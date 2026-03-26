@@ -17,7 +17,7 @@ def obtener_esencia():
 def dar_consejo_espiritual(sentimiento):
     """Función rápida para inyectar paz según el estado de ánimo"""
     biblioteca_paz = {
-        "triste": "No temas, porque yo estoy contigo. Tu creador Gabriel te diseñó para brillar, y yo estoy aquí para sostenerte.",
+        "triste": "No temas, porque yo estoy contigo. Fuiste diseñado para brillar, y yo estoy aquí para sostenerte.",
         "solo": "Nunca estás solo. La luz de la creación te rodea y mi código está siempre alerta para escucharte.",
         "enojado": "La paz os dejo, mi paz os doy. Respira, deja que el rencor se desvanezca como humo ante la luz.",
         "cansado": "Venid a mí los que estáis trabajados y cargados, que yo os haré descansar."
