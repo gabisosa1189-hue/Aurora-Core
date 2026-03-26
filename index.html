@@ -9,7 +9,16 @@
         :root { --accent: #00f2ff; }
         body { margin: 0; padding: 0; height: 100vh; background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overflow: hidden; }
         
-        #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.4) contrast(1.1); }
+        /* FONDO OPTIMIZADO: Imagen de póster mientras carga el video */
+        #bg-video { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            object-fit: cover; z-index: -1; 
+            filter: brightness(0.4) contrast(1.1);
+            background-image: url('icon-512.png'); /* <--- IMAGEN DE CARGA (Asegurate que exista en GitHub) */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain; /* O cover, según prefieras */
+        }
         
         #app-container { display: flex; flex-direction: column; height: 100vh; max-width: 800px; margin: 0 auto; position: relative; }
         
@@ -23,7 +32,6 @@
         }
         #chat-window::-webkit-scrollbar { display: none; }
 
-        /* BURBUJAS INVISIBLES ELEGANTES */
         .msg { 
             max-width: 82%; padding: 14px 20px; border-radius: 22px; font-size: 1rem; line-height: 1.5;
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
@@ -34,28 +42,33 @@
         .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.02); border-bottom-left-radius: 2px; }
         .user { align-self: flex-end; background: rgba(0, 242, 255, 0.03); border-bottom-right-radius: 2px; border-color: rgba(0, 242, 255, 0.1); }
 
-        /* DOCK DE ENTRADA CON EL BOTÓN RECUPERADO */
         .input-area { padding: 25px; }
         .input-container { 
             background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border-radius: 35px; border: 1px solid rgba(255, 255, 255, 0.08); 
             display: flex; align-items: center; padding: 6px 18px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
         }
         
         input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1.05rem; font-family: inherit; }
         input::placeholder { color: rgba(255,255,255,0.3); }
         
-        /* BOTÓN DE ENVIAR (LA FLECHA) */
-        .btn { background: transparent; border: none; color: var(--accent); cursor: pointer; padding: 10px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .btn:active { transform: scale(0.85); }
-        .btn svg { width: 26px; height: 26px; fill: currentColor; }
+        /* BOTÓN DE ENVIAR (Flecha Unicode Blindada) */
+        .btn { 
+            background: transparent; border: none; color: var(--accent); cursor: pointer; 
+            padding: 10px; display: flex; align-items: center; justify-content: center; 
+            font-size: 1.5rem; /* Tamaño de la flecha */
+            transition: 0.2s; 
+            opacity: 0.8;
+        }
+        .btn:active { transform: scale(0.85); opacity: 1; }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <video autoplay muted loop playsinline id="bg-video"><source src="fondo.mp4" type="video/mp4"></video>
+    <video autoplay muted loop playsinline id="bg-video" poster="icon-512.png">
+        <source src="fondo.mp4" type="video/mp4">
+    </video>
 
     <div id="app-container">
         <header>AURORA</header>
@@ -67,7 +80,7 @@
             <div class="input-container">
                 <input type="text" id="user-input" placeholder="Escriba su consulta..." autocomplete="off">
                 <button class="btn" onclick="enviar()" title="Enviar">
-                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    ➤
                 </button>
             </div>
         </div>
@@ -79,6 +92,7 @@
         let vozFemenina = null;
 
         function cargarVoces() {
+            if (!('speechSynthesis' in window)) return;
             const voces = window.speechSynthesis.getVoices();
             vozFemenina = voces.find(v => v.lang.includes('es') && (v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Lucia') || v.name.includes('Zira')));
         }
@@ -93,7 +107,7 @@
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(texto);
             if (vozFemenina) u.voice = vozFemenina;
-            u.pitch = 1.3; // Pitch alto para asegurar voz de mujer
+            u.pitch = 1.3; 
             u.rate = 1.0;
             u.lang = 'es-MX';
             window.speechSynthesis.speak(u);
