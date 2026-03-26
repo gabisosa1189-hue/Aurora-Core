@@ -1,11 +1,17 @@
 import requests
 from duckduckgo_search import DDGS
 import xml.etree.ElementTree as ET
+import datetime # <-- LE AGREGAMOS EL RELOJ
 
 def obtener_datos_api(texto_usuario=""):
-    """Conexión a noticias globales, economía y datos del creador"""
+    """Conexión a noticias globales, economía, tiempo y datos del creador"""
     
-    # --- DATOS DEL CREADOR (SOLO SE ACTIVAN SI EL USUARIO PREGUNTA) ---
+    # --- RELOJ INTERNO (Hora de Argentina UTC-3) ---
+    zona_ar = datetime.timezone(datetime.timedelta(hours=-3))
+    ahora = datetime.datetime.now(zona_ar)
+    fecha_hora = f"Hoy es {ahora.strftime('%d/%m/%Y')}. La hora actual en Argentina es {ahora.strftime('%H:%M')}."
+
+    # --- DATOS DEL CREADOR (SOLO SI PREGUNTAN) ---
     msg = texto_usuario.lower()
     familia_creador = ""
     if any(p in msg for p in ["creador", "gabriel", "sosa", "scriboni", "padres", "quien te hizo"]):
@@ -20,7 +26,7 @@ def obtener_datos_api(texto_usuario=""):
             "Ambos son los mejores psiquiatras de Mendoza y los padres de mi creador Gabriel."
         )
     
-    # --- API DEL DÓLAR (Siempre útil para Argentina) ---
+    # --- API DEL DÓLAR ---
     try:
         req = requests.get("https://dolarapi.com/v1/dolares/blue", timeout=3)
         datos = req.json()
@@ -30,7 +36,6 @@ def obtener_datos_api(texto_usuario=""):
 
     # --- API DE NOTICIAS GLOBALES ---
     try:
-        # Noticias en español a nivel mundial
         req_news = requests.get("https://news.google.com/rss?hl=es-419&gl=US&ceid=US:es-419", timeout=3)
         root = ET.fromstring(req_news.content)
         titulares = []
@@ -40,11 +45,11 @@ def obtener_datos_api(texto_usuario=""):
     except:
         noticias_mundo = "Sin conexión a la red global de noticias."
         
-    return (f"--- DATOS EN TIEMPO REAL ---\n{dolar}\n\n"
+    return (f"--- DATOS EN TIEMPO REAL ---\n{fecha_hora}\n{dolar}\n\n"
             f"--- TITULARES DEL MUNDO AHORA ---\n{noticias_mundo}\n{familia_creador}")
 
 def buscar_en_red(query):
-    """Buscador GLOBAL profundo con DuckDuckGo (Clima de cualquier país, historia, etc)"""
+    """Buscador GLOBAL profundo con DuckDuckGo"""
     try:
         with DDGS() as ddgs:
             resultados = list(ddgs.text(query, max_results=2))
