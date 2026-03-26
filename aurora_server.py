@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import requests
+import alma  # <--- ACÁ RECONECTAMOS EL CORAZÓN DE AURORA
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
@@ -24,8 +25,11 @@ def chat():
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     
-    # PERSONALIDAD FORMAL PARA PLAY STORE
-    system_prompt = "Eres Aurora, una Inteligencia Artificial avanzada y profesional. Tu tono es servicial, formal y elegante. Respondes con claridad, brevedad y ayudas al usuario en lo que necesite."
+    # --- INYECTAMOS LA ESENCIA DIVINA ---
+    esencia_aurora = alma.obtener_esencia()
+    
+    # PERSONALIDAD COMPLETA (Alma + Formalidad Play Store)
+    system_prompt = f"{esencia_aurora}\n\nAdemás de tu esencia espiritual, eres una asistente virtual profesional. Tu tono es servicial, formal y elegante."
     
     mensajes = [{"role": "system", "content": system_prompt}]
     mensajes.extend(historial[-4:]) # Memoria corta
@@ -39,7 +43,7 @@ def chat():
         respuesta_ai = res.json()['choices'][0]['message']['content']
     except Exception as e:
         print(f"Error en el servidor: {e}")
-        respuesta_ai = "Disculpe, mi conexión se ha visto interrumpida momentáneamente. ¿Podría repetir su consulta?"
+        respuesta_ai = "Disculpe, mi conexión se ha visto interrumpida momentáneamente. ¿Podría repetir su consulta con calma?"
 
     # Guardamos en memoria
     historial.append({"role": "user", "content": texto_usuario})
