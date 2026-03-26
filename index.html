@@ -7,9 +7,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #00f2ff; }
-        body { margin: 0; padding: 0; height: 100vh; background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overflow: hidden; }
         
-        #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.4); background: #050505; }
+        /* --- ENTRADA CINEMÁTICA --- */
+        body { 
+            margin: 0; padding: 0; height: 100vh; background: #000; 
+            font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overflow: hidden; 
+            animation: entradaSuave 1.5s ease-in-out forwards;
+        }
+        @keyframes entradaSuave {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        /* EL VIDEO SIN EL ÍCONO FANTASMA */
+        #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.4); }
         
         #app-container { display: flex; flex-direction: column; height: 100vh; max-width: 800px; margin: 0 auto; position: relative; }
         header { padding: 15px; text-align: center; font-family: 'Orbitron'; letter-spacing: 6px; opacity: 0.9; font-size: 1.2rem; }
@@ -51,7 +62,7 @@
     </style>
 </head>
 <body>
-    <video autoplay muted loop playsinline id="bg-video" poster="icon-512.png"><source src="fondo.mp4" type="video/mp4"></video>
+    <video autoplay muted loop playsinline id="bg-video"><source src="fondo.mp4" type="video/mp4"></video>
 
     <div id="app-container">
         <header>AURORA</header>
@@ -72,12 +83,9 @@
         const input = document.getElementById('user-input');
         let vozFemenina = null;
 
-        // --- VOZ HUMANA FLUIDA ---
         function cargarVoces() {
             if (!('speechSynthesis' in window)) return;
             const voces = window.speechSynthesis.getVoices();
-            
-            // Busca la voz más natural posible
             vozFemenina = voces.find(v => v.lang.startsWith('es') && 
                 (v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Lucia') || 
                  v.name.includes('Paulina') || v.name.includes('Sabina') || v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('mujer')));
@@ -96,7 +104,6 @@
             if (vozFemenina) {
                 u.voice = vozFemenina;
             }
-            // Bajamos el pitch a 1.0 (tono natural) y la velocidad a 0.95 (más fluido y calmado)
             u.pitch = 1.05; 
             u.rate = 0.95; 
             u.lang = 'es-MX'; 
