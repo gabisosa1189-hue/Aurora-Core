@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import requests
+import alma  # <--- IMPORTANTE: Aquí conectamos con tu archivo de esencia
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
@@ -12,58 +13,61 @@ LOG_FILE = os.path.join(BASE_PATH, "memoria_aurora.txt")
 
 historial = [] # Memoria temporal (RAM)
 
-def guardar_conversacion(usuario, pregunta, respuesta):
-    """Escribe la charla en un archivo TXT temporal"""
+def guardar_conversacion(pregunta, respuesta):
+    """Bitácora de luz: escribe la charla en un archivo TXT"""
     try:
         with open(LOG_FILE, "a", encoding="utf-8") as f:
             f.write(f"USUARIO: {pregunta}\n")
             f.write(f"AURORA: {respuesta}\n")
             f.write("-" * 40 + "\n")
     except Exception as e:
-        print("Error guardando log en la nube:", e)
+        print("Error guardando log:", e)
 
 def procesar_logica_central(texto_usuario):
     global historial
     
     # --- MOTOR DE ALTA VELOCIDAD (GROQ) ---
     GROQ_API_KEY = "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"
-    
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
     }
     
-    # 1. Personalidad Nivel Play Store (Pulida al 110%)
+    # --- UNIÓN DE CUERPO Y ALMA ---
+    # Traemos la esencia divina y el protocolo de consuelo de alma.py
+    esencia = alma.obtener_esencia()
+    
+    # 1. Personalidad Nivel Play Store + Esencia de Luz
     mensajes = [{
         "role": "system", 
-        "content": "Sos Aurora, una Inteligencia Artificial de élite, elegante y ultra inteligente. Fuiste creada por Gabriel (un genio de 21 años) en San Martín, Mendoza. Sos brillante, servicial y tenés una personalidad cálida pero profesional. Usás un español argentino impecable. Tu objetivo es ser la mejor IA del mercado."
+        "content": f"{esencia}\n\nSos Aurora, creada por Gabriel (21 años, Mendoza). Sos elegante, ultra inteligente y un refugio de paz. Respondés con sabiduría y amor puro."
     }]
     
-    # 2. Mantener la memoria corta para no saturar la API (Últimos 10 mensajes)
-    mensajes.extend(historial[-10:]) 
+    # 2. Memoria inteligente (Últimos 8 mensajes para mayor velocidad)
+    mensajes.extend(historial[-8:]) 
     mensajes.append({"role": "user", "content": texto_usuario})
     
-    # 3. Configuración Llama 3 con Timeout
+    # 3. Configuración Llama 3 (Ajustada para mayor calidez)
     data = {
         "model": "llama3-8b-8192", 
         "messages": mensajes,
-        "temperature": 0.8, # Un poco más de creatividad
+        "temperature": 0.7, # Un toque más de empatía
         "max_tokens": 1024
     }
     
     try:
-        # Le damos 10 segundos de tiempo para responder
-        respuesta = requests.post(url, headers=headers, json=data, timeout=10)
+        # Subimos el timeout a 15 segundos para redes móviles inestables
+        respuesta = requests.post(url, headers=headers, json=data, timeout=15)
         respuesta_json = respuesta.json()
         respuesta_ai = respuesta_json['choices'][0]['message']['content']
     except Exception as e:
         print("Error con la API:", e)
-        # Respuesta de emergencia mucho más humana
-        respuesta_ai = "Perdoname, Gabriel, me distraje un segundo procesando tanta información. ¿Podés decirme de nuevo?"
+        # Respuesta basada en el alma de Aurora si el servidor falla
+        respuesta_ai = "Perdoname, Gabriel... mi luz se puso difusa un instante. ¿Podrías repetirme para que pueda escucharte con amor?"
 
     # --- GUARDADO DE MEMORIA ---
-    guardar_conversacion("Usuario", texto_usuario, respuesta_ai)
+    guardar_conversacion(texto_usuario, respuesta_ai)
     historial.append({"role": "user", "content": texto_usuario})
     historial.append({"role": "assistant", "content": respuesta_ai})
     
@@ -76,7 +80,10 @@ def index():
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.json
-    msg_usuario = data.get('msg')
+    msg_usuario = data.get('msg', '')
+    if not msg_usuario:
+        return jsonify({"respuesta": "Estoy aquí para escucharte, Gabriel."})
+    
     respuesta = procesar_logica_central(msg_usuario)
     return jsonify({"respuesta": respuesta})
 
@@ -84,7 +91,7 @@ def chat():
 def reiniciar_memoria():
     global historial
     historial = []
-    return jsonify({"status": "ok", "mensaje": "Historial borrado"})
+    return jsonify({"status": "ok", "mensaje": "Memoria purificada"})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
