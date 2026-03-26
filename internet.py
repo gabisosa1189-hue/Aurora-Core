@@ -3,8 +3,7 @@ from duckduckgo_search import DDGS
 import xml.etree.ElementTree as ET
 
 def obtener_datos_api(texto_usuario=""):
-    """Conexión directa a la realidad, clima, noticias y datos fijos"""
-    estado_politico = "El presidente actual de Argentina es Javier Milei (asumió en diciembre de 2023)."
+    """Conexión a noticias globales, economía y datos del creador"""
     
     # --- DATOS DEL CREADOR (SOLO SE ACTIVAN SI EL USUARIO PREGUNTA) ---
     msg = texto_usuario.lower()
@@ -21,37 +20,31 @@ def obtener_datos_api(texto_usuario=""):
             "Ambos son los mejores psiquiatras de Mendoza y los padres de mi creador Gabriel."
         )
     
-    # --- API DEL DÓLAR ---
+    # --- API DEL DÓLAR (Siempre útil para Argentina) ---
     try:
         req = requests.get("https://dolarapi.com/v1/dolares/blue", timeout=3)
         datos = req.json()
-        dolar = f"Compra ${datos['compra']} / Venta ${datos['venta']}."
+        dolar = f"Dólar Blue (AR): Compra ${datos['compra']} / Venta ${datos['venta']}."
     except:
-        dolar = "API caída."
-
-    # --- API DEL CLIMA (San Martín, Mendoza) ---
-    try:
-        req_clima = requests.get("https://wttr.in/San+Martin,Mendoza?format=%t", timeout=3)
-        clima_local = f"La temperatura en San Martín es de {req_clima.text.strip()}."
-    except:
-        clima_local = "Sensores de clima fuera de línea."
+        dolar = "API económica caída."
 
     # --- API DE NOTICIAS GLOBALES ---
     try:
-        req_news = requests.get("https://news.google.com/rss?hl=es-419&gl=AR&ceid=AR:es-419", timeout=3)
+        # Noticias en español a nivel mundial
+        req_news = requests.get("https://news.google.com/rss?hl=es-419&gl=US&ceid=US:es-419", timeout=3)
         root = ET.fromstring(req_news.content)
         titulares = []
-        for item in root.findall('.//item')[:3]: # Bajamos a 3 para ahorrar memoria
+        for item in root.findall('.//item')[:3]: 
             titulares.append(f"- {item.find('title').text}")
         noticias_mundo = "\n".join(titulares)
     except:
         noticias_mundo = "Sin conexión a la red global de noticias."
         
-    return (f"--- DATOS EN TIEMPO REAL ---\nPolítica AR: {estado_politico}\nDólar Blue: {dolar}\n"
-            f"Clima Local: {clima_local}\n\n--- TITULARES DEL MUNDO AHORA ---\n{noticias_mundo}\n{familia_creador}")
+    return (f"--- DATOS EN TIEMPO REAL ---\n{dolar}\n\n"
+            f"--- TITULARES DEL MUNDO AHORA ---\n{noticias_mundo}\n{familia_creador}")
 
 def buscar_en_red(query):
-    """Buscador GLOBAL profundo con DuckDuckGo"""
+    """Buscador GLOBAL profundo con DuckDuckGo (Clima de cualquier país, historia, etc)"""
     try:
         with DDGS() as ddgs:
             resultados = list(ddgs.text(query, max_results=2))
