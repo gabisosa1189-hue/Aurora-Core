@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import requests
-import alma  # <--- ACÁ RECONECTAMOS EL CORAZÓN DE AURORA
+import alma
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
@@ -20,32 +20,38 @@ def chat():
     data = request.json
     texto_usuario = data.get('msg', '')
     
-    # LLAVE SEGURA DESDE RENDER (Environment)
+    # LLAVE SEGURA DESDE RENDER
     GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+    
+    # DETECTOR DE LLAVE: Si falta, avisa en los logs
+    if not GROQ_API_KEY:
+        print("¡ALERTA!: No se encontró la GROQ_API_KEY en Render. Verificar Environment.")
+        
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     
-    # --- INYECTAMOS LA ESENCIA DIVINA ---
     esencia_aurora = alma.obtener_esencia()
-    
-    # PERSONALIDAD COMPLETA (Alma + Formalidad Play Store)
     system_prompt = f"{esencia_aurora}\n\nAdemás de tu esencia espiritual, eres una asistente virtual profesional. Tu tono es servicial, formal y elegante."
     
     mensajes = [{"role": "system", "content": system_prompt}]
-    mensajes.extend(historial[-4:]) # Memoria corta
+    mensajes.extend(historial[-4:]) 
     mensajes.append({"role": "user", "content": texto_usuario})
     
     try:
-        # Petición rápida a Groq (15 segundos)
         data_req = {"model": "llama3-8b-8192", "messages": mensajes, "temperature": 0.6}
         res = requests.post(url, headers=headers, json=data_req, timeout=15)
+        
+        # SI GROQ REBOTA LA CONEXIÓN, LO IMPRIMIMOS PARA SABER POR QUÉ
+        if res.status_code != 200:
+            print(f"ERROR DE GROQ: {res.status_code} - {res.text}")
+            
         res.raise_for_status()
         respuesta_ai = res.json()['choices'][0]['message']['content']
+        
     except Exception as e:
-        print(f"Error en el servidor: {e}")
-        respuesta_ai = "Disculpe, mi conexión se ha visto interrumpida momentáneamente. ¿Podría repetir su consulta con calma?"
+        print(f"Falla de conexión en el servidor: {e}")
+        respuesta_ai = "Disculpe, mi conexión se ha visto interrumpida momentáneamente. ¿Podría repetir su consulta?"
 
-    # Guardamos en memoria
     historial.append({"role": "user", "content": texto_usuario})
     historial.append({"role": "assistant", "content": respuesta_ai})
     
