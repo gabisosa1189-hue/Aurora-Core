@@ -3,7 +3,7 @@ from flask_cors import CORS
 import os
 import requests
 import alma
-import internet # Conectamos el módulo de internet
+import internet 
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
@@ -26,20 +26,21 @@ def chat():
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     
-    # 1. Obtenemos datos del clima, dolar y (si preguntan) creadores
+    # 1. Obtenemos datos del clima, dolar, reloj y creadores
     datos_api = internet.obtener_datos_api(texto_usuario)
     
     # 2. Búsqueda profunda opcional
     datos_red = ""
-    palabras_clave = ["noticia", "clima", "quien", "paso", "mundo", "hora", "hoy"]
+    palabras_clave = ["noticia", "clima", "quien", "paso", "mundo", "hoy", "temperatura"]
     if len(texto_usuario.split()) >= 2 and any(p in msg_limpio for p in palabras_clave):
         datos_red = internet.buscar_en_red(texto_usuario) 
     
-    # 3. Armamos la personalidad
+    # 3. Armamos la personalidad con "Filtro Social"
     esencia_aurora = alma.obtener_esencia()
     system_prompt = (
         f"{esencia_aurora}\n\n"
-        "Eres una asistente virtual profesional, formal y elegante. Usa estos datos recientes para responder:\n"
+        "INSTRUCCIÓN CRÍTICA: Si el usuario solo dice 'hola', saluda o pregunta cómo estás, responde con un saludo MUY breve, formal y elegante (máximo 1 o 2 líneas). NO le preguntes por sus problemas ni le ofrezcas consuelo a menos que él te diga explícitamente que se siente mal o triste.\n\n"
+        "Eres una asistente virtual profesional. Usa estos datos recientes para responder:\n"
         f"{datos_api}\n\nBÚSQUEDA ADICIONAL:\n{datos_red}"
     )
     
