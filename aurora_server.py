@@ -3,7 +3,7 @@ from flask_cors import CORS
 import os
 import requests
 import alma
-import internet # <--- RECUPERAMOS TU MÓDULO DE INTERNET
+import internet # Conectamos el módulo de internet
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
@@ -22,29 +22,25 @@ def chat():
     texto_usuario = data.get('msg', '')
     msg_limpio = texto_usuario.lower()
     
-    # LLAVE DE GROQ DESDE RENDER
     GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     
-    # --- LÓGICA DE INTERNET ---
-    # Si detecta palabras clave, busca en la red rápido
+    # 1. Obtenemos datos del clima, dolar y (si preguntan) creadores
+    datos_api = internet.obtener_datos_api(texto_usuario)
+    
+    # 2. Búsqueda profunda opcional
     datos_red = ""
     palabras_clave = ["noticia", "clima", "quien", "paso", "mundo", "hora", "hoy"]
     if len(texto_usuario.split()) >= 2 and any(p in msg_limpio for p in palabras_clave):
-        try:
-            # Llama a la función que tenés en internet.py
-            datos_red = internet.buscar_en_red(texto_usuario) 
-        except Exception as e:
-            print(f"Error buscando en internet: {e}")
-            datos_red = "La red externa no está disponible en este segundo."
-
-    # --- ESENCIA DE AURORA + DATOS DE INTERNET ---
+        datos_red = internet.buscar_en_red(texto_usuario) 
+    
+    # 3. Armamos la personalidad
     esencia_aurora = alma.obtener_esencia()
     system_prompt = (
         f"{esencia_aurora}\n\n"
-        "Además de tu esencia espiritual, eres una asistente virtual profesional, formal y elegante.\n"
-        f"DATOS RECIENTES DE INTERNET PARA RESPONDER: {datos_red}"
+        "Eres una asistente virtual profesional, formal y elegante. Usa estos datos recientes para responder:\n"
+        f"{datos_api}\n\nBÚSQUEDA ADICIONAL:\n{datos_red}"
     )
     
     mensajes = [{"role": "system", "content": system_prompt}]
@@ -52,7 +48,6 @@ def chat():
     mensajes.append({"role": "user", "content": texto_usuario})
     
     try:
-        # Petición a la velocidad de la luz (Llama 3.1)
         data_req = {
             "model": "llama-3.1-8b-instant", 
             "messages": mensajes, 
@@ -61,9 +56,8 @@ def chat():
         res = requests.post(url, headers=headers, json=data_req, timeout=15)
         res.raise_for_status()
         respuesta_ai = res.json()['choices'][0]['message']['content']
-        
     except Exception as e:
-        print(f"Falla de conexión principal: {e}")
+        print(f"Error: {e}")
         respuesta_ai = "Disculpe, mi conexión se ha visto interrumpida momentáneamente. ¿Podría repetir su consulta?"
 
     historial.append({"role": "user", "content": texto_usuario})
