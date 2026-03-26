@@ -1,0 +1,112 @@
+/* Reseteo básico para móviles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body, html {
+    height: 100%;
+    overflow: hidden; /* Evita scrolls raros en el fondo */
+    background-color: #000;
+}
+
+/* 1. EL FONDO AURORA AL 110% */
+#bg-video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    transform: translateX(-50%) translateY(-50%);
+    object-fit: cover;
+    filter: brightness(0.8) contrast(1.1); /* Ajusta esto para resaltar la aurora */
+}
+
+/* 2. LA INTERFAZ */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    color: white;
+}
+
+header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.2rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.welcome-text h1 {
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 400;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* 3. BARRA DE ENTRADA (ESTILO GLASSMORPHISM) */
+.input-container {
+    padding: 20px;
+    padding-bottom: 40px; /* Espacio para el dock de Android/iOS */
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1); /* Transparencia blanca */
+    backdrop-filter: blur(20px); /* El efecto de vidrio */
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 10px 15px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 10px;
+    font-size: 1rem;
+    outline: none;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.icon-btn, .mic-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 10px;
+    transition: transform 0.2s;
+}
+
+.mic-btn:active {
+    transform: scale(1.2);
+    color: #4285f4; /* Azul Google */
+}
