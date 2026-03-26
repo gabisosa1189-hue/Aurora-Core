@@ -19,8 +19,8 @@ def chat():
     data = request.json
     texto_usuario = data.get('msg', '')
     
-    # LLAVE DE ALTA VELOCIDAD
-    GROQ_API_KEY = "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"
+    # LLAVE SEGURA DESDE RENDER (Environment)
+    GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     
@@ -28,11 +28,11 @@ def chat():
     system_prompt = "Eres Aurora, una Inteligencia Artificial avanzada y profesional. Tu tono es servicial, formal y elegante. Respondes con claridad, brevedad y ayudas al usuario en lo que necesite."
     
     mensajes = [{"role": "system", "content": system_prompt}]
-    mensajes.extend(historial[-4:]) # Memoria corta para que responda al instante
+    mensajes.extend(historial[-4:]) # Memoria corta
     mensajes.append({"role": "user", "content": texto_usuario})
     
     try:
-        # Petición rápida a Groq (15 segundos máximo)
+        # Petición rápida a Groq (15 segundos)
         data_req = {"model": "llama3-8b-8192", "messages": mensajes, "temperature": 0.6}
         res = requests.post(url, headers=headers, json=data_req, timeout=15)
         res.raise_for_status()
