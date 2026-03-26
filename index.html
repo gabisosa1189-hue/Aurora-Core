@@ -16,31 +16,33 @@
         
         #chat-window { 
             flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; 
-            scrollbar-width: none; padding-bottom: 30px;
+            scrollbar-width: none; padding-bottom: 20px;
         }
         #chat-window::-webkit-scrollbar { display: none; }
 
         .msg { 
             max-width: 85%; padding: 14px 20px; border-radius: 20px; font-size: 1rem; line-height: 1.5;
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1); animation: slideUp 0.3s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.05); animation: slideUp 0.3s ease-out;
         }
-        .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.05); border-bottom-left-radius: 2px; }
-        .user { align-self: flex-end; background: rgba(0, 242, 255, 0.1); border-bottom-right-radius: 2px; border-color: rgba(0, 242, 255, 0.2); }
+        .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.02); border-bottom-left-radius: 2px; }
+        .user { align-self: flex-end; background: rgba(0, 242, 255, 0.05); border-bottom-right-radius: 2px; border-color: rgba(0, 242, 255, 0.1); }
 
-        .input-area { padding: 15px 20px 25px 20px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+        /* BARRA DE TEXTO 100% INVISIBLE (CRISTAL PURO) */
+        .input-area { padding: 15px 20px 25px 20px; background: transparent; }
         .input-container { 
-            background: rgba(20, 20, 25, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.15); 
+            background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.1); 
             display: flex; align-items: center; padding: 5px 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         
         input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; font-family: inherit; }
         input::placeholder { color: rgba(255,255,255,0.4); }
         
         .btn { 
-            background: var(--accent); border: none; color: #000; cursor: pointer; 
-            padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;
+            background: transparent; border: none; color: var(--accent); cursor: pointer; 
+            padding: 8px 10px; border-radius: 20px; font-weight: 600; font-size: 1.2rem;
             transition: 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .btn:active { transform: scale(0.9); }
@@ -49,7 +51,7 @@
     </style>
 </head>
 <body>
-    <video autoplay muted loop playsinline id="bg-video"><source src="fondo.mp4" type="video/mp4"></video>
+    <video autoplay muted loop playsinline id="bg-video" poster="icon-512.png"><source src="fondo.mp4" type="video/mp4"></video>
 
     <div id="app-container">
         <header>AURORA</header>
@@ -60,7 +62,7 @@
         <div class="input-area">
             <div class="input-container">
                 <input type="text" id="user-input" placeholder="Escriba aquí..." autocomplete="off">
-                <button class="btn" onclick="enviar()">ENVIAR</button>
+                <button class="btn" onclick="enviar()">➤</button>
             </div>
         </div>
     </div>
@@ -70,16 +72,15 @@
         const input = document.getElementById('user-input');
         let vozFemenina = null;
 
-        // --- SOLUCIÓN NUCLEAR PARA LA VOZ ---
+        // --- VOZ HUMANA FLUIDA ---
         function cargarVoces() {
             if (!('speechSynthesis' in window)) return;
             const voces = window.speechSynthesis.getVoices();
             
-            // Busca a las mujeres hispanas más comunes en los celulares
+            // Busca la voz más natural posible
             vozFemenina = voces.find(v => v.lang.startsWith('es') && 
-                (v.name.includes('Google') || v.name.includes('Paulina') || v.name.includes('Sabina') || 
-                 v.name.includes('Helena') || v.name.includes('Lucia') || v.name.includes('Monica') || 
-                 v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('mujer')));
+                (v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Lucia') || 
+                 v.name.includes('Paulina') || v.name.includes('Sabina') || v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('mujer')));
         }
 
         if ('speechSynthesis' in window) {
@@ -94,13 +95,11 @@
             const u = new SpeechSynthesisUtterance(texto);
             if (vozFemenina) {
                 u.voice = vozFemenina;
-                u.pitch = 1.1; // Tono normal si es mujer
-            } else {
-                u.pitch = 1.6; // Tono SUPER agudo si el celular fuerza un hombre
             }
-            
-            u.rate = 1.0;
-            u.lang = 'es-US'; // Español neutro
+            // Bajamos el pitch a 1.0 (tono natural) y la velocidad a 0.95 (más fluido y calmado)
+            u.pitch = 1.05; 
+            u.rate = 0.95; 
+            u.lang = 'es-MX'; 
             window.speechSynthesis.speak(u);
         }
 
