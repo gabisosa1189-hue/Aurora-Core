@@ -6,67 +6,115 @@
     <title>AURORA AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #00f2ff; }
-        body { margin: 0; background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overflow: hidden; }
-        #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.3); }
+        :root { --accent: #00f2ff; --bg-glass: rgba(255, 255, 255, 0.03); --border-glass: rgba(255, 255, 255, 0.08); }
+        body { margin: 0; padding: 0; height: 100vh; background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overflow: hidden; }
         
-        /* BOTÓN "A" MÁGICO */
+        /* 1. TELÓN NEGRO ANTI-PARPADEO */
+        #telon-negro { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; animation: fadeOut 1.5s ease 0.5s forwards; pointer-events: none; }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+
+        #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.4); }
+        
+        #app-container { display: flex; flex-direction: column; height: 100vh; max-width: 800px; margin: 0 auto; position: relative; }
+        
+        /* HEADER CON BOTÓN "A" */
+        header { padding: 15px; text-align: center; border-bottom: 1px solid var(--border-glass); backdrop-filter: blur(10px); position: relative; }
+        .titulo { font-family: 'Orbitron'; letter-spacing: 6px; font-size: 1.2rem; }
+        
         #btn-modo-voz {
-            position: fixed; top: 15px; left: 15px; width: 40px; height: 40px;
-            border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05); backdrop-filter: blur(10px);
-            color: var(--accent); font-family: 'Orbitron'; font-size: 1.2rem;
-            cursor: pointer; z-index: 1000; display: flex; align-items: center; justify-content: center;
+            position: absolute; top: 50%; left: 15px; transform: translateY(-50%);
+            width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border-glass);
+            background: var(--bg-glass); color: var(--accent);
+            font-family: 'Orbitron'; font-size: 1.3rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* PANEL DE VOZ (TIPO GEMINI LIVE) */
-        #panel-voz {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); backdrop-filter: blur(20px);
-            z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center;
-            animation: fadeIn 0.5s ease;
-        }
-        .circulo-pulso {
-            width: 150px; height: 150px; border-radius: 50%;
-            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-            animation: pulso 2s infinite; margin-bottom: 30px;
-        }
-        @keyframes pulso { 0% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 0.8; } 100% { transform: scale(0.8); opacity: 0.5; } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        #app-container { display: flex; flex-direction: column; height: 100vh; max-width: 800px; margin: 0 auto; }
-        header { padding: 15px; text-align: center; font-family: 'Orbitron'; letter-spacing: 5px; font-size: 1.1rem; }
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
-        .msg { max-width: 80%; padding: 12px 18px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .aurora { align-self: flex-start; background: rgba(255,255,255,0.05); }
-        .user { align-self: flex-end; background: rgba(0, 242, 255, 0.1); }
+        #chat-window::-webkit-scrollbar { display: none; }
+
+        .msg { max-width: 85%; padding: 14px 20px; border-radius: 20px; line-height: 1.5; backdrop-filter: blur(15px); border: 1px solid var(--border-glass); animation: slideUp 0.3s ease-out; }
+        .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.02); border-bottom-left-radius: 2px; }
+        .user { align-self: flex-end; background: rgba(0, 242, 255, 0.05); border-bottom-right-radius: 2px; border-color: rgba(0, 242, 255, 0.1); }
+
+        /* 2. AREA DE ENTRADA Y DISCLAIMER */
+        .input-area { padding: 10px 20px 15px 20px; background: transparent; display: flex; flex-direction: column; align-items: center;}
         
-        .input-area { padding: 20px; }
-        .input-container { background: rgba(255,255,255,0.05); border-radius: 30px; display: flex; padding: 5px 15px; border: 1px solid rgba(255,255,255,0.1); }
-        input { flex: 1; background: transparent; border: none; color: white; padding: 10px; outline: none; }
-        .btn { background: transparent; border: none; color: var(--accent); font-size: 1.2rem; cursor: pointer; }
+        .input-container { 
+            width: 100%; background: var(--bg-glass); backdrop-filter: blur(25px);
+            border-radius: 30px; border: 1px solid var(--border-glass); 
+            display: flex; align-items: center; padding: 5px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; font-family: inherit; }
+        
+        .btn-enviar { background: transparent; border: none; color: var(--accent); cursor: pointer; padding: 8px 10px; font-size: 1.3rem; }
+
+        /* TEXTO DISCLAIMER OBLIGATORIO */
+        .disclaimer { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 10px; text-align: center; }
+
+        /* 3. TUERCA DE CONFIGURACIÓN (GDPR) */
+        #btn-config {
+            position: fixed; bottom: 15px; left: 15px;
+            width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border-glass);
+            background: var(--bg-glass); backdrop-filter: blur(10px); color: rgba(255,255,255,0.5);
+            cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+        #btn-config svg { width: 22px; height: 22px; fill: currentColor; }
+
+        /* PANELES OCULTOS (VOZ Y CONFIG) */
+        .panel-full { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(20px); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .circulo-pulso { width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, var(--accent) 0%, transparent 70%); animation: pulso 2s infinite; }
+        @keyframes pulso { 0%, 100% { transform: scale(0.9); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } }
+        
+        .btn-cerrar { background: transparent; border: 1px solid var(--border-glass); color: #fff; padding: 10px 20px; border-radius: 20px; margin-top: 40px; cursor: pointer; font-family: inherit; }
+
+        /* Estilos específicos panel config */
+        .panel-content { max-width: 80%; text-align: center; }
+        .btn-borrar { background: #ff4757; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; margin-top: 20px; cursor: pointer; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
+    <div id="telon-negro"></div>
     <video autoplay muted loop playsinline id="bg-video"><source src="fondo.mp4" type="video/mp4"></video>
-    
+
     <button id="btn-modo-voz" onclick="abrirModoVoz()">A</button>
 
-    <div id="panel-voz">
+    <button id="btn-config" onclick="abrirConfig()">
+        <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.81,11.69,4.81,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.5c-1.93,0-3.5-1.57-3.5-3.5 s1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5S13.93,15.5,12,15.5z"/></svg>
+    </button>
+
+    <div id="panel-voz" class="panel-full">
         <div class="circulo-pulso"></div>
-        <h2 id="estado-voz" style="font-family: 'Orbitron'; color: var(--accent);">AURORA LIVE</h2>
-        <p id="subtitulo-voz">Escuchando...</p>
-        <button class="btn" onclick="cerrarModoVoz()" style="margin-top: 50px; border: 1px solid; padding: 10px 20px; border-radius: 20px;">CERRAR</button>
+        <h2 style="font-family:'Orbitron'; color:var(--accent); margin-top:20px;">AURORA LIVE</h2>
+        <p id="subtitulo-voz">Hable con tranquilidad...</p>
+        <button class="btn-cerrar" onclick="cerrarPanel()">CERRAR</button>
+    </div>
+
+    <div id="panel-config" class="panel-full">
+        <div class="panel-content">
+            <h2 style="font-family:'Orbitron'; color:rgba(255,255,255,0.7);">CONFIGURACIÓN</h2>
+            <p style="color:rgba(255,255,255,0.6);">Aurora respeta su privacidad. Sus conversaciones son temporales y no se almacenan en servidores externos.</p>
+            <p style="font-weight:600;">Para borrar los datos locales de esta sesión:</p>
+            <button class="btn-borrar" onclick="borrarDatosDatos()">BORRAR MIS DATOS</button>
+        </div>
+        <button class="btn-cerrar" onclick="cerrarPanel()">VOLVER</button>
     </div>
 
     <div id="app-container">
-        <header>AURORA</header>
-        <div id="chat-window"></div>
+        <header><div class="titulo">AURORA</div></header>
+        <div id="chat-window">
+            <div class="msg aurora">Bienvenido. Soy Aurora, ¿En qué puedo ayudarle?</div>
+        </div>
+        
         <div class="input-area">
             <div class="input-container">
-                <input type="text" id="user-input" placeholder="Pregunte algo...">
-                <button class="btn" onclick="enviar()">➤</button>
+                <input type="text" id="user-input" placeholder="Escriba aquí..." autocomplete="off">
+                <button class="btn-enviar" onclick="enviar()">➤</button>
             </div>
+            <div class="disclaimer">Aurora es una IA y puede cometer errores. Verifique la información importante.</div>
         </div>
     </div>
 
@@ -75,38 +123,69 @@
         const input = document.getElementById('user-input');
         let vozFemenina = null;
 
+        // --- SISTEMA DE VOZ ---
         function cargarVoces() {
             const voces = window.speechSynthesis.getVoices();
             vozFemenina = voces.find(v => v.lang.startsWith('es') && v.name.includes('Google'));
         }
-        window.speechSynthesis.onvoiceschanged = cargarVoces;
+        if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = cargarVoces;
 
         function hablar(texto, callback) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(texto);
             if(vozFemenina) u.voice = vozFemenina;
-            u.rate = 0.95;
-            u.onend = callback;
+            u.rate = 0.95; u.onend = callback;
             window.speechSynthesis.speak(u);
         }
 
+        // --- LÓGICA DE PANELES ---
+        function abrirModoVoz() { document.getElementById('panel-voz').style.display = 'flex'; iniciarReconocimiento(true); }
+        function abrirConfig() { document.getElementById('panel-config').style.display = 'flex'; }
+        function cerrarPanel() { 
+            document.querySelectorAll('.panel-full').forEach(p => p.style.display = 'none'); 
+            window.speechSynthesis.cancel();
+            detenerReconocimiento();
+        }
+
+        function borrarDatosDatos() {
+            window.location.reload(); // La forma más rápida de limpiar el historial de sesión
+        }
+
+        // --- RECONOCIMIENTO DE VOZ INMERSIVO ---
+        let recognition;
+        function iniciarReconocimiento(modoContinuo) {
+            if (!('webkitSpeechRecognition' in window)) return;
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = 'es-AR'; recognition.interimResults = false;
+            recognition.onstart = () => { document.getElementById('subtitulo-voz').innerText = "Escuchando..."; };
+            recognition.onresult = (e) => {
+                const txt = e.results[0][0].transcript;
+                detenerReconocimiento();
+                enviar(txt); // Modo inmersivo
+            };
+            recognition.onend = () => { if(document.getElementById('panel-voz').style.display === 'flex') recognition.start(); };
+            recognition.start();
+        }
+        function detenerReconocimiento() { if(recognition) { recognition.onend = null; recognition.stop(); } }
+
+        // --- ENVIAR ---
         async function enviar(textoOverride) {
-            const msg = textoOverride || input.value;
+            const msg = textoOverride || input.value.trim();
             if(!msg) return;
-            if(!textoOverride) {
-                addMsg(msg, 'user');
-                input.value = '';
-            }
-            
-            const res = await fetch('/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({msg}) });
-            const data = await res.json();
-            
-            if(data.respuesta) {
+            if(!textoOverride) { addMsg(msg, 'user'); input.value = ''; }
+            if(document.getElementById('panel-voz').style.display === 'flex') document.getElementById('subtitulo-voz').innerText = "Procesando...";
+
+            try {
+                const res = await fetch('/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({msg}) });
+                const data = await res.json();
+                
                 if(!textoOverride) addMsg(data.respuesta, 'aurora');
                 hablar(data.respuesta, () => {
-                    if(textoOverride) iniciarEscuchaInfinita(); // Si está en modo voz, vuelve a escuchar
+                    if(document.getElementById('panel-voz').style.display === 'flex') iniciarReconocimiento(true);
                 });
-                if(textoOverride) document.getElementById('subtitulo-voz').innerText = data.respuesta;
+                if(document.getElementById('panel-voz').style.display === 'flex') document.getElementById('subtitulo-voz').innerText = data.respuesta;
+            } catch {
+                if(!textoOverride) addMsg("Error de conexión.", 'aurora');
             }
         }
 
@@ -116,29 +195,6 @@
             d.innerText = t;
             chatWin.appendChild(d);
             chatWin.scrollTo(0, chatWin.scrollHeight);
-        }
-
-        // --- LÓGICA MODO VOZ ---
-        function abrirModoVoz() {
-            document.getElementById('panel-voz').style.display = 'flex';
-            iniciarEscuchaInfinita();
-        }
-        function cerrarModoVoz() {
-            document.getElementById('panel-voz').style.display = 'none';
-            window.speechSynthesis.cancel();
-        }
-
-        function iniciarEscuchaInfinita() {
-            if(!('webkitSpeechRecognition' in window)) return;
-            const rec = new webkitSpeechRecognition();
-            rec.lang = 'es-AR';
-            rec.onstart = () => { document.getElementById('subtitulo-voz').innerText = "Escuchando..."; };
-            rec.onresult = (e) => {
-                const txt = e.results[0][0].transcript;
-                document.getElementById('subtitulo-voz').innerText = "Procesando...";
-                enviar(txt);
-            };
-            rec.start();
         }
 
         input.addEventListener('keypress', (e) => { if(e.key === 'Enter') enviar(); });
