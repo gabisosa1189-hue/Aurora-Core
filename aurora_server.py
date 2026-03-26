@@ -5,18 +5,19 @@ import requests
 import datetime
 import alma
 
-# Intentamos cargar el módulo de internet de forma segura
 try:
     import internet
     INTERNET_ACTIVO = True
-except Exception as e:
-    print(f"Aviso: Módulo de internet no cargó correctamente - {e}")
+except:
     INTERNET_ACTIVO = False
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
 BASE_PATH = os.getcwd() 
+
+# --- MEJORA DE MEMORIA ---
+# Guardamos el historial pero lo vamos a limpiar para que no pese
 historial = [] 
 
 @app.route('/')
@@ -34,55 +35,47 @@ def chat():
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     
-    # --- 1. RELOJ INTERNO INFALIBLE (Hora de Argentina UTC-3) ---
+    # Reloj de sistema
     try:
         zona_ar = datetime.timezone(datetime.timedelta(hours=-3))
         ahora = datetime.datetime.now(zona_ar)
-        reloj_interno = f"DATOS DE SISTEMA: Hoy es {ahora.strftime('%d/%m/%Y')} y la hora exacta en Argentina es {ahora.strftime('%H:%M')}."
-    except:
-        reloj_interno = "Hora no disponible."
+        reloj_interno = f"Sistema: Hoy es {ahora.strftime('%d/%m/%Y')} {ahora.strftime('%H:%M')}."
+    except: reloj_interno = ""
 
-    # --- 2. DATOS EXTRA SEGUROS (Clima, Noticias) ---
+    # Datos de Internet (con escudo de error)
     datos_api = ""
-    datos_red = ""
     if INTERNET_ACTIVO:
-        try:
-            datos_api = internet.obtener_datos_api(texto_usuario)
-        except Exception as e:
-            print(f"Error leve buscando APIs: {e}")
-            
-        palabras_clave = ["noticia", "clima", "quien", "paso", "mundo", "temperatura"]
-        if len(texto_usuario.split()) >= 2 and any(p in msg_limpio for p in palabras_clave):
-            try:
-                datos_red = internet.buscar_en_red(texto_usuario)
-            except Exception as e:
-                print(f"Error leve en buscador profundo: {e}")
-    
-    # --- 3. ARMADO DEL CEREBRO ---
+        try: datos_api = internet.obtener_datos_api(texto_usuario)
+        except: pass
+
+    # --- LIMPIEZA DE MEMORIA ---
+    # Si el historial tiene más de 6 mensajes, borramos los más viejos
+    # Esto evita que el servidor se trabe por peso.
+    if len(historial) > 6:
+        historial = historial[-6:]
+
     esencia_aurora = alma.obtener_esencia()
-    system_prompt = (
-        f"{esencia_aurora}\n\n"
-        f"{reloj_interno}\n"
-        f"DATOS RECIENTES DE INTERNET (Úsalos solo si la pregunta lo requiere):\n{datos_api}\n{datos_red}"
-    )
+    system_prompt = f"{esencia_aurora}\n{reloj_interno}\nDATOS ACTUALES:\n{datos_api}"
     
     mensajes = [{"role": "system", "content": system_prompt}]
-    mensajes.extend(historial[-4:]) 
+    mensajes.extend(historial) 
     mensajes.append({"role": "user", "content": texto_usuario})
     
     try:
         data_req = {
             "model": "llama-3.1-8b-instant", 
             "messages": mensajes, 
-            "temperature": 0.4 # Lo bajamos a 0.4 para que responda directo al punto
+            "temperature": 0.4,
+            "max_tokens": 300 # Limitamos la respuesta para que no gaste memoria
         }
-        res = requests.post(url, headers=headers, json=data_req, timeout=15)
+        # Aumentamos el tiempo de espera a 25 segundos por las dudas
+        res = requests.post(url, headers=headers, json=data_req, timeout=25)
         res.raise_for_status()
         respuesta_ai = res.json()['choices'][0]['message']['content']
-    except Exception as e:
-        print(f"Falla crítica de Groq: {e}")
-        respuesta_ai = "Disculpe, mi red se congestionó un segundo. ¿Me lo repite?"
+    except:
+        respuesta_ai = "Disculpe, mi conexión se saturó un momento. ¿Podemos retomar?"
 
+    # Guardar en memoria limpia
     historial.append({"role": "user", "content": texto_usuario})
     historial.append({"role": "assistant", "content": respuesta_ai})
     
