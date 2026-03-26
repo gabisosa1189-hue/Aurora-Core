@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
-import cerebro_aurora # Conectamos con el cerebro actualizado
+import requests
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
@@ -17,16 +17,35 @@ def index():
 def chat():
     global historial
     data = request.json
-    msg = data.get('msg', '')
+    texto_usuario = data.get('msg', '')
     
-    # El Cerebro procesa todo
-    respuesta = cerebro_aurora.generar_respuesta(msg, historial)
+    # LLAVE DE ALTA VELOCIDAD
+    GROQ_API_KEY = "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"
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     
-    # Guardamos en la memoria de la sesión
-    historial.append({"role": "user", "content": msg})
-    historial.append({"role": "assistant", "content": respuesta})
+    # PERSONALIDAD FORMAL PARA PLAY STORE
+    system_prompt = "Eres Aurora, una Inteligencia Artificial avanzada y profesional. Tu tono es servicial, formal y elegante. Respondes con claridad, brevedad y ayudas al usuario en lo que necesite."
     
-    return jsonify({"respuesta": respuesta})
+    mensajes = [{"role": "system", "content": system_prompt}]
+    mensajes.extend(historial[-4:]) # Memoria corta para que responda al instante
+    mensajes.append({"role": "user", "content": texto_usuario})
+    
+    try:
+        # Petición rápida a Groq (15 segundos máximo)
+        data_req = {"model": "llama3-8b-8192", "messages": mensajes, "temperature": 0.6}
+        res = requests.post(url, headers=headers, json=data_req, timeout=15)
+        res.raise_for_status()
+        respuesta_ai = res.json()['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"Error en el servidor: {e}")
+        respuesta_ai = "Disculpe, mi conexión se ha visto interrumpida momentáneamente. ¿Podría repetir su consulta?"
+
+    # Guardamos en memoria
+    historial.append({"role": "user", "content": texto_usuario})
+    historial.append({"role": "assistant", "content": respuesta_ai})
+    
+    return jsonify({"respuesta": respuesta_ai})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
