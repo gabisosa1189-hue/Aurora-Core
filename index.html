@@ -13,7 +13,7 @@
         
         #app-container { display: flex; flex-direction: column; height: 100vh; max-width: 800px; margin: 0 auto; position: relative; }
         
-        header { padding: 20px; text-align: center; font-family: 'Orbitron'; letter-spacing: 8px; opacity: 0.9; }
+        header { padding: 20px; text-align: center; font-family: 'Orbitron'; letter-spacing: 10px; opacity: 0.9; }
         
         #chat-window { 
             flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px; 
@@ -23,7 +23,7 @@
         }
         #chat-window::-webkit-scrollbar { display: none; }
 
-        /* BURBUJAS INVISIBLES NIVEL PREMIUM */
+        /* BURBUJAS INVISIBLES ELEGANTES */
         .msg { 
             max-width: 82%; padding: 14px 20px; border-radius: 22px; font-size: 1rem; line-height: 1.5;
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
@@ -34,16 +34,21 @@
         .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.02); border-bottom-left-radius: 2px; }
         .user { align-self: flex-end; background: rgba(0, 242, 255, 0.03); border-bottom-right-radius: 2px; border-color: rgba(0, 242, 255, 0.1); }
 
+        /* DOCK DE ENTRADA CON EL BOTÓN RECUPERADO */
         .input-area { padding: 25px; }
         .input-container { 
             background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border-radius: 35px; border: 1px solid rgba(255, 255, 255, 0.08); 
             display: flex; align-items: center; padding: 6px 18px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
         }
         
         input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1.05rem; font-family: inherit; }
+        input::placeholder { color: rgba(255,255,255,0.3); }
         
-        .btn { background: transparent; border: none; color: var(--accent); cursor: pointer; padding: 10px; }
+        /* BOTÓN DE ENVIAR (LA FLECHA) */
+        .btn { background: transparent; border: none; color: var(--accent); cursor: pointer; padding: 10px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn:active { transform: scale(0.85); }
         .btn svg { width: 26px; height: 26px; fill: currentColor; }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -61,7 +66,7 @@
         <div class="input-area">
             <div class="input-container">
                 <input type="text" id="user-input" placeholder="Escriba su consulta..." autocomplete="off">
-                <button class="btn" onclick="enviar()">
+                <button class="btn" onclick="enviar()" title="Enviar">
                     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
             </div>
@@ -73,12 +78,9 @@
         const input = document.getElementById('user-input');
         let vozFemenina = null;
 
-        // --- CARGA DE VOZ FORZADA ---
         function cargarVoces() {
             const voces = window.speechSynthesis.getVoices();
-            // Prioridad absoluta a voces femeninas latinas o españolas
-            vozFemenina = voces.find(v => v.lang.includes('es') && (v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Lucia') || v.name.includes('Zira') || v.name.includes('femenino')));
-            if (!vozFemenina) vozFemenina = voces.find(v => v.name.includes('Female') || v.name.includes('mujer'));
+            vozFemenina = voces.find(v => v.lang.includes('es') && (v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Lucia') || v.name.includes('Zira')));
         }
 
         if ('speechSynthesis' in window) {
@@ -89,14 +91,9 @@
         function hablar(texto) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
-            
             const u = new SpeechSynthesisUtterance(texto);
-            if (vozFemenina) {
-                u.voice = vozFemenina;
-            }
-            
-            // Truco final: pitch alto para asegurar tono femenino
-            u.pitch = 1.3; 
+            if (vozFemenina) u.voice = vozFemenina;
+            u.pitch = 1.3; // Pitch alto para asegurar voz de mujer
             u.rate = 1.0;
             u.lang = 'es-MX';
             window.speechSynthesis.speak(u);
@@ -120,7 +117,7 @@
                     hablar(data.respuesta);
                 }
             } catch {
-                addMsg("Disculpe, mi conexión ha tenido una breve interrupción. ¿Podría repetir su consulta?", 'aurora');
+                addMsg("Disculpe, mi conexión ha tenido una breve interrupción.", 'aurora');
             }
         }
 
