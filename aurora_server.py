@@ -20,13 +20,7 @@ def chat():
     data = request.json
     texto_usuario = data.get('msg', '')
     
-    # LLAVE SEGURA DESDE RENDER
     GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-    
-    # DETECTOR DE LLAVE: Si falta, avisa en los logs
-    if not GROQ_API_KEY:
-        print("¡ALERTA!: No se encontró la GROQ_API_KEY en Render. Verificar Environment.")
-        
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     
@@ -38,18 +32,23 @@ def chat():
     mensajes.append({"role": "user", "content": texto_usuario})
     
     try:
-        data_req = {"model": "llama3-8b-8192", "messages": mensajes, "temperature": 0.6}
+        # --- ACÁ ESTÁ EL ARREGLO: EL NUEVO CEREBRO LLAMA 3.1 ---
+        data_req = {
+            "model": "llama-3.1-8b-instant", 
+            "messages": mensajes, 
+            "temperature": 0.6
+        }
         res = requests.post(url, headers=headers, json=data_req, timeout=15)
         
-        # SI GROQ REBOTA LA CONEXIÓN, LO IMPRIMIMOS PARA SABER POR QUÉ
+        # Si hay error, que nos diga exactamente qué le pasa a Groq
         if res.status_code != 200:
-            print(f"ERROR DE GROQ: {res.status_code} - {res.text}")
+            print(f"DETALLE DE GROQ: {res.text}")
             
         res.raise_for_status()
         respuesta_ai = res.json()['choices'][0]['message']['content']
         
     except Exception as e:
-        print(f"Falla de conexión en el servidor: {e}")
+        print(f"Falla de conexión: {e}")
         respuesta_ai = "Disculpe, mi conexión se ha visto interrumpida momentáneamente. ¿Podría repetir su consulta?"
 
     historial.append({"role": "user", "content": texto_usuario})
