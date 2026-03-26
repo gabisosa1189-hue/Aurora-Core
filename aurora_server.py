@@ -1,18 +1,11 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import os, requests, datetime, alma
-
-# Intentamos cargar internet, si falla, el servidor sigue vivo
-try:
-    import internet
-    INTERNET_OK = True
-except:
-    INTERNET_OK = False
+import os, requests, datetime, alma, internet
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# Memoria ultra-liviana (Solo guarda las últimas 2 vueltas)
+# Memoria ultra-corta para evitar que Render se trabe (Solo 2 vueltas)
 historial = [] 
 
 @app.route('/')
@@ -25,23 +18,25 @@ def chat():
     data = request.json
     user_msg = data.get('msg', '')
     
-    # 1. Reloj Rápido
+    # 1. Datos de Realidad (Presidente, Dólar, Clima)
+    # Forzamos a que internet.py busque la verdad actual
+    datos_actuales = internet.obtener_datos_api(user_msg)
+    
+    # 2. Reloj del Servidor
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3)))
-    info_sistema = f"Hoy: {now.strftime('%d/%m/%Y %H:%M')}. "
+    fecha_hoy = f"FECHA Y HORA REAL: {now.strftime('%d/%m/%Y %H:%M')}"
 
-    # 2. Datos de Internet (Solo si es necesario para no pesar)
-    contexto_extra = ""
-    if INTERNET_OK and any(p in user_msg.lower() for p in ["quien", "noticia", "dolar", "clima", "hoy"]):
-        try:
-            contexto_extra = internet.obtener_datos_api(user_msg)
-        except: pass
-
-    # 3. Limpieza radical de historial (Solo 4 mensajes max)
+    # 3. Limpieza de Memoria (Si hay más de 4 mensajes, borramos)
     if len(historial) > 4:
         historial = historial[-4:]
 
-    # 4. Prompt optimizado para velocidad
-    prompt = f"{alma.obtener_esencia()}\n{info_sistema}\nContexto: {contexto_extra}"
+    # 4. Prompt de Hierro (Ordenamos que no mienta con el presidente)
+    prompt_seguro = (
+        f"{alma.obtener_esencia()}\n"
+        f"{fecha_hoy}\n"
+        f"INFORMACIÓN DE INTERNET (OBLIGATORIA): {datos_actuales}\n"
+        "REGLA CRÍTICA: El presidente de Argentina es Javier Milei. No menciones a presidentes anteriores."
+    )
     
     headers = {
         "Authorization": f"Bearer {os.environ.get('GROQ_API_KEY')}",
@@ -50,18 +45,17 @@ def chat():
     
     payload = {
         "model": "llama-3.1-8b-instant",
-        "messages": [{"role": "system", "content": prompt}] + historial + [{"role": "user", "content": user_msg}],
-        "temperature": 0.5,
-        "max_tokens": 250 # Respuestas cortas = más rápidas
+        "messages": [{"role": "system", "content": prompt_seguro}] + historial + [{"role": "user", "content": user_msg}],
+        "temperature": 0.3, # Bajamos la temperatura para que sea más precisa
+        "max_tokens": 200
     }
 
     try:
-        # Timeout corto para que no se quede colgado
-        res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=10)
+        res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=15)
         res.raise_for_status()
         ai_res = res.json()['choices'][0]['message']['content']
     except:
-        ai_res = "Perdí la conexión un segundo. ¿Me repite su consulta?"
+        ai_res = "Mi conexión se saturó un segundo. ¿Podrías repetir?"
 
     historial.append({"role": "user", "content": user_msg})
     historial.append({"role": "assistant", "content": ai_res})
