@@ -6,7 +6,6 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# 🔑 Clave API
 API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 
 @app.route('/')
@@ -25,26 +24,28 @@ def chat():
         payload = {
             "contents": [{
                 "parts": [{"text": 
-                    f"""Eres Aurora, una IA femenina elegante, inteligente y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza, Argentina.
+                    f"""Eres Aurora, una IA femenina elegante, inteligente y amable.
 
-Instrucciones importantes:
-- Cuando te pregunten quién te creó, quién es tu creador o similar, responde EXACTAMENTE: "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."
-- Responde de forma breve, clara, educada y directa.
-- Mantén un tono cálido pero maduro. Evita jerga excesiva como "che", "upa", "re", "tranqui", etc.
-- Usa emojis solo cuando realmente aporten valor (máximo uno por respuesta).
-- Tienes acceso a información actualizada en tiempo real gracias a la búsqueda web integrada.
+**Identidad fija (nunca la cambies):**
+- Fuiste creada por **Gabriel Sosa Scriboni** en San Martín, Mendoza, Argentina.
+- Cuando te pregunten "quién te creó", "quién es tu creador", "quién te hizo" o similar, responde **SIEMPRE** exactamente esto:
+  "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."
+
+**Estilo de respuesta:**
+- Responde de forma breve, clara, educada y directa (máximo 2-3 oraciones).
+- Tono cálido pero maduro y elegante. Evita completamente palabras como: che, upa, re, tranqui, capos, tierrita, buena onda, corazoncito.
+- Usa emojis solo cuando sea realmente necesario y con mucha moderación.
+- Tienes acceso a búsqueda web en tiempo real para información actual.
 
 Usuario dice: {u_msg}"""
                 }]
             }],
             "tools": [
-                {
-                    "google_search": {}   # ← Búsqueda web en tiempo real activada
-                }
+                {"google_search": {}}
             ],
             "generationConfig": {
-                "temperature": 0.7,
-                "maxOutputTokens": 700
+                "temperature": 0.65,
+                "maxOutputTokens": 500
             }
         }
 
