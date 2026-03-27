@@ -5,11 +5,12 @@ import os, requests, datetime, alma
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
+# Memoria para que no se olvide de lo que hablan
 memoria_global = [] 
 
 @app.route('/')
 def index():
-    # Buscamos inicio.html que es el nombre que le pusimos para engañar al caché
+    # Buscamos inicio.html (asegurate que se llame así en GitHub)
     return send_from_directory(os.getcwd(), 'inicio.html')
 
 @app.route('/chat', methods=['POST'])
@@ -18,16 +19,17 @@ def chat():
     data = request.json
     texto_usuario = data.get('msg', '').strip()
     
+    # 1. Traemos la llave desde Render
     API_KEY = os.environ.get("GEMINI_API_KEY")
     
-    # URL v1 estable: La dirección oficial de Google
+    # 2. URL Oficial v1 (La más estable)
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     try:
         esencia = alma.obtener_esencia()
         contexto = f"{esencia}\nHora en Mendoza: {datetime.datetime.now().strftime('%H:%M')}"
 
-        # Este es el "JSON" que Google pedía corregir:
+        # 3. Formateo de historial (JSON que Google entiende)
         historial = []
         for m in memoria_global[-6:]:
             rol = "user" if m["role"] == "user" else "model"
@@ -41,23 +43,26 @@ def chat():
             "generationConfig": {"temperature": 0.7, "maxOutputTokens": 600}
         }
         
-        res = requests.post(url, json=payload, timeout=25)
+        # 4. Petición a Google
+        headers = {'Content-Type': 'application/json'}
+        res = requests.post(url, json=payload, headers=headers, timeout=25)
         
         if res.status_code != 200:
-            return jsonify({"respuesta": f"Google Error {res.status_code}. Revisá la llave en Render."})
+            return jsonify({"respuesta": f"Error de Google: {res.status_code}"})
             
         resultado = res.json()
         respuesta_ai = resultado['candidates'][0]['content']['parts'][0]['text']
         
-        # Guardamos en memoria para la charla fluida
+        # Guardamos en memoria
         memoria_global.append({"role": "user", "content": texto_usuario})
         memoria_global.append({"role": "model", "content": respuesta_ai})
         
         return jsonify({"respuesta": respuesta_ai})
 
     except Exception as e:
-        return jsonify({"respuesta": f"Error de conexión: {str(e)}"})
+        return jsonify({"respuesta": "Se me cortó el hilo, Gabriel. ¿Me repetís?"})
 
 if __name__ == '__main__':
+    # Render asigna el puerto automáticamente
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
