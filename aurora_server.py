@@ -5,9 +5,9 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# 🔑 LLAVES (Sacalas de la pestaña Environment de Render)
-API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
-EL_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
+# 🔑 RECOGEMOS LAS LLAVES (Asegurate que se llamen así en Render)
+GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
+ELEVEN_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
 
 @app.route('/')
 def index():
@@ -18,44 +18,48 @@ def chat():
     try:
         data = request.json
         u_msg = data.get('msg', '').strip()
-        
-        if not API_KEY:
+
+        if not GEMINI_KEY:
             return jsonify({"respuesta": "Falta la llave GEMINI_API_KEY en Render.", "audio": None})
 
-        # 🚀 ESTRATEGIA DE TRIPLE INTENTO (Para matar el Error 404)
-        # Probamos diferentes modelos y versiones hasta que uno ande
-        modelos_a_probar = [
-            "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent",
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
-            "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent"
+        # 🚀 ESTRATEGIA DE TRIPLE INTENTO (Anti-Error 404)
+        # Probamos los modelos más nuevos y estables de 2026
+        opciones = [
+            {"ver": "v1beta", "mod": "gemini-2.0-flash"},
+            {"ver": "v1beta", "mod": "gemini-1.5-flash"},
+            {"ver": "v1", "mod": "gemini-1.5-flash"}
         ]
         
         txt = None
-        error_final = ""
+        ultimo_error = ""
 
-        for url in modelos_a_probar:
-            res = requests.post(f"{url}?key={API_KEY}", 
-                                json={"contents": [{"parts": [{"text": f"Sos Aurora, una IA de Mendoza. Respondé corto: {u_msg}"}]}]}, 
-                                timeout=10)
+        for opt in opciones:
+            url = f"https://generativelanguage.googleapis.com/{opt['ver']}/models/{opt['mod']}:generateContent?key={GEMINI_KEY}"
+            payload = {
+                "contents": [{
+                    "parts": [{"text": f"Sos Aurora, una IA de Mendoza. Sé breve y amable. Usuario dice: {u_msg}"}]
+                }]
+            }
+            res = requests.post(url, json=payload, timeout=10)
+            
             if res.status_code == 200:
                 txt = res.json()['candidates'][0]['content']['parts'][0]['text']
-                break # ¡LO LOGRAMOS! Salimos del bucle
+                break
             else:
-                error_final = res.text
+                ultimo_error = res.text
 
         if not txt:
-            return jsonify({"respuesta": f"Google sigue rechazando: {error_final}", "audio": None})
+            return jsonify({"respuesta": f"Google rechazó todos los modelos. Error: {ultimo_error}", "audio": None})
 
-        # --- VOZ: ELEVENLABS ---
+        # --- VOZ (ELEVENLABS) ---
         audio_b64 = None
-        if EL_KEY:
-            # Tu Voice ID de ElevenLabs
-            voice_id = "EXAVITQu4vr4xnSDxMaL" 
+        if ELEVEN_KEY:
+            voice_id = "EXAVITQu4vr4xnSDxMaL" # Tu ID de voz
             tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
             tts_res = requests.post(
                 tts_url,
                 json={"text": txt, "model_id": "eleven_multilingual_v2"},
-                headers={"xi-api-key": EL_KEY},
+                headers={"xi-api-key": ELEVEN_KEY},
                 timeout=15
             )
             if tts_res.status_code == 200:
