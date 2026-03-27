@@ -5,7 +5,7 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# 🔑 BUSCAMOS LA LLAVE DE OPENAI (Asegurate que en Render se llame así)
+# 🔑 LLAVES
 OPENAI_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
 ELEVEN_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
 
@@ -20,10 +20,9 @@ def chat():
         u_msg = data.get('msg', '').strip()
 
         if not OPENAI_KEY:
-            return jsonify({"respuesta": "❌ Error: No encontré la variable OPENAI_API_KEY en Render.", "audio": None})
+            return jsonify({"respuesta": "Falta la llave OPENAI_API_KEY en Render.", "audio": None})
 
-        # 🚀 CEREBRO: OPENAI (ChatGPT - GPT-4o-mini)
-        # Este modelo es rapidísimo y muy barato.
+        # 🚀 LLAMADA A OPENAI
         url = "https://api.openai.com/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {OPENAI_KEY}",
@@ -32,25 +31,32 @@ def chat():
         payload = {
             "model": "gpt-4o-mini",
             "messages": [
-                {"role": "system", "content": "Sos Aurora, una IA de Mendoza. Sos amable, usás modismos mendocinos y ayudás a Gabriel con todo."},
+                {"role": "system", "content": "Sos Aurora, una IA de Mendoza. Hablás como una mendocina cálida y ayudás a Gabriel."},
                 {"role": "user", "content": u_msg}
             ]
         }
 
         res = requests.post(url, json=payload, headers=headers, timeout=15)
         
+        # 🕵️‍♂️ AQUÍ ESTÁ EL TRUCO PARA EL ERROR 'choices'
+        resp_json = res.json()
+        
         if res.status_code != 200:
-            return jsonify({"respuesta": f"OpenAI falló: {res.text}", "audio": None})
+            error_msg = resp_json.get('error', {}).get('message', 'Error desconocido')
+            return jsonify({"respuesta": f"OpenAI dice: {error_msg}", "audio": None})
 
-        txt = res.json()['choices'][0]['message']['content']
+        # Verificamos si 'choices' está en la respuesta antes de usarlo
+        if 'choices' not in resp_json:
+            return jsonify({"respuesta": f"Respuesta rara de OpenAI: {resp_json}", "audio": None})
 
-        # --- VOZ: ELEVENLABS ---
+        txt = resp_json['choices'][0]['message']['content']
+
+        # --- VOZ (ELEVENLABS) ---
         audio_b64 = None
         if ELEVEN_KEY:
             voice_id = "EXAVITQu4vr4xnSDxMaL"
-            tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
             tts_res = requests.post(
-                tts_url,
+                f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
                 json={"text": txt, "model_id": "eleven_multilingual_v2"},
                 headers={"xi-api-key": ELEVEN_KEY},
                 timeout=15
@@ -61,7 +67,7 @@ def chat():
         return jsonify({"respuesta": txt, "audio": audio_b64})
         
     except Exception as e:
-        return jsonify({"respuesta": f"Error crítico: {str(e)}", "audio": None})
+        return jsonify({"respuesta": f"Error en el servidor: {str(e)}", "audio": None})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
