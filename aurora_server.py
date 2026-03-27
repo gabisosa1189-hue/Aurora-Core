@@ -21,13 +21,14 @@ def chat():
     data = request.json
     u_msg = data.get('msg', '').strip()
     
-    # ACÁ LLAMA A GOOGLE (Ya no existe OpenAI en este código)
     API_KEY = os.environ.get("GEMINI_API_KEY")
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+    
+    # 🚨 SOLUCIÓN API: Cambiamos a la versión v1 oficial de Google
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     try:
         esencia = alma.obtener_esencia()
-        contexto = f"{esencia}\nHora en San Martín, Mendoza: {datetime.datetime.now().strftime('%H:%M')}"
+        contexto = f"{esencia}\nHora en Mendoza: {datetime.datetime.now().strftime('%H:%M')}"
 
         historial = []
         for m in memoria_global[-6:]:
@@ -47,7 +48,7 @@ def chat():
         
         if res.status_code != 200:
             error_msg = res_json.get('error', {}).get('message', 'Error desconocido')
-            return jsonify({"respuesta": f"Google Error: {error_msg}"})
+            return jsonify({"respuesta": f"Error de Google: {error_msg}"})
 
         txt_ai = res_json['candidates'][0]['content']['parts'][0]['text']
         
@@ -57,7 +58,7 @@ def chat():
         return jsonify({"respuesta": txt_ai})
 
     except Exception as e:
-        return jsonify({"respuesta": "Error de red, che."})
+        return jsonify({"respuesta": "Cortocircuito de red. ¿Render se durmió?"})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
