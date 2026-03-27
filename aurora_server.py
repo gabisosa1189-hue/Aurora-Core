@@ -9,6 +9,7 @@ memoria_global = []
 
 @app.route('/')
 def index():
+    # Buscamos inicio.html que es el nombre que le pusimos para engañar al caché
     return send_from_directory(os.getcwd(), 'inicio.html')
 
 @app.route('/chat', methods=['POST'])
@@ -19,42 +20,36 @@ def chat():
     
     API_KEY = os.environ.get("GEMINI_API_KEY")
     
-    # URL V1 ESTABLE: La dirección oficial que no falla en 2026
+    # URL v1 estable: La dirección oficial de Google
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     try:
         esencia = alma.obtener_esencia()
         contexto = f"{esencia}\nHora en Mendoza: {datetime.datetime.now().strftime('%H:%M')}"
 
-        # Formateo estricto para evitar el Error 400
+        # Este es el "JSON" que Google pedía corregir:
         historial = []
         for m in memoria_global[-6:]:
-            # Cambiamos 'assistant' por 'model' para que Google no se queje
-            rol_gemini = "user" if m["role"] == "user" else "model"
-            historial.append({"role": rol_gemini, "parts": [{"text": m["content"]}]})
+            rol = "user" if m["role"] == "user" else "model"
+            historial.append({"role": rol, "parts": [{"text": m["content"]}]})
         
         historial.append({"role": "user", "parts": [{"text": texto_usuario}]})
 
         payload = {
             "contents": historial,
             "systemInstruction": {"parts": [{"text": contexto}]},
-            "generationConfig": {
-                "temperature": 0.7,
-                "maxOutputTokens": 600
-            }
+            "generationConfig": {"temperature": 0.7, "maxOutputTokens": 600}
         }
         
-        headers = {'Content-Type': 'application/json'}
-        res = requests.post(url, json=payload, headers=headers, timeout=25)
+        res = requests.post(url, json=payload, timeout=25)
         
         if res.status_code != 200:
-            # Si hay error, lo mostramos para saber qué pasa
-            return jsonify({"respuesta": f"Error {res.status_code}: Google no aceptó el formato."})
+            return jsonify({"respuesta": f"Google Error {res.status_code}. Revisá la llave en Render."})
             
         resultado = res.json()
         respuesta_ai = resultado['candidates'][0]['content']['parts'][0]['text']
         
-        # Guardamos en memoria con roles limpios
+        # Guardamos en memoria para la charla fluida
         memoria_global.append({"role": "user", "content": texto_usuario})
         memoria_global.append({"role": "model", "content": respuesta_ai})
         
