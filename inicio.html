@@ -11,34 +11,56 @@
     <style>
         :root { --accent: #00f2ff; }
         html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background-image: url('poster.jpg'); background-size: cover; background-position: center; background-color: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; }
+        
         #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover !important; z-index: 1; opacity: 0; transition: opacity 2s ease; }
 
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: all 0.6s ease; }
-        .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.25); text-align: center; max-width: 380px; width: 85%; box-shadow: 0 0 60px rgba(0, 242, 255, 0.15); }
+        /* LOGIN PROFESIONAL */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(25px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: all 0.6s ease; }
+        
+        .login-card { 
+            background: rgba(255, 255, 255, 0.03); padding: 45px 30px; border-radius: 40px; 
+            border: 1px solid rgba(0, 242, 255, 0.25); text-align: center; 
+            max-width: 400px; width: 88%; box-shadow: 0 0 60px rgba(0, 242, 255, 0.15); 
+        }
 
+        .titulo-login { font-family: 'Orbitron', sans-serif; letter-spacing: 5px; font-size: 1.3rem; margin-bottom: 10px; color: #fff; }
+        .subtitulo-login { font-weight: 300; font-size: 0.95rem; margin-bottom: 40px; color: rgba(255, 255, 255, 0.6); }
+
+        .btn-auth {
+            width: 100%; padding: 16px; border-radius: 20px; border: none;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            transition: 0.3s ease; font-size: 1rem; margin-bottom: 15px;
+        }
+
+        .btn-google { background: #fff; color: #000; }
+        .btn-google:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2); }
+
+        .btn-email-toggle { background: rgba(0, 242, 255, 0.1); border: 1px solid rgba(0, 242, 255, 0.4); color: #fff; }
+        .btn-email-toggle:hover { background: rgba(0, 242, 255, 0.2); border-color: var(--accent); }
+
+        /* INTERFAZ CHAT */
         #app-container { display: none; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1s; }
-        header { padding: 30px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .titulo { font-family: 'Orbitron', sans-serif; letter-spacing: 12px; font-size: 1.5rem; text-shadow: 0 0 15px var(--accent); }
+        header { padding: 30px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .titulo-app { font-family: 'Orbitron', sans-serif; letter-spacing: 15px; font-size: 1.5rem; text-shadow: 0 0 20px var(--accent); }
 
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
-        .msg { max-width: 85%; padding: 15px 20px; border-radius: 20px; backdrop-filter: blur(15px); animation: slide 0.3s ease; }
-        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
-        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .msg { max-width: 85%; padding: 15px 20px; border-radius: 22px; backdrop-filter: blur(15px); animation: slide 0.3s ease; line-height: 1.4; }
+        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 4px; }
+        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-bottom-right-radius: 4px; }
 
         .input-area { padding: 25px 20px; }
         .input-container { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 242, 255, 0.4); border-radius: 35px; display: flex; align-items: center; padding: 5px 20px; backdrop-filter: blur(20px); }
-        
-        /* Input con estilo formal */
-        #aurora-comms-channel { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; }
+        #aurora-input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; }
 
         @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div style="position: absolute; top: -500px; left: -500px; opacity: 0;">
-        <input type="text" name="email">
-        <input type="password" name="password">
+    <div style="position: absolute; top: -1000px; left: -1000px; visibility: hidden;">
+        <input type="email" name="user_email_fake">
+        <input type="password" name="user_password_fake">
     </div>
 
     <video autoplay muted loop playsinline preload="auto" poster="poster.jpg" id="bg-video">
@@ -47,23 +69,43 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <h1 style="font-family:'Orbitron'; letter-spacing:5px;">AURORA</h1>
-            <button onclick="loginGoogle()" style="width:100%; padding:16px; border-radius:18px; border:none; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#000;">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="18"> Entrar con Google
-            </button>
-            <p onclick="mostrarFormulario()" style="margin-top:20px; font-size:0.8rem; cursor:pointer; opacity:0.5;">Usar correo</p>
+            <h1 class="titulo-login">BIENVENIDO A AURORA</h1>
+            <p class="subtitulo-login">¿Cómo desea ingresar al sistema neuronal?</p>
+            
+            <div id="main-auth">
+                <button onclick="loginGoogle()" class="btn-auth btn-google">
+                    <svg width="18" height="18" viewBox="0 0 18 18">
+                        <path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.85 2.22c1.67-1.53 2.63-3.8 2.63-6.55z" fill="#4285F4"/>
+                        <path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.85-2.22c-.79.53-1.8.85-3.11.85-2.39 0-4.41-1.61-5.14-3.78H.9v2.33C2.38 15.94 5.47 18 9 18z" fill="#34A853"/>
+                        <path d="M3.86 10.67c-.19-.56-.3-1.16-.3-1.77s.11-1.21.3-1.77V4.8H.9A8.98 8.98 0 0 0 0 9c0 1.45.35 2.82.9 4.05l2.96-2.38z" fill="#FBBC05"/>
+                        <path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.89 11.43 0 9 0 5.47 0 2.38 2.06.9 5.07L3.86 7.4c.73-2.17 2.75-3.82 5.14-3.82z" fill="#EA4335"/>
+                    </svg>
+                    Ingresar con Google
+                </button>
+
+                <button onclick="mostrarEmail()" class="btn-auth btn-email-toggle">
+                    📧 Correo electrónico
+                </button>
+            </div>
+
+            <div id="email-form" style="display:none; flex-direction:column; gap:12px; animation: slide 0.4s ease;">
+                <input type="email" id="email-input" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:15px; color:#fff;" placeholder="Tu email">
+                <input type="password" id="pass-input" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:15px; color:#fff;" placeholder="Contraseña">
+                <button onclick="ejecutarAuth()" style="background:var(--accent); color:#000; padding:16px; border-radius:15px; border:none; font-weight:600; cursor:pointer;">Entrar</button>
+                <p onclick="volverInicio()" style="color:rgba(255,255,255,0.5); font-size:0.8rem; cursor:pointer; margin-top:10px; text-decoration: underline;">← Volver</p>
+            </div>
         </div>
     </div>
 
     <div id="app-container">
-        <header><div class="titulo">AURORA</div></header>
+        <header><div class="titulo-app">AURORA</div></header>
         <div id="chat-window">
-            <div class="msg aurora" id="saludo-ia">Estableciendo conexión neuronal...</div>
+            <div class="msg aurora" id="saludo-ia">Estableciendo conexión...</div>
         </div>
         <div class="input-area">
             <div class="input-container">
                 <button style="background:none; border:none; color:var(--accent); font-size:1.2rem;">🎤</button>
-                <input type="text" id="aurora-comms-channel" readonly placeholder="Iniciando interfaz..." autocomplete="off">
+                <input type="text" id="aurora-input" readonly placeholder="Iniciando interfaz formal..." autocomplete="new-password">
                 <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.6rem; cursor:pointer;">➤</button>
             </div>
         </div>
@@ -93,38 +135,52 @@
             window.speechSynthesis.speak(u);
         }
 
-        // 🚨 LIMPIEZA TOTAL POR INTERVALO
-        function exterminarMail() {
-            const input = document.getElementById('aurora-comms-channel');
-            let t = setInterval(() => { input.value = ''; }, 50);
-            setTimeout(() => { clearInterval(t); }, 3000); // Limpia durante 3 segundos
+        // Limpieza de campos al entrar
+        function limpiarChat() {
+            const input = document.getElementById('aurora-input');
+            let t = setInterval(() => { input.value = ''; }, 100);
+            setTimeout(() => { clearInterval(t); }, 2500);
+        }
+
+        function mostrarEmail() { document.getElementById('main-auth').style.display='none'; document.getElementById('email-form').style.display='flex'; }
+        function volverInicio() { document.getElementById('main-auth').style.display='flex'; document.getElementById('email-form').style.display='none'; }
+
+        async function ejecutarAuth() {
+            const email = document.getElementById('email-input').value;
+            const pass = document.getElementById('pass-input').value;
+            try { await firebase.auth().signInWithEmailAndPassword(email, pass); } 
+            catch(e) { alert("Error: " + e.message); }
+        }
+
+        function loginGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider);
         }
 
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                exterminarMail();
+                limpiarChat();
                 document.getElementById('login-overlay').style.opacity = "0";
                 setTimeout(() => {
                     document.getElementById('login-overlay').style.display = "none";
                     document.getElementById('app-container').style.display = "flex";
                     setTimeout(() => {
                         document.getElementById('app-container').style.opacity = "1";
-                        const m = "Bienvenido, Gabriel. El sistema Aurora está operativo. ¿En qué puedo ayudarte hoy?";
+                        const m = "Bienvenido, Gabriel. El sistema Aurora está operativo. Háblame o escríbeme.";
                         document.getElementById('saludo-ia').innerText = m;
                         hablar(m);
                         
-                        // 🚨 DESBLOQUEAMOS Y PONEMOS TEXTO FORMAL
-                        const chatInp = document.getElementById('aurora-comms-channel');
+                        const chatInp = document.getElementById('aurora-input');
                         chatInp.removeAttribute('readonly');
                         chatInp.placeholder = "Escribe a Aurora...";
-                        exterminarMail();
+                        limpiarChat();
                     }, 500);
                 }, 600);
             }
         });
 
         async function enviar() {
-            const inp = document.getElementById('aurora-comms-channel');
+            const inp = document.getElementById('aurora-input');
             const msg = inp.value.trim(); 
             if(!msg || msg.includes('@')) { inp.value = ''; return; }
             
@@ -134,7 +190,7 @@
                 const data = await res.json();
                 addMsg(data.respuesta, 'aurora');
                 hablar(data.respuesta);
-            } catch(e) { addMsg("Error en la conexión.", 'aurora'); }
+            } catch(e) { addMsg("Error neuronal.", 'aurora'); }
         }
 
         function addMsg(t, cl) {
@@ -143,7 +199,7 @@
             win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
         
-        document.getElementById('aurora-comms-channel').addEventListener('keypress', (e) => { if(e.key === 'Enter') enviar(); });
+        document.getElementById('aurora-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') enviar(); });
     </script>
 </body>
 </html>
