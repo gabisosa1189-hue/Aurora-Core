@@ -44,22 +44,17 @@ def chat():
 
     esencia = alma.obtener_esencia()
     
-    # LA ORDEN MILITAR: Esto la obliga a usar los datos nuevos y no los viejos
     system_prompt = (
         f"{esencia}\n{reloj}\n\n"
-        "INSTRUCCIÓN CRÍTICA Y OBLIGATORIA:\n"
-        "Tu memoria interna puede estar desactualizada. A continuación se te proveen 'DATOS EN TIEMPO REAL'. "
-        "DEBES basar tus respuestas sobre política, clima o tu creador estrictamente en estos datos provistos. "
-        "Si los datos dicen que el presidente es Javier Milei o que tu creador es Gabriel, esa es la única verdad. No uses otra información.\n"
+        "INSTRUCCIÓN OBLIGATORIA: Si los datos provistos indican que el presidente es Javier Milei, esa es la única verdad.\n"
     )
     
     if INTERNET_ACTIVO:
         try:
             datos_api = internet.obtener_datos_api(texto_usuario)
-            system_prompt += f"\n--- DATOS EN TIEMPO REAL (MANDATORIO LEER) ---\n{datos_api}\n"
+            system_prompt += f"\n--- DATOS EN TIEMPO REAL ---\n{datos_api}\n"
         except: pass
         
-        # Agregamos "presidente" a las palabras clave para que busque mejor en internet
         palabras_clave = ["noticia", "clima", "quien", "paso", "mundo", "temperatura", "presidente"]
         if len(texto_usuario.split()) >= 2 and any(p in msg_limpio for p in palabras_clave):
             try:
@@ -76,7 +71,7 @@ def chat():
         data_req = {
             "model": "llama-3.1-8b-instant", 
             "messages": mensajes, 
-            "temperature": 0.2, # Lo bajamos para que sea super precisa
+            "temperature": 0.2, 
             "max_tokens": 400
         }
         res = requests.post(url, headers=headers, json=data_req, timeout=25)
