@@ -15,28 +15,28 @@ def chat():
         data = request.json
         u_msg = data.get('msg', '').strip()
         
-        # 🔑 BUSCAMOS LAS LLAVES EN EL "CAJÓN" DE RENDER
-        gemini_key = os.environ.get("GEMINI_API_KEY")
-        eleven_key = os.environ.get("ELEVENLABS_API_KEY")
+        # 🛡️ USAMOS .strip() PARA BORRAR ESPACIOS ACCIDENTALES
+        gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
+        eleven_key = os.environ.get("ELEVENLABS_API_KEY", "").strip()
 
         if not gemini_key:
-            return jsonify({"respuesta": "Error: No configuraste GEMINI_API_KEY en Render.", "audio": None})
+            return jsonify({"respuesta": "Falta la llave en Render.", "audio": None})
 
-        # 🚀 MOTOR GEMINI 2026 (Ruta estable)
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
+        # 🚀 MOTOR GEMINI (Versión estable v1)
+        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={gemini_key}"
         
         payload = {"contents": [{"parts": [{"text": u_msg}]}]}
         res = requests.post(url, json=payload, timeout=15)
         
         if res.status_code != 200:
-            return jsonify({"respuesta": f"Google falló ({res.status_code}). Revisá la llave en Render.", "audio": None})
+            return jsonify({"respuesta": f"Google rechazó la llave. ¿Es nueva? Error: {res.text}", "audio": None})
             
         txt = res.json()['candidates'][0]['content']['parts'][0]['text']
 
-        # --- VOZ (ELEVENLABS) ---
+        # --- VOZ ---
         audio_b64 = None
         if eleven_key:
-            voice_id = "EXAVITQu4vr4xnSDxMaL" # Bella
+            voice_id = "EXAVITQu4vr4xnSDxMaL"
             tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
             tts_res = requests.post(
                 tts_url, 
@@ -50,7 +50,7 @@ def chat():
         return jsonify({"respuesta": txt, "audio": audio_b64})
         
     except Exception as e:
-        return jsonify({"respuesta": f"Error crítico: {str(e)}", "audio": None})
+        return jsonify({"respuesta": f"Error: {str(e)}", "audio": None})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
