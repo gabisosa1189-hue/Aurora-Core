@@ -87,26 +87,29 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 FUNCIÓN HABLAR: VOLVEMOS AL ESTILO QUE TE GUSTABA (TECNOLÓGICO Y CLARO)
+        // 🚨 FUNCIÓN HABLAR: RECALIBRACIÓN DEFINITIVA
         function hablar(t) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
             u.lang = 'es-AR';
             
             const voices = window.speechSynthesis.getVoices();
+            // Buscamos Sabina (Apple), Helena (Microsoft) o Luciana (Google Latam)
             const vozOriginal = voices.find(v => 
-                (v.name.includes('Google español') || v.name.includes('Helena') || 
-                 v.name.includes('Sabina') || v.name.includes('Luciana')) && v.lang.includes('es')
+                (v.name.includes('Sabina') || v.name.includes('Helena') || 
+                 v.name.includes('Luciana') || v.name.includes('Google español')) && v.lang.includes('es')
             );
             
             if (vozOriginal) u.voice = vozOriginal;
             
-            u.pitch = 1.6; // ⬆️ Restauramos el tono tecnológico original
-            u.rate = 1.0;  // ➡️ Velocidad normal de respuesta
+            // CONFIGURACIÓN ORIGINAL (TECNOLÓGICA)
+            u.pitch = 1.6;  
+            u.rate = 1.0;  
             u.volume = 1.0;
             window.speechSynthesis.speak(u);
         }
 
+        // Obliga al navegador a refrescar las voces
         window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
         function exterminarMail() {
