@@ -87,7 +87,7 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 FUNCIÓN HABLAR: AHORA MÁS DULCE Y NATURAL
+        // 🚨 FUNCIÓN HABLAR: MÁS DULCE Y NATURAL
         function hablar(t) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
@@ -100,8 +100,11 @@
             );
             
             if (femaleVoice) u.voice = femaleVoice;
-            u.pitch = 1.1; // ⬇️ Bajamos de 1.7 a 1.1 para quitar lo chillón y ganar dulzura
-            u.rate = 0.95; // ⬇️ Un pelín más lento para que sea más elegante
+            
+            // AJUSTE PARA DULZURA:
+            u.pitch = 1.05; // Bajo el tono de 1.5/1.7 a 1.05 (Suave)
+            u.rate = 0.95;  // Un pelín más lento para que sea elegante
+            u.volume = 1.0;
             window.speechSynthesis.speak(u);
         }
 
@@ -143,15 +146,16 @@
                     setTimeout(() => {
                         document.getElementById('app-container').style.opacity = "1";
                         
-                        // 🚨 SALUDO CORTO Y FORMAL
+                        // 🚨 SALUDO SIMPLE Y DULCE
                         const nombreUsuario = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
-                        const m = `Bienvenido, ${nombreUsuario}.`;
+                        const m = `Hola, ${nombreUsuario}. ¿Cómo puedo ayudarte hoy?`;
                         
                         document.getElementById('saludo-ia').innerText = m;
                         hablar(m);
 
                         const chatInp = document.getElementById('chat-terminal');
-                        chatInp.removeAttribute('readonly'); chatInp.placeholder = "Escribe a Aurora...";
+                        chatInp.removeAttribute('readonly'); 
+                        chatInp.placeholder = "Escribe a Aurora...";
                         exterminarMail();
                     }, 500);
                 }, 600);
@@ -164,8 +168,10 @@
             addMsg(msg, 'user'); inp.value = '';
             try {
                 const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg}) });
-                const data = await res.json(); addMsg(data.respuesta, 'aurora'); hablar(data.respuesta);
-            } catch(e) { addMsg("Error en la conexión.", 'aurora'); }
+                const data = await res.json(); 
+                addMsg(data.respuesta, 'aurora'); 
+                hablar(data.respuesta);
+            } catch(e) { addMsg("Error en la conexión neuronal.", 'aurora'); }
         }
 
         function addMsg(t, cl) {
