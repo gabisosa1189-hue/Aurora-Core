@@ -15,35 +15,35 @@ def chat():
         data = request.json
         u_msg = data.get('msg', '').strip()
         
-        # 🛡️ LIMPIEZA DE LLAVE (Por si se coló un espacio en Render)
+        # 🕵️‍♂️ BUSCAMOS LAS LLAVES
         gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
         eleven_key = os.environ.get("ELEVENLABS_API_KEY", "").strip()
 
+        # 🚨 DIAGNÓSTICO EN PANTALLA
         if not gemini_key:
-            return jsonify({"respuesta": "Falta la llave GEMINI_API_KEY en Render.", "audio": None})
+            return jsonify({"respuesta": "❌ ERROR: Render NO me está pasando la llave. Revisá que el nombre en Render sea GEMINI_API_KEY (todo mayúsculas).", "audio": None})
 
         # 🚀 MOTOR ESTABLE 2026
-        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={gemini_key}"
+        # Si la llave existe, se la mandamos a Google
+        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={gemini_key}"
         
         payload = {"contents": [{"parts": [{"text": u_msg}]}]}
         res = requests.post(url, json=payload, timeout=15)
         
         if res.status_code != 200:
-            # Esto nos va a decir la verdad absoluta del error
-            error_info = res.json().get('error', {}).get('message', 'Error desconocido')
-            return jsonify({"respuesta": f"Google dice: {error_info}", "audio": None})
+            # Aquí Google nos va a decir si la llave es inválida
+            return jsonify({"respuesta": f"⚠️ Google recibió la llave pero la rechazó. Error: {res.text}", "audio": None})
             
         txt = res.json()['candidates'][0]['content']['parts'][0]['text']
 
-        # --- VOZ (Solo si la llave de Eleven está ok) ---
+        # --- VOZ ---
         audio_b64 = None
         if eleven_key:
             voice_id = "EXAVITQu4vr4xnSDxMaL"
-            tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
             tts_res = requests.post(
-                tts_url, 
-                json={"text": txt, "model_id": "eleven_multilingual_v2"}, 
-                headers={"xi-api-key": eleven_key}, 
+                f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
+                json={"text": txt, "model_id": "eleven_multilingual_v2"},
+                headers={"xi-api-key": eleven_key},
                 timeout=15
             )
             if tts_res.status_code == 200:
