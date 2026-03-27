@@ -1,11 +1,9 @@
-const CACHE_NAME = 'aurora-cache-v2';
+const CACHE_NAME = 'aurora-cache-v3'; // Subimos a V3 para que se entere del cambio
 
-// Instala el nuevo Service Worker y se activa inmediatamente
 self.addEventListener('install', (e) => {
   self.skipWaiting();
 });
 
-// Borra cualquier memoria caché vieja que haya quedado
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then(keys => {
@@ -21,8 +19,12 @@ self.addEventListener('activate', (e) => {
   return self.clients.claim();
 });
 
-// Le dice al navegador: "Buscá SIEMPRE en internet primero. Si no hay internet, recién ahí usá la memoria"
 self.addEventListener('fetch', (e) => {
+  // 🚨 LA LLAVE MÁGICA: Si es el video .mp4 o pide transmisión en vivo (range), el guardián lo deja pasar libremente.
+  if (e.request.url.endsWith('.mp4') || e.request.headers.has('range')) {
+    return; // Esto hace que tu celular cargue el video naturalmente sin bloqueos
+  }
+
   e.respondWith(
     fetch(e.request).catch(() => caches.match(e.request))
   );
