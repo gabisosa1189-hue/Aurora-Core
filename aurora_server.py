@@ -26,12 +26,13 @@ def chat():
     global historial
     data = request.json
     texto_usuario = data.get('msg', '')
-    msg_limpio = texto_usuario.lower()
     
-    # Nos conectamos a los servidores de Google Gemini
+    # BUSCAMOS LA LLAVE
     GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+    if not GEMINI_API_KEY:
+        return jsonify({"respuesta": "Error: No encontré la llave GEMINI_API_KEY en Render."})
+
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-    headers = {"Content-Type": "application/json"}
     
     try:
         zona_ar = datetime.timezone(datetime.timedelta(hours=-3))
@@ -40,56 +41,35 @@ def chat():
     except:
         reloj = ""
 
-    if len(historial) > 6:
-        historial = historial[-6:]
-
     esencia = alma.obtener_esencia()
-    
-    system_prompt = (
-        f"{esencia}\n{reloj}\n\n"
-        "INSTRUCCIÓN OBLIGATORIA: Si los datos provistos indican que el presidente es Javier Milei, esa es la única verdad.\n"
-    )
+    system_prompt = f"{esencia}\n{reloj}\n"
     
     if INTERNET_ACTIVO:
         try:
             datos_api = internet.obtener_datos_api(texto_usuario)
             system_prompt += f"\n--- DATOS EN TIEMPO REAL ---\n{datos_api}\n"
         except: pass
-        
-        palabras_clave = ["noticia", "clima", "quien", "paso", "mundo", "temperatura", "presidente"]
-        if len(texto_usuario.split()) >= 2 and any(p in msg_limpio for p in palabras_clave):
-            try:
-                datos_red = internet.buscar_en_red(texto_usuario)
-                if datos_red != "Sin datos extra de internet.":
-                    system_prompt += f"\n--- BÚSQUEDA PROFUNDA DE INTERNET ---\n{datos_red}\n"
-            except: pass
 
-    # Adaptamos la memoria al formato que exige Google
+    # Formato obligatorio para Google Gemini
     contenidos = []
-    for msg in historial:
+    for msg in historial[-6:]:
         rol = "user" if msg["role"] == "user" else "model"
         contenidos.append({"role": rol, "parts": [{"text": msg["content"]}]})
     
     contenidos.append({"role": "user", "parts": [{"text": texto_usuario}]})
 
-    data_req = {
+    payload = {
         "contents": contenidos,
-        "systemInstruction": {
-            "role": "user",
-            "parts": [{"text": system_prompt}]
-        },
-        "generationConfig": {
-            "temperature": 0.2,
-            "maxOutputTokens": 400
-        }
+        "systemInstruction": {"parts": [{"text": system_prompt}]},
+        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 400}
     }
     
     try:
-        res = requests.post(url, headers=headers, json=data_req, timeout=25)
+        res = requests.post(url, json=payload, timeout=20)
         res.raise_for_status()
         respuesta_ai = res.json()['candidates'][0]['content']['parts'][0]['text']
     except Exception as e:
-        print(f"Error en servidor: {e}")
+        print(f"DEBUG ERROR: {e}")
         respuesta_ai = "Disculpe, mi red se saturó un segundo. ¿Podemos retomar?"
 
     historial.append({"role": "user", "content": texto_usuario})
