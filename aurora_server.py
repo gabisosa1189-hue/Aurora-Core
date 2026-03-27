@@ -5,8 +5,8 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# 🔑 RECOGEMOS LAS LLAVES (Asegurate que se llamen así en Render)
-GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
+# 🔑 LLAVES (Sacalas de Environment en Render)
+API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 ELEVEN_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
 
 @app.route('/')
@@ -18,46 +18,35 @@ def chat():
     try:
         data = request.json
         u_msg = data.get('msg', '').strip()
-
-        if not GEMINI_KEY:
-            return jsonify({"respuesta": "Falta la llave GEMINI_API_KEY en Render.", "audio": None})
-
-        # 🚀 ESTRATEGIA DE TRIPLE INTENTO (Anti-Error 404)
-        # Probamos los modelos más nuevos y estables de 2026
-        opciones = [
-            {"ver": "v1beta", "mod": "gemini-2.0-flash"},
-            {"ver": "v1beta", "mod": "gemini-1.5-flash"},
-            {"ver": "v1", "mod": "gemini-1.5-flash"}
-        ]
         
-        txt = None
-        ultimo_error = ""
+        if not API_KEY:
+            return jsonify({"respuesta": "❌ No hay GEMINI_API_KEY en Render.", "audio": None})
 
-        for opt in opciones:
-            url = f"https://generativelanguage.googleapis.com/{opt['ver']}/models/{opt['mod']}:generateContent?key={GEMINI_KEY}"
-            payload = {
-                "contents": [{
-                    "parts": [{"text": f"Sos Aurora, una IA de Mendoza. Sé breve y amable. Usuario dice: {u_msg}"}]
-                }]
-            }
-            res = requests.post(url, json=payload, timeout=10)
+        # 🚀 LA RUTA QUE NO PUEDE FALLAR (v1beta + 1.5-flash sin 'latest')
+        # Esta es la combinación más estable para el plan gratuito
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+        
+        payload = {
+            "contents": [{
+                "parts": [{"text": f"Sos Aurora, una IA de Mendoza. Sé cortés y breve. Gabriel dice: {u_msg}"}]
+            }]
+        }
+        
+        res = requests.post(url, json=payload, timeout=15)
+        
+        # 🕵️‍♂️ SI FALLA, QUE NOS DIGA LA VERDAD ABSOLUTA
+        if res.status_code != 200:
+            info_error = res.json().get('error', {}).get('message', 'Error desconocido')
+            return jsonify({"respuesta": f"Google dice: {info_error}", "audio": None})
             
-            if res.status_code == 200:
-                txt = res.json()['candidates'][0]['content']['parts'][0]['text']
-                break
-            else:
-                ultimo_error = res.text
-
-        if not txt:
-            return jsonify({"respuesta": f"Google rechazó todos los modelos. Error: {ultimo_error}", "audio": None})
+        txt = res.json()['candidates'][0]['content']['parts'][0]['text']
 
         # --- VOZ (ELEVENLABS) ---
         audio_b64 = None
         if ELEVEN_KEY:
-            voice_id = "EXAVITQu4vr4xnSDxMaL" # Tu ID de voz
-            tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+            voice_id = "EXAVITQu4vr4xnSDxMaL"
             tts_res = requests.post(
-                tts_url,
+                f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
                 json={"text": txt, "model_id": "eleven_multilingual_v2"},
                 headers={"xi-api-key": ELEVEN_KEY},
                 timeout=15
@@ -68,7 +57,7 @@ def chat():
         return jsonify({"respuesta": txt, "audio": audio_b64})
         
     except Exception as e:
-        return jsonify({"respuesta": f"Error crítico: {str(e)}", "audio": None})
+        return jsonify({"respuesta": f"Error del servidor: {str(e)}", "audio": None})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
