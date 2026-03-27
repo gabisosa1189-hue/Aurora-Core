@@ -34,19 +34,28 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
 
-        /* AREA DE ESCRITURA */
-        .input-area { padding: 20px 20px 10px 20px; }
-        .input-container { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 35px; display: flex; align-items: center; padding: 5px 20px; backdrop-filter: blur(20px); }
+        /* AREA DE ESCRITURA MEJORADA */
+        .input-area { 
+            padding: 20px 20px 30px 20px; /* Más espacio abajo */
+            background: transparent;
+        }
+        .input-container { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(0, 242, 255, 0.4); 
+            border-radius: 35px; display: flex; align-items: center; 
+            padding: 5px 20px; backdrop-filter: blur(20px); 
+        }
         #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; }
 
-        /* 🚨 ACÁ ESTÁ EL ESTILO DEL DESCARGO */
-        .disclaimer { 
-            font-size: 0.72rem; 
-            color: rgba(255, 255, 255, 0.35); 
+        /* EL TEXTO QUE TIENE QUE APARECER SÍ O SÍ */
+        .disclaimer-final { 
+            font-size: 0.75rem; 
+            color: rgba(0, 242, 255, 0.6); /* Más celeste para que resalte */
             text-align: center; 
-            margin-top: 12px; 
+            margin-top: 15px; 
+            display: block;
+            width: 100%;
             letter-spacing: 0.5px;
-            font-weight: 300;
         }
 
         @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -94,7 +103,7 @@
                 <input type="text" id="chat-terminal" readonly placeholder="Iniciando interfaz..." autocomplete="new-password">
                 <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.6rem; cursor:pointer;">➤</button>
             </div>
-            <p class="disclaimer">AURORA es una IA y puede cometer errores.</p>
+            <div class="disclaimer-final">AURORA es una IA y puede cometer errores.</div>
         </div>
     </div>
 
