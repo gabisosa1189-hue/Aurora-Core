@@ -11,37 +11,47 @@ except:
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-BASE_PATH = os.getcwd() 
-historial = [] 
+# Memoria de la charla (Para que sea fluida y se acuerde de lo que dijeron)
+historial_memoria = [] 
 
 @app.route('/')
 def index(): 
-    return send_from_directory(BASE_PATH, 'index.html')
+    return send_from_directory(os.getcwd(), 'index.html')
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    global historial
+    global historial_memoria
     data = request.json
     texto_usuario = data.get('msg', '')
     
+    # 1. VERIFICAR LLAVE
     API_KEY = os.environ.get("GEMINI_API_KEY")
     if not API_KEY:
-        return jsonify({"respuesta": "ERROR: No configuraste GEMINI_API_KEY en Render."})
+        return jsonify({"respuesta": "Falta la GEMINI_API_KEY en las variables de Render."})
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     try:
         esencia = alma.obtener_esencia()
-        system_prompt = f"{esencia}\n"
+        # Le pasamos la fecha y hora de Mendoza para que esté ubicada
+        reloj = f"Sistema: Hoy es {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}."
+        
+        system_prompt = f"{esencia}\n{reloj}\n"
         
         if INTERNET_ACTIVO:
-            datos_api = internet.obtener_datos_api(texto_usuario)
-            system_prompt += f"\nDATOS ACTUALES: {datos_api}"
+            try:
+                datos_api = internet.obtener_datos_api(texto_usuario)
+                system_prompt += f"\nDATOS TIEMPO REAL: {datos_api}"
+            except: pass
 
+        # 2. CONSTRUIR LA MEMORIA (Esto es lo que hace la charla fluida)
+        # Tomamos los últimos 10 mensajes para que no se olvide de nada
         contenidos = []
-        for m in historial[-6:]:
+        for m in historial_memoria[-10:]:
             rol = "user" if m["role"] == "user" else "model"
             contenidos.append({"role": rol, "parts": [{"text": m["content"]}]})
+        
+        # Agregamos lo que el usuario acaba de decir ahora
         contenidos.append({"role": "user", "parts": [{"text": texto_usuario}]})
 
         payload = {
@@ -50,16 +60,23 @@ def chat():
             "generationConfig": {"temperature": 0.7, "maxOutputTokens": 500}
         }
         
+        # 3. LLAMADA A GOOGLE
         res = requests.post(url, json=payload, timeout=20)
-        res.raise_for_status()
+        
+        if res.status_code != 200:
+            print(f"ERROR GOOGLE: {res.text}") # Esto lo vemos en Render
+            return jsonify({"respuesta": "Aurora está descansando un minuto. Probá de nuevo en un instante."})
+            
         respuesta_ai = res.json()['candidates'][0]['content']['parts'][0]['text']
         
-    except Exception as e:
-        print(f"ERROR: {e}")
-        respuesta_ai = "Perdón, tuve un problema al conectarme con mis servidores de Google. ¿Podrías intentar de nuevo?"
+        # Guardamos en la memoria para que la charla siga
+        historial_memoria.append({"role": "user", "content": texto_usuario})
+        historial_memoria.append({"role": "assistant", "content": respuesta_ai})
 
-    historial.append({"role": "user", "content": texto_usuario})
-    historial.append({"role": "assistant", "content": respuesta_ai})
+    except Exception as e:
+        print(f"ERROR CRÍTICO: {e}")
+        respuesta_ai = "Perdón, se me cruzaron los cables. ¿Me repetís eso?"
+
     return jsonify({"respuesta": respuesta_ai})
 
 if __name__ == '__main__':
