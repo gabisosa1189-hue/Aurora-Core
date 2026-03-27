@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AURORA - Sistema Neuronal</title>
+    <title>AURORA - Acceso Neuronal</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#00f2ff">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
     
     <style>
         :root { --accent: #00f2ff; }
@@ -14,46 +14,51 @@
         
         #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover !important; z-index: 1; }
 
-        /* PANTALLA DE LOGIN PROFESIONAL */
+        /* PANTALLA DE ACCESO CRISTAL */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(25px); /* Desenfoque profundo */
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px);
             z-index: 9999; display: flex; align-items: center; justify-content: center;
             transition: all 0.8s ease-in-out;
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.03); padding: 50px 30px; border-radius: 40px;
+            background: rgba(255, 255, 255, 0.03); padding: 40px 30px; border-radius: 40px;
             border: 1px solid rgba(0, 242, 255, 0.25); text-align: center;
-            max-width: 420px; width: 85%; box-shadow: 0 0 60px rgba(0, 242, 255, 0.15);
+            max-width: 400px; width: 85%; box-shadow: 0 0 60px rgba(0, 242, 255, 0.15);
+            transition: all 0.5s ease;
         }
 
-        .titulo-login { font-family: 'Orbitron', sans-serif; letter-spacing: 6px; font-size: 1.3rem; margin-bottom: 10px; color: #fff; }
-        .subtitulo-login { font-weight: 300; font-size: 0.95rem; margin-bottom: 40px; color: rgba(255, 255, 255, 0.6); line-height: 1.6; }
+        .titulo-login { font-family: 'Orbitron', sans-serif; letter-spacing: 5px; font-size: 1.2rem; margin-bottom: 30px; }
 
-        .auth-container { display: flex; flex-direction: column; gap: 15px; }
+        /* Formulario oculto por defecto */
+        #email-form { display: none; flex-direction: column; gap: 15px; margin-top: 20px; animation: fadeIn 0.5s ease; }
+        
+        .input-login {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px; border-radius: 15px; color: #fff; outline: none; font-family: inherit;
+        }
+        .input-login:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.05); }
 
-        /* Botón de Google Estilizado */
+        .auth-buttons { display: flex; flex-direction: column; gap: 12px; }
+
         .btn-auth {
-            width: 100%; padding: 16px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);
-            font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-size: 1rem;
+            width: 100%; padding: 16px; border-radius: 18px; border: none;
+            font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.3s; font-size: 0.95rem;
         }
 
         .btn-google { background: #fff; color: #000; }
-        .btn-google:hover { background: #f0f0f0; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2); }
+        .btn-email-toggle { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.15); }
+        .btn-main { background: var(--accent); color: #000; margin-top: 10px; }
 
-        /* Botón de Email/Contraseña (Habilitado en Firebase) */
-        .btn-email { background: rgba(0, 242, 255, 0.1); border: 1px solid rgba(0, 242, 255, 0.4); color: #fff; }
-        .btn-email:hover { background: rgba(0, 242, 255, 0.2); transform: translateY(-2px); border-color: var(--accent); }
+        .toggle-link { font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); cursor: pointer; margin-top: 15px; text-decoration: underline; }
+        .toggle-link:hover { color: var(--accent); }
 
-        /* Interfaz Oculta */
-        #app-container { display: none; flex-direction: column; height: 100%; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1.2s; }
-        header { padding: 30px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .titulo-app { font-family: 'Orbitron', sans-serif; letter-spacing: 15px; font-size: 1.5rem; text-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; scrollbar-width: none; }
+        /* App Container */
+        #app-container { display: none; flex-direction: column; height: 100%; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1s; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -61,32 +66,28 @@
     <video autoplay muted loop playsinline id="bg-video"><source src="fondo.mp4" type="video/mp4"></video>
 
     <div id="login-overlay">
-        <div class="login-card">
-            <h1 class="titulo-login">BIENVENIDO A AURORA</h1>
-            <p class="subtitulo-login">Seleccione un método de acceso para iniciar el sistema neuronal.</p>
+        <div class="login-card" id="card">
+            <h1 class="titulo-login" id="login-title">BIENVENIDO A AURORA</h1>
             
-            <div class="auth-container">
+            <div id="main-auth" class="auth-buttons">
                 <button onclick="loginGoogle()" class="btn-auth btn-google">
-                    <svg width="18" height="18" viewBox="0 0 18 18">
-                        <path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.85 2.22c1.67-1.53 2.63-3.8 2.63-6.55z" fill="#4285F4"/>
-                        <path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.85-2.22c-.79.53-1.8.85-3.11.85-2.39 0-4.41-1.61-5.14-3.78H.9v2.33C2.38 15.94 5.47 18 9 18z" fill="#34A853"/>
-                        <path d="M3.86 10.67c-.19-.56-.3-1.16-.3-1.77s.11-1.21.3-1.77V4.8H.9A8.98 8.98 0 0 0 0 9c0 1.45.35 2.82.9 4.05l2.96-2.38z" fill="#FBBC05"/>
-                        <path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.89 11.43 0 9 0 5.47 0 2.38 2.06.9 5.07L3.86 7.4c.73-2.17 2.75-3.82 5.14-3.82z" fill="#EA4335"/>
-                    </svg>
-                    Ingresar con Google
+                    <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.85 2.22c1.67-1.53 2.63-3.8 2.63-6.55z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.85-2.22c-.79.53-1.8.85-3.11.85-2.39 0-4.41-1.61-5.14-3.78H.9v2.33C2.38 15.94 5.47 18 9 18z" fill="#34A853"/><path d="M3.86 10.67c-.19-.56-.3-1.16-.3-1.77s.11-1.21.3-1.77V4.8H.9A8.98 8.98 0 0 0 0 9c0 1.45.35 2.82.9 4.05l2.96-2.38z" fill="#FBBC05"/><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.89 11.43 0 9 0 5.47 0 2.38 2.06.9 5.07L3.86 7.4c.73-2.17 2.75-3.82 5.14-3.82z" fill="#EA4335"/></svg>
+                    Continuar con Google
                 </button>
+                <button onclick="showEmailForm()" class="btn-auth btn-email-toggle">📧 Correo electrónico</button>
+            </div>
 
-                <button onclick="loginEmail()" class="btn-auth btn-email">
-                    <span>📧</span>
-                    Correo y Contraseña
-                </button>
+            <div id="email-form">
+                <input type="email" id="email" class="input-login" placeholder="Tu correo">
+                <input type="password" id="pass" class="input-login" placeholder="Tu contraseña">
+                <button id="btn-submit" onclick="handleAuth()" class="btn-auth btn-main">Ingresar</button>
+                <p class="toggle-link" id="toggle-text" onclick="toggleMode()">¿No tienes cuenta? Regístrate</p>
+                <p class="toggle-link" onclick="backToMain()">← Volver</p>
             </div>
         </div>
     </div>
 
     <div id="app-container">
-        <header><div class="titulo-app">AURORA</div></header>
-        <div id="chat-window"><div id="saludo-ia" style="padding: 20px; text-align: center; color: rgba(255,255,255,0.6);">Sincronizando...</div></div>
         </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -103,17 +104,44 @@
         };
         firebase.initializeApp(firebaseConfig);
 
-        function loginGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).catch(e => alert("Error Google: " + e.message));
+        let isRegisterMode = false;
+
+        function showEmailForm() {
+            document.getElementById('main-auth').style.display = 'none';
+            document.getElementById('email-form').style.display = 'flex';
+            document.getElementById('login-title').innerText = "ACCESO POR EMAIL";
         }
 
-        function loginEmail() {
-            const email = prompt("Ingrese su correo:");
-            const pass = prompt("Ingrese su contraseña:");
-            if(email && pass) {
-                firebase.auth().signInWithEmailAndPassword(email, pass).catch(e => alert("Error Email: " + e.message));
-            }
+        function backToMain() {
+            document.getElementById('main-auth').style.display = 'flex';
+            document.getElementById('email-form').style.display = 'none';
+            document.getElementById('login-title').innerText = "BIENVENIDO A AURORA";
+        }
+
+        function toggleMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('login-title').innerText = isRegisterMode ? "CREAR CUENTA" : "ACCESO POR EMAIL";
+            document.getElementById('btn-submit').innerText = isRegisterMode ? "Registrarme" : "Ingresar";
+            document.getElementById('toggle-text').innerText = isRegisterMode ? "¿Ya tienes cuenta? Ingresa" : "¿No tienes cuenta? Regístrate";
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            if(!email || !pass) return alert("Completa los campos");
+
+            try {
+                if(isRegisterMode) {
+                    await firebase.auth().createUserWithEmailAndPassword(email, pass);
+                } else {
+                    await firebase.auth().signInWithEmailAndPassword(email, pass);
+                }
+            } catch(e) { alert(e.message); }
+        }
+
+        function loginGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider).catch(e => alert(e.message));
         }
 
         firebase.auth().onAuthStateChanged((user) => {
@@ -123,7 +151,6 @@
                     document.getElementById('login-overlay').style.display = "none";
                     document.getElementById('app-container').style.display = "flex";
                     setTimeout(() => document.getElementById('app-container').style.opacity = "1", 50);
-                    document.getElementById('saludo-ia').innerText = "Bienvenido Gabriel. Acceso concedido.";
                 }, 800);
             }
         });
