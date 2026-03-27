@@ -87,28 +87,23 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 MOTOR DE VOZ DULCE Y HUMANA
+        // 🚨 FUNCIÓN HABLAR: VOLVEMOS AL ESTILO QUE TE GUSTABA (TECNOLÓGICO Y CLARO)
         function hablar(t) {
             window.speechSynthesis.cancel();
-            
-            // Agregamos una pausa sutil después del nombre para humanizar
-            const textoConPausa = t.replace(',', '... ');
-            const u = new SpeechSynthesisUtterance(textoConPausa);
+            const u = new SpeechSynthesisUtterance(t);
             u.lang = 'es-AR';
             
             const voices = window.speechSynthesis.getVoices();
-            const vozDulce = voices.find(v => 
-                (v.name.includes('Sabina') || v.name.includes('Helena') || 
-                 v.name.includes('Luciana') || v.name.includes('Google español')) && v.lang.includes('es')
+            const vozOriginal = voices.find(v => 
+                (v.name.includes('Google español') || v.name.includes('Helena') || 
+                 v.name.includes('Sabina') || v.name.includes('Luciana')) && v.lang.includes('es')
             );
             
-            if (vozDulce) u.voice = vozDulce;
+            if (vozOriginal) u.voice = vozOriginal;
             
-            // CALIBRACIÓN DE SEDA
-            u.pitch = 0.82; // ⬇️ Tono más bajo = Voz más cálida y menos robótica
-            u.rate = 0.80;  // ⬇️ Velocidad pausada = Sensación de dulzura y atención
+            u.pitch = 1.6; // ⬆️ Restauramos el tono tecnológico original
+            u.rate = 1.0;  // ➡️ Velocidad normal de respuesta
             u.volume = 1.0;
-            
             window.speechSynthesis.speak(u);
         }
 
@@ -150,7 +145,6 @@
                     setTimeout(() => {
                         document.getElementById('app-container').style.opacity = "1";
                         
-                        // 🚨 SALUDO SIMPLE Y ELEGANTE
                         const nombreUsuario = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
                         const m = `Hola, ${nombreUsuario}. ¿Cómo puedo ayudarte hoy?`;
                         
