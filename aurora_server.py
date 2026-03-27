@@ -11,6 +11,7 @@ memoria_global = []
 def index():
     return send_from_directory(os.getcwd(), 'inicio.html')
 
+# Esto es vital para que cargue la App (PWA)
 @app.route('/<path:path>')
 def send_static(path):
     return send_from_directory(os.getcwd(), path)
@@ -21,44 +22,46 @@ def chat():
     data = request.json
     u_msg = data.get('msg', '').strip()
     
-    # 🔑 RENDER: Asegurate de que la Key se llame exactamente OPENAI_API_KEY
-    API_KEY = os.environ.get("OPENAI_API_KEY")
-    url = "https://api.openai.com/v1/chat/completions"
+    # Llama a tu nueva llave de Google en Render
+    API_KEY = os.environ.get("GEMINI_API_KEY")
+    
+    # Usamos la v1beta que ACEPTA systemInstruction sin dar Error 400
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     try:
         esencia = alma.obtener_esencia()
-        contexto = f"{esencia}\nHora en Mendoza: {datetime.datetime.now().strftime('%H:%M')}"
+        contexto = f"{esencia}\nHora en San Martín, Mendoza: {datetime.datetime.now().strftime('%H:%M')}"
 
-        mensajes = [{"role": "system", "content": contexto}]
+        # Limpieza de memoria (Google es estricto con los roles)
+        historial = []
         for m in memoria_global[-6:]:
-            mensajes.append({"role": m["role"], "content": m["content"]})
-        mensajes.append({"role": "user", "content": u_msg})
+            rol = "user" if m["role"] == "user" else "model"
+            historial.append({"role": rol, "parts": [{"text": m["content"]}]})
+        
+        historial.append({"role": "user", "parts": [{"text": u_msg}]})
 
         payload = {
-            "model": "gpt-4o-mini", 
-            "messages": mensajes,
-            "temperature": 0.7
+            "contents": historial,
+            "systemInstruction": {"parts": [{"text": contexto}]},
+            "generationConfig": {"temperature": 0.7}
         }
         
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {API_KEY}"
-        }
-        
-        res = requests.post(url, json=payload, headers=headers, timeout=20)
+        res = requests.post(url, json=payload, timeout=20)
         res_json = res.json()
         
-        # Si la API responde bien:
-        if res.status_code == 200:
-            txt_ai = res_json['choices'][0]['message']['content']
-            memoria_global.append({"role": "user", "content": u_msg})
-            memoria_global.append({"role": "assistant", "content": txt_ai})
-            return jsonify({"respuesta": txt_ai})
-        else:
-            return jsonify({"respuesta": "Gabriel, OpenAI dice que la llave no es válida o no tiene saldo."})
+        if res.status_code != 200:
+            error_msg = res_json.get('error', {}).get('message', 'Error desconocido')
+            return jsonify({"respuesta": f"Google Error: {error_msg}"})
+
+        txt_ai = res_json['candidates'][0]['content']['parts'][0]['text']
+        
+        memoria_global.append({"role": "user", "content": u_msg})
+        memoria_global.append({"role": "model", "content": txt_ai})
+        
+        return jsonify({"respuesta": txt_ai})
 
     except Exception as e:
-        return jsonify({"respuesta": "Error técnico: El servidor no pudo conectar."})
+        return jsonify({"respuesta": "Error técnico: Me quedé sin señal, che."})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
