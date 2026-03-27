@@ -21,7 +21,7 @@ def chat():
     data = request.json
     u_msg = data.get('msg', '').strip()
     
-    # 🔑 USAMOS LA LLAVE DE OPENAI QUE PUSISTE EN RENDER
+    # 🔑 RENDER: Asegurate de que la Key se llame exactamente OPENAI_API_KEY
     API_KEY = os.environ.get("OPENAI_API_KEY")
     url = "https://api.openai.com/v1/chat/completions"
     
@@ -29,7 +29,6 @@ def chat():
         esencia = alma.obtener_esencia()
         contexto = f"{esencia}\nHora en Mendoza: {datetime.datetime.now().strftime('%H:%M')}"
 
-        # Formato exclusivo para OpenAI (Eliminamos systemInstruction para siempre)
         mensajes = [{"role": "system", "content": contexto}]
         for m in memoria_global[-6:]:
             mensajes.append({"role": m["role"], "content": m["content"]})
@@ -49,20 +48,17 @@ def chat():
         res = requests.post(url, json=payload, headers=headers, timeout=20)
         res_json = res.json()
         
-        # Si OpenAI responde con error, lo atrapamos acá
-        if res.status_code != 200:
-            error_openai = res_json.get('error', {}).get('message', 'Error desconocido')
-            return jsonify({"respuesta": f"Falla en OpenAI: {error_openai}"})
-
-        txt_ai = res_json['choices'][0]['message']['content']
-        
-        memoria_global.append({"role": "user", "content": u_msg})
-        memoria_global.append({"role": "assistant", "content": txt_ai})
-        
-        return jsonify({"respuesta": txt_ai})
+        # Si la API responde bien:
+        if res.status_code == 200:
+            txt_ai = res_json['choices'][0]['message']['content']
+            memoria_global.append({"role": "user", "content": u_msg})
+            memoria_global.append({"role": "assistant", "content": txt_ai})
+            return jsonify({"respuesta": txt_ai})
+        else:
+            return jsonify({"respuesta": "Gabriel, OpenAI dice que la llave no es válida o no tiene saldo."})
 
     except Exception as e:
-        return jsonify({"respuesta": "Gabriel, parece que el servidor está tildado. ¡Revisá los logs!"})
+        return jsonify({"respuesta": "Error técnico: El servidor no pudo conectar."})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
