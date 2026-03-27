@@ -6,10 +6,10 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
 # =========================================================
-# 🔑 TUS LLAVES (Pegalas acá adentro de las comillas)
+# 🔑 TUS LLAVES (Usa llaves NUEVAS, las anteriores ya son públicas y peligrosas)
 # =========================================================
-GOOGLE_KEY = "AIzaSyADiRyFwBo-pnbLLHDNZFzUiy68HIviNLo"
-ELEVEN_KEY = "030a3ba3598741ba9e2d57722b1d2db7"
+GOOGLE_KEY = "TU_NUEVA_LLAVE_AQUÍ"
+ELEVEN_KEY = "TU_NUEVA_LLAVE_AQUÍ"
 # =========================================================
 
 @app.route('/')
@@ -23,7 +23,6 @@ def chat():
         u_msg = data.get('msg', '').strip()
         
         # 🚀 DIRECCIÓN ESTABLE 2026 (v1 + gemini-2.0-flash)
-        # Esta es la ruta oficial que Google mantiene activa hoy.
         url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={GOOGLE_KEY}"
         
         payload = {"contents": [{"parts": [{"text": u_msg}]}]}
@@ -36,15 +35,19 @@ def chat():
 
         # --- VOZ (ELEVENLABS) ---
         audio_b64 = None
-        if ELEVEN_KEY and "PEGA_AQUÍ" not in ELEVEN_KEY:
+        if ELEVEN_KEY and "TU_NUEVA" not in ELEVEN_KEY:
             voice_id = "EXAVITQu4vr4xnSDxMaL"
             tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-            tts_res = requests.post(
-                tts_url, 
-                json={"text": txt, "model_id": "eleven_multilingual_v2"}, 
-                headers={"xi-api-key": ELEVEN_KEY}, 
-                timeout=15
-            )
+            
+            # Ajustamos para máxima calidad en español
+            tts_payload = {
+                "text": txt,
+                "model_id": "eleven_multilingual_v2",
+                "voice_settings": {"stability": 0.5, "similarity_boost": 0.8}
+            }
+            
+            tts_res = requests.post(tts_url, json=tts_payload, headers={"xi-api-key": ELEVEN_KEY}, timeout=15)
+            
             if tts_res.status_code == 200:
                 audio_b64 = base64.b64encode(tts_res.content).decode('utf-8')
 
