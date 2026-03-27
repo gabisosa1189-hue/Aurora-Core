@@ -87,29 +87,27 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 FUNCIÓN HABLAR ACTUALIZADA A VOZ DE HOMBRE
+        // 🚨 FUNCIÓN HABLAR RESTAURADA A VOZ FEMENINA
         function hablar(t) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
             u.lang = 'es-AR';
             
             const voices = window.speechSynthesis.getVoices();
-            // Buscamos voces masculinas comunes en español (Pablo, Mateo, o Google español)
-            const maleVoice = voices.find(v => 
-                (v.name.includes('Microsoft Pablo') || 
-                 v.name.includes('Male') || 
-                 v.name.includes('Google español') ||
-                 v.name.includes('Dario') ||
-                 v.name.includes('Mateo')) && v.lang.includes('es')
+            // Filtramos específicamente por voces femeninas (Helena, Google español, etc.)
+            const femaleVoice = voices.find(v => 
+                (v.name.includes('Google español') || 
+                 v.name.includes('Helena') || 
+                 v.name.includes('Female') || 
+                 v.name.includes('Sabina')) && v.lang.includes('es')
             );
             
-            if (maleVoice) u.voice = maleVoice;
-            u.pitch = 0.85; // Bajas el tono para que suene más a hombre
-            u.rate = 0.95;  // Un poquito más pausado para dar autoridad
+            if (femaleVoice) u.voice = femaleVoice;
+            u.pitch = 1.6; // Tono más agudo/femenino de IA
+            u.rate = 1.0; 
             window.speechSynthesis.speak(u);
         }
 
-        // Carga de voces para que estén listas
         window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
         function exterminarMail() {
@@ -147,9 +145,12 @@
                     document.getElementById('app-container').style.display = "flex";
                     setTimeout(() => {
                         document.getElementById('app-container').style.opacity = "1";
-                        const m = "Acceso concedido. El sistema Aurora está operativo.";
+                        const nombreUsuario = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
+                        const m = `Bienvenido, ${nombreUsuario}. El sistema Aurora ha sido reactivado. Estoy a su servicio.`;
+                        
                         document.getElementById('saludo-ia').innerText = m;
                         hablar(m);
+
                         const chatInp = document.getElementById('chat-terminal');
                         chatInp.removeAttribute('readonly'); chatInp.placeholder = "Escribe a Aurora...";
                         exterminarMail();
