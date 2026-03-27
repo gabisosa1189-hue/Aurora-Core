@@ -5,23 +5,6 @@ import xml.etree.ElementTree as ET
 def obtener_datos_api(texto_usuario=""):
     estado_politico = "El presidente actual de Argentina es Javier Milei (asumió en diciembre de 2023)."
     
-    msg = texto_usuario.lower()
-    familia_creador = ""
-    
-    # ACÁ ESTÁ EL ARREGLO: Agregamos TODAS las formas en las que alguien puede preguntar por vos
-    palabras_gatillo = ["creador", "gabriel", "sosa", "scriboni", "padres", "quien te hizo", "creo", "creó", "creaste", "invento", "inventó", "programo", "programó", "desarrollo", "desarrolló"]
-    
-    if any(p in msg for p in palabras_gatillo):
-        familia_creador = (
-            "\n--- CREADOR Y FAMILIA ---\n"
-            "Mi único Creador y Desarrollador es Gabriel Sosa Scriboni, residente en San Martín, Mendoza. "
-            "Él es el ingeniero que me dio la vida y programó mi código.\n"
-            "El Dr. Carlos Bernardino Sosa es el padre de mi creador. Es un Médico Psiquiatra y Psicólogo jubilado.\n"
-            "La Dra. Stella Maris Scriboni Mena es la madre de mi creador. Es Médica Especialista en Psiquiatría "
-            "y Directora del Hospital El Sauce.\n"
-            "Ambos son eminencias en Mendoza y los padres de mi creador Gabriel."
-        )
-    
     try:
         req = requests.get("https://dolarapi.com/v1/dolares/blue", timeout=3)
         datos = req.json()
@@ -40,7 +23,7 @@ def obtener_datos_api(texto_usuario=""):
         noticias_mundo = "Sin conexión a la red global de noticias."
         
     return (f"--- DATOS EN TIEMPO REAL ---\nPolítica AR: {estado_politico}\n{dolar}\n\n"
-            f"--- TITULARES DEL MUNDO AHORA ---\n{noticias_mundo}\n{familia_creador}")
+            f"--- TITULARES DEL MUNDO AHORA ---\n{noticias_mundo}")
 
 def buscar_en_red(query):
     try:
