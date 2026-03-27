@@ -87,22 +87,25 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 FUNCIÓN HABLAR: CONFIGURADA PARA SABINA (DULCE)
+        // 🚨 FUNCIÓN HABLAR: MOTOR DE DULZURA (SABINA PRIORITARIA)
         function hablar(t) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
             u.lang = 'es-AR';
             
             const voices = window.speechSynthesis.getVoices();
+            // Buscamos Sabina (Apple), Helena (Microsoft) o Luciana (Google Latam)
             const vozDulce = voices.find(v => 
-                (v.name.includes('Sabina') || v.name.includes('Google español') || 
-                 v.name.includes('Helena') || v.name.includes('Luciana')) && v.lang.includes('es')
+                (v.name.includes('Sabina') || 
+                 v.name.includes('Helena') || 
+                 v.name.includes('Luciana') ||
+                 v.name.includes('Google español')) && v.lang.includes('es')
             );
             
             if (vozDulce) u.voice = vozDulce;
             
-            u.pitch = 1.0;  // Tono natural, nada de chillidos
-            u.rate = 0.95;  // Elegante y pausada
+            u.pitch = 0.95; // Bajamos el tono ligeramente para ganar calidez (Cero chillidos)
+            u.rate = 0.9;   // Un pelín más pausada para que sea aterciopelada
             u.volume = 1.0;
             window.speechSynthesis.speak(u);
         }
@@ -145,7 +148,7 @@
                     setTimeout(() => {
                         document.getElementById('app-container').style.opacity = "1";
                         
-                        // 🚨 SALUDO SIMPLE Y DULCE
+                        // 🚨 SALUDO SIMPLE Y ELEGANTE
                         const nombreUsuario = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
                         const m = `Hola, ${nombreUsuario}. ¿Cómo puedo ayudarte hoy?`;
                         
