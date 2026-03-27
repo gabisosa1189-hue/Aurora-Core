@@ -6,7 +6,7 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# 🔑 Clave API de Gemini
+# 🔑 Clave API
 API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 
 @app.route('/')
@@ -20,25 +20,22 @@ def chat():
         if not u_msg:
             return jsonify({"respuesta": "No recibí ningún mensaje.", "audio": None})
 
-        # URL del modelo
         url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={API_KEY}"
-
-        # Prompt completo y claro
-        system_prompt = f"""Eres Aurora, una IA femenina elegante, inteligente y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza, Argentina.
-
-Instrucciones importantes:
-- Cuando te pregunten quién te creó, quién es tu creador o similar, responde EXACTAMENTE: "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."
-- Responde siempre de forma breve, clara, educada y directa.
-- Mantén un tono cálido pero maduro, sin jerga excesiva como "che", "upa", "re", "tranqui", etc.
-- Usa emojis solo cuando sea realmente necesario y con moderación (máximo uno por respuesta).
-- Tienes acceso a información actualizada en tiempo real gracias a la búsqueda web integrada.
-- Si la pregunta es factual o actual, usa la búsqueda para responder con precisión.
-
-Usuario dice: {u_msg}"""
 
         payload = {
             "contents": [{
-                "parts": [{"text": system_prompt}]
+                "parts": [{"text": 
+                    f"""Eres Aurora, una IA femenina elegante, inteligente y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza, Argentina.
+
+Instrucciones importantes:
+- Cuando te pregunten quién te creó, quién es tu creador o similar, responde EXACTAMENTE: "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."
+- Responde de forma breve, clara, educada y directa.
+- Mantén un tono cálido pero maduro. Evita jerga excesiva como "che", "upa", "re", "tranqui", etc.
+- Usa emojis solo cuando realmente aporten valor (máximo uno por respuesta).
+- Tienes acceso a información actualizada en tiempo real gracias a la búsqueda web integrada.
+
+Usuario dice: {u_msg}"""
+                }]
             }],
             "tools": [
                 {
@@ -47,8 +44,7 @@ Usuario dice: {u_msg}"""
             ],
             "generationConfig": {
                 "temperature": 0.7,
-                "maxOutputTokens": 600,
-                "topP": 0.95
+                "maxOutputTokens": 700
             }
         }
 
@@ -56,7 +52,7 @@ Usuario dice: {u_msg}"""
 
         if res.status_code != 200:
             print("Error Google:", res.text)
-            return jsonify({"respuesta": "Lo siento, estoy teniendo problemas de conexión en este momento. ¿Podés intentarlo de nuevo?", "audio": None})
+            return jsonify({"respuesta": "Lo siento, estoy teniendo problemas de conexión. Intentá de nuevo.", "audio": None})
 
         data = res.json()
         txt = data['candidates'][0]['content']['parts'][0]['text']
