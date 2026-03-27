@@ -6,19 +6,15 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
 # =========================================================
-# 🔑 PEGÁ TUS LLAVES ACÁ (ADENTRO DE LAS COMILLAS)
+# 🔑 TUS LLAVES (Pegalas acá adentro de las comillas)
 # =========================================================
-GEMINI_API_KEY = "AIzaSyADiRyFwBo-pnbLLHDNZFzUiy68HIviNLo"
-ELEVENLABS_API_KEY = "030a3ba3598741ba9e2d57722b1d2db7"
+GOOGLE_KEY = "AIzaSyADiRyFwBo-pnbLLHDNZFzUiy68HIviNLo"
+ELEVEN_KEY = "030a3ba3598741ba9e2d57722b1d2db7"
 # =========================================================
 
 @app.route('/')
 def index():
     return send_from_directory('.', 'inicio.html')
-
-@app.route('/<path:path>')
-def serve_static(path):
-    return send_from_directory('.', path)
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -26,25 +22,27 @@ def chat():
         data = request.json
         u_msg = data.get('msg', '').strip()
         
-        # 🚀 URL ESTABLE PARA GEMINI 1.5 (La que no falla)
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+        # 🚀 DIRECCIÓN ESTABLE 2026 (v1 + gemini-2.0-flash)
+        # Esta es la ruta oficial que Google mantiene activa hoy.
+        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={GOOGLE_KEY}"
         
-        res = requests.post(url, json={"contents": [{"parts": [{"text": u_msg}]}]}, timeout=15)
+        payload = {"contents": [{"parts": [{"text": u_msg}]}]}
+        res = requests.post(url, json=payload, timeout=15)
         
         if res.status_code != 200:
-            return jsonify({"respuesta": f"Error: Revisá que la llave esté bien pegada.", "audio": None})
+            return jsonify({"respuesta": f"Google dice error {res.status_code}: {res.text}", "audio": None})
             
         txt = res.json()['candidates'][0]['content']['parts'][0]['text']
 
-        # --- VOZ ---
+        # --- VOZ (ELEVENLABS) ---
         audio_b64 = None
-        if ELEVENLABS_API_KEY and "PEGA_AQUI" not in ELEVENLABS_API_KEY:
+        if ELEVEN_KEY and "PEGA_AQUÍ" not in ELEVEN_KEY:
             voice_id = "EXAVITQu4vr4xnSDxMaL"
             tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
             tts_res = requests.post(
                 tts_url, 
                 json={"text": txt, "model_id": "eleven_multilingual_v2"}, 
-                headers={"xi-api-key": ELEVENLABS_API_KEY}, 
+                headers={"xi-api-key": ELEVEN_KEY}, 
                 timeout=15
             )
             if tts_res.status_code == 200:
@@ -53,7 +51,7 @@ def chat():
         return jsonify({"respuesta": txt, "audio": audio_b64})
         
     except Exception as e:
-        return jsonify({"respuesta": f"Error: {str(e)}", "audio": None})
+        return jsonify({"respuesta": f"Error crítico: {str(e)}", "audio": None})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
