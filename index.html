@@ -9,7 +9,6 @@
         :root { --accent: #00f2ff; --bg-glass: rgba(255, 255, 255, 0.03); --border-glass: rgba(255, 255, 255, 0.08); }
         body { margin: 0; padding: 0; height: 100vh; background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overflow: hidden; }
         
-        /* 1. TELÓN NEGRO ANTI-PARPADEO */
         #telon-negro { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; animation: fadeOut 1.5s ease 0.5s forwards; pointer-events: none; }
         @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
@@ -17,7 +16,6 @@
         
         #app-container { display: flex; flex-direction: column; height: 100vh; max-width: 800px; margin: 0 auto; position: relative; }
         
-        /* HEADER CON BOTÓN "A" */
         header { padding: 15px; text-align: center; border-bottom: 1px solid var(--border-glass); backdrop-filter: blur(10px); position: relative; }
         .titulo { font-family: 'Orbitron'; letter-spacing: 6px; font-size: 1.2rem; }
         
@@ -36,9 +34,7 @@
         .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.02); border-bottom-left-radius: 2px; }
         .user { align-self: flex-end; background: rgba(0, 242, 255, 0.05); border-bottom-right-radius: 2px; border-color: rgba(0, 242, 255, 0.1); }
 
-        /* 2. AREA DE ENTRADA Y DISCLAIMER */
         .input-area { padding: 10px 20px 15px 20px; background: transparent; display: flex; flex-direction: column; align-items: center;}
-        
         .input-container { 
             width: 100%; background: var(--bg-glass); backdrop-filter: blur(25px);
             border-radius: 30px; border: 1px solid var(--border-glass); 
@@ -46,32 +42,22 @@
         }
         
         input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; font-family: inherit; }
-        
         .btn-enviar { background: transparent; border: none; color: var(--accent); cursor: pointer; padding: 8px 10px; font-size: 1.3rem; }
 
-        /* TEXTO DISCLAIMER OBLIGATORIO */
         .disclaimer { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 10px; text-align: center; }
 
-        /* 3. TUERCA DE CONFIGURACIÓN (GDPR) */
         #btn-config {
             position: fixed; bottom: 15px; left: 15px;
             width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border-glass);
             background: var(--bg-glass); backdrop-filter: blur(10px); color: rgba(255,255,255,0.5);
             cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1000;
         }
-        #btn-config svg { width: 22px; height: 22px; fill: currentColor; }
 
-        /* PANELES OCULTOS (VOZ Y CONFIG) */
         .panel-full { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(20px); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        
         .circulo-pulso { width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, var(--accent) 0%, transparent 70%); animation: pulso 2s infinite; }
         @keyframes pulso { 0%, 100% { transform: scale(0.9); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } }
         
         .btn-cerrar { background: transparent; border: 1px solid var(--border-glass); color: #fff; padding: 10px 20px; border-radius: 20px; margin-top: 40px; cursor: pointer; font-family: inherit; }
-
-        /* Estilos específicos panel config */
-        .panel-content { max-width: 80%; text-align: center; }
-        .btn-borrar { background: #ff4757; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; margin-top: 20px; cursor: pointer; }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -83,7 +69,7 @@
     <button id="btn-modo-voz" onclick="abrirModoVoz()">A</button>
 
     <button id="btn-config" onclick="abrirConfig()">
-        <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.81,11.69,4.81,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.5c-1.93,0-3.5-1.57-3.5-3.5 s1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5S13.93,15.5,12,15.5z"/></svg>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.81,11.69,4.81,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.5c-1.93,0-3.5-1.57-3.5-3.5 s1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5S13.93,15.5,12,15.5z"/></svg>
     </button>
 
     <div id="panel-voz" class="panel-full">
@@ -96,9 +82,8 @@
     <div id="panel-config" class="panel-full">
         <div class="panel-content">
             <h2 style="font-family:'Orbitron'; color:rgba(255,255,255,0.7);">CONFIGURACIÓN</h2>
-            <p style="color:rgba(255,255,255,0.6);">Aurora respeta su privacidad. Sus conversaciones son temporales y no se almacenan en servidores externos.</p>
-            <p style="font-weight:600;">Para borrar los datos locales de esta sesión:</p>
-            <button class="btn-borrar" onclick="borrarDatosDatos()">BORRAR MIS DATOS</button>
+            <p style="color:rgba(255,255,255,0.6); padding: 0 20px;">Conversaciones temporales y privadas.</p>
+            <button class="btn-borrar" onclick="window.location.reload()">BORRAR MIS DATOS</button>
         </div>
         <button class="btn-cerrar" onclick="cerrarPanel()">VOLVER</button>
     </div>
@@ -114,7 +99,7 @@
                 <input type="text" id="user-input" placeholder="Escriba aquí..." autocomplete="off">
                 <button class="btn-enviar" onclick="enviar()">➤</button>
             </div>
-            <div class="disclaimer">Aurora es una IA y puede cometer errores. Verifique la información importante.</div>
+            <div class="disclaimer">Aurora es una IA y puede cometer errores.</div>
         </div>
     </div>
 
@@ -123,37 +108,31 @@
         const input = document.getElementById('user-input');
         let vozFemenina = null;
 
-        // --- SISTEMA DE VOZ ---
         function cargarVoces() {
             const voces = window.speechSynthesis.getVoices();
-            // Radar amplio: Busca voces femeninas conocidas en todos los sistemas (Android, iOS, Windows, Mac)
+            // Buscamos voces femeninas en español
             vozFemenina = voces.find(v => v.lang.startsWith('es') && 
-                (v.name.includes('Google') || v.name.includes('Paulina') || 
-                 v.name.includes('Monica') || v.name.includes('Helena') || 
-                 v.name.includes('Laura') || v.name.includes('Luciana')));
-                 
-            // Si es un celular muy raro y no encuentra esos nombres, atrapa la primera voz en español que exista
-            if (!vozFemenina) {
-                vozFemenina = voces.find(v => v.lang.startsWith('es'));
-            }
+                (v.name.includes('Google') || v.name.includes('Paulina') || v.name.includes('Helena') || v.name.includes('Lucia') || v.name.includes('Sabina')));
+            if (!vozFemenina) vozFemenina = voces.find(v => v.lang.startsWith('es'));
         }
         
         if ('speechSynthesis' in window) {
             window.speechSynthesis.onvoiceschanged = cargarVoces;
-            cargarVoces(); // Forzamos la carga por si el navegador es rápido
+            cargarVoces();
         }
 
         function hablar(texto, callback) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(texto);
             if(vozFemenina) u.voice = vozFemenina;
-            u.rate = 0.95; u.pitch = 1.1; // Subimos un poco el tono (pitch) para asegurar que suene más femenina
+            u.rate = 1.0; 
+            u.pitch = 1.3; // FORZAMOS TONO FEMENINO
+            u.lang = 'es-AR';
             u.onend = callback;
             window.speechSynthesis.speak(u);
         }
 
-        // --- LÓGICA DE PANELES ---
-        function abrirModoVoz() { document.getElementById('panel-voz').style.display = 'flex'; iniciarReconocimiento(true); }
+        function abrirModoVoz() { document.getElementById('panel-voz').style.display = 'flex'; iniciarReconocimiento(); }
         function abrirConfig() { document.getElementById('panel-config').style.display = 'flex'; }
         function cerrarPanel() { 
             document.querySelectorAll('.panel-full').forEach(p => p.style.display = 'none'); 
@@ -161,45 +140,39 @@
             detenerReconocimiento();
         }
 
-        function borrarDatosDatos() {
-            window.location.reload(); 
-        }
-
-        // --- RECONOCIMIENTO DE VOZ INMERSIVO ---
         let recognition;
-        function iniciarReconocimiento(modoContinuo) {
+        function iniciarReconocimiento() {
             if (!('webkitSpeechRecognition' in window)) return;
             recognition = new webkitSpeechRecognition();
-            recognition.lang = 'es-AR'; recognition.interimResults = false;
+            recognition.lang = 'es-AR';
             recognition.onstart = () => { document.getElementById('subtitulo-voz').innerText = "Escuchando..."; };
-            recognition.onresult = (e) => {
-                const txt = e.results[0][0].transcript;
-                detenerReconocimiento();
-                enviar(txt); // Modo inmersivo
-            };
+            recognition.onresult = (e) => { enviar(e.results[0][0].transcript); detenerReconocimiento(); };
             recognition.onend = () => { if(document.getElementById('panel-voz').style.display === 'flex') recognition.start(); };
             recognition.start();
         }
         function detenerReconocimiento() { if(recognition) { recognition.onend = null; recognition.stop(); } }
 
-        // --- ENVIAR ---
         async function enviar(textoOverride) {
             const msg = textoOverride || input.value.trim();
             if(!msg) return;
             if(!textoOverride) { addMsg(msg, 'user'); input.value = ''; }
-            if(document.getElementById('panel-voz').style.display === 'flex') document.getElementById('subtitulo-voz').innerText = "Procesando...";
-
+            
             try {
-                const res = await fetch('/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({msg}) });
+                const res = await fetch('/chat', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({msg}) 
+                });
                 const data = await res.json();
                 
                 if(!textoOverride) addMsg(data.respuesta, 'aurora');
                 hablar(data.respuesta, () => {
-                    if(document.getElementById('panel-voz').style.display === 'flex') iniciarReconocimiento(true);
+                    if(document.getElementById('panel-voz').style.display === 'flex') iniciarReconocimiento();
                 });
                 if(document.getElementById('panel-voz').style.display === 'flex') document.getElementById('subtitulo-voz').innerText = data.respuesta;
-            } catch {
-                if(!textoOverride) addMsg("Error de conexión.", 'aurora');
+            } catch (err) {
+                console.error("Error en Fetch:", err);
+                addMsg("Error de conexión. Revisa el servidor.", 'aurora');
             }
         }
 
