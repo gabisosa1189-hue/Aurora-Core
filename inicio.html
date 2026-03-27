@@ -6,58 +6,55 @@
     <title>AURORA AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #00f2ff; --aurora: #004d4d; }
+        :root { --accent: #00f2ff; --aurora: #008080; }
         body { margin: 0; padding: 0; height: 100vh; background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overflow: hidden; }
         
-        /* 🌌 EL FONDO DE LA AURORA QUE SE MUEVE */
-        .aurora-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
-            background: radial-gradient(circle at bottom, #001a1a, #000);
-            overflow: hidden;
+        /* 🌌 EL FONDO DE LA AURORA (Reforzado) */
+        .aurora-master {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -10; background: #000; overflow: hidden;
         }
-        .aurora-layer {
-            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        .aurora-blob {
+            position: absolute; top: -20%; left: -20%; width: 140%; height: 140%;
             background: radial-gradient(circle at center, var(--aurora) 0%, transparent 50%);
-            filter: blur(80px); opacity: 0.5;
-            animation: flow 15s infinite alternate ease-in-out;
+            filter: blur(80px); opacity: 0.6;
+            animation: flow 10s infinite alternate ease-in-out;
         }
         @keyframes flow {
-            0% { transform: translate(-5%, -5%) rotate(0deg); }
-            100% { transform: translate(5%, 10%) rotate(10deg); }
+            from { transform: translate(-5%, -5%) scale(1); rotate(0deg); }
+            to { transform: translate(5%, 10%) scale(1.1); rotate(10deg); }
         }
 
-        #app-container { display: flex; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; }
-        header { padding: 15px; text-align: center; border-bottom: 1px solid rgba(0, 242, 255, 0.2); backdrop-filter: blur(15px); }
-        .titulo { font-family: 'Orbitron'; letter-spacing: 6px; color: var(--accent); text-shadow: 0 0 15px var(--accent); }
+        #app-container { display: flex; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; }
+        header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(0, 242, 255, 0.2); backdrop-filter: blur(10px); }
+        .titulo { font-family: 'Orbitron'; letter-spacing: 8px; color: var(--accent); text-shadow: 0 0 15px var(--accent); }
 
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
-        .msg { max-width: 85%; padding: 14px 20px; border-radius: 20px; line-height: 1.5; backdrop-filter: blur(10px); animation: slideUp 0.3s ease; }
+        .msg { max-width: 85%; padding: 15px 20px; border-radius: 20px; line-height: 1.5; backdrop-filter: blur(15px); animation: slide 0.3s ease; }
         
-        /* DISEÑO: MENSAJES */
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.1); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 2px; }
-        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 2px; }
+        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-bottom-right-radius: 2px; }
 
-        /* DISEÑO: INPUT CON GLOW */
-        .input-area { padding: 20px; }
+        .input-area { padding: 20px; background: transparent; }
         .input-container { 
-            background: rgba(0, 0, 0, 0.4); border: 1px solid var(--accent); 
-            border-radius: 30px; display: flex; align-items: center; padding: 5px 15px;
+            background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); 
+            border-radius: 35px; display: flex; align-items: center; padding: 5px 20px;
             box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
         }
-        input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; }
+        input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; }
         
-        /* DISEÑO: MICRÓFONO */
         #btn-mic { 
-            background: rgba(0, 242, 255, 0.15); border: 1px solid var(--accent); color: var(--accent);
-            border-radius: 50%; width: 44px; height: 44px; cursor: pointer; transition: 0.3s; margin-right: 10px;
+            background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent); color: var(--accent);
+            border-radius: 50%; width: 45px; height: 45px; cursor: pointer; transition: 0.3s; margin-right: 10px;
         }
         #btn-mic:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--accent); }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div class="aurora-container"><div class="aurora-layer"></div></div>
+    <div class="aurora-master"><div class="aurora-blob"></div></div>
+    
     <div id="app-container">
         <header><div class="titulo">AURORA</div></header>
         <div id="chat-window">
@@ -67,7 +64,7 @@
             <div class="input-container">
                 <button id="btn-mic">🎤</button>
                 <input type="text" id="user-input" placeholder="Escribí aquí..." autocomplete="off">
-                <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.6rem; cursor:pointer;">➤</button>
+                <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.8rem; cursor:pointer;">➤</button>
             </div>
         </div>
     </div>
@@ -109,7 +106,7 @@
                 addMsg(data.respuesta, 'aurora');
                 hablar(data.respuesta);
             } catch (err) {
-                addMsg("Se cortó la conexión, che. Revisá Render.", 'aurora');
+                addMsg("Se cortó la conexión. Revisá Render.", 'aurora');
             }
         }
 
