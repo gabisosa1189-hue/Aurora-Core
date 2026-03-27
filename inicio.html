@@ -76,7 +76,7 @@
     <div id="login-overlay">
         <div class="login-card">
             <h1 class="titulo-login">BIENVENIDO A AURORA</h1>
-            <p class="subtitulo-login">Seleccione su modalidad de acceso para continuar</p>
+            <p class="subtitulo-login" id="subtitulo-auth">Seleccione su modalidad de acceso para continuar</p>
             
             <div id="main-auth">
                 <button onclick="loginGoogle()" class="btn-auth btn-google">
@@ -97,7 +97,11 @@
             <div id="email-form" style="display:none; flex-direction:column; gap:12px; animation: slide 0.4s ease;">
                 <input type="email" id="email-input" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:15px; color:#fff;" placeholder="Email">
                 <input type="password" id="pass-input" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:15px; color:#fff;" placeholder="Contraseña">
-                <button onclick="ejecutarAuth()" style="background:var(--accent); color:#000; padding:16px; border-radius:15px; border:none; font-weight:600; cursor:pointer;">Ingresar</button>
+                
+                <button id="auth-btn-main" onclick="ejecutarAuth()" style="background:var(--accent); color:#000; padding:16px; border-radius:15px; border:none; font-weight:600; cursor:pointer;">Ingresar</button>
+                
+                <p id="toggle-auth-text" onclick="cambiarModoAuth()" style="color:rgba(255,255,255,0.4); font-size:0.8rem; cursor:pointer; margin-top:5px;">¿No tienes cuenta? Regístrate aquí</p>
+                
                 <p onclick="volverInicio()" style="color:rgba(255,255,255,0.5); font-size:0.8rem; cursor:pointer; margin-top:10px; text-decoration: underline;">← Volver</p>
             </div>
         </div>
@@ -147,13 +151,40 @@
             setTimeout(() => { clearInterval(t); }, 3000);
         }
 
+        let modoRegistro = false;
+
+        function cambiarModoAuth() {
+            modoRegistro = !modoRegistro;
+            const btn = document.getElementById('auth-btn-main');
+            const link = document.getElementById('toggle-auth-text');
+            const subtitulo = document.getElementById('subtitulo-auth');
+            
+            if(modoRegistro) {
+                btn.innerText = "Crear Cuenta";
+                link.innerText = "¿Ya tienes cuenta? Inicia sesión";
+                subtitulo.innerText = "Complete los datos para registrarse en AURORA";
+            } else {
+                btn.innerText = "Ingresar";
+                link.innerText = "¿No tienes cuenta? Regístrate aquí";
+                subtitulo.innerText = "Seleccione su modalidad de acceso para continuar";
+            }
+        }
+
         function mostrarEmail() { document.getElementById('main-auth').style.display='none'; document.getElementById('email-form').style.display='flex'; }
         function volverInicio() { document.getElementById('main-auth').style.display='flex'; document.getElementById('email-form').style.display='none'; }
 
         async function ejecutarAuth() {
             const email = document.getElementById('email-input').value;
             const pass = document.getElementById('pass-input').value;
-            try { await firebase.auth().signInWithEmailAndPassword(email, pass); } 
+            if(!email || !pass) return alert("Por favor, complete los campos.");
+
+            try { 
+                if(modoRegistro) {
+                    await firebase.auth().createUserWithEmailAndPassword(email, pass);
+                } else {
+                    await firebase.auth().signInWithEmailAndPassword(email, pass); 
+                }
+            } 
             catch(e) { alert("Error: " + e.message); }
         }
 
