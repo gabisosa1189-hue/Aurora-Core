@@ -1,9 +1,13 @@
+import os, requests, base64
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import os, requests, base64
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
+
+# 🔑 LLAVES DESDE RENDER
+OPENAI_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
+ELEVEN_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
 
 @app.route('/')
 def index():
@@ -14,53 +18,39 @@ def chat():
     try:
         data = request.json
         u_msg = data.get('msg', '').strip()
-        
-        # 🔑 LLAVES DESDE RENDER
-        api_key = os.environ.get("GEMINI_API_KEY", "").strip()
-        el_key = os.environ.get("ELEVENLABS_API_KEY", "").strip()
 
-        if not api_key:
-            return jsonify({"respuesta": "Falta GEMINI_API_KEY en Render.", "audio": None})
+        if not OPENAI_KEY:
+            return jsonify({"respuesta": "Falta la llave OPENAI_API_KEY en Render.", "audio": None})
 
-        # 🚀 LA DIRECCIÓN QUE NO FALLA EN 2026
-        # Usamos v1 y el modelo 2.0 que es el estándar actual
-        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={api_key}"
-        
-        payload = {"contents": [{"parts": [{"text": u_msg}]}]}
-        
-        res = requests.post(url, json=payload, timeout=15)
-        
-        # SI DA 404, VAMOS A BUSCAR QUÉ MODELOS TENÉS DISPONIBLES
-        if res.status_code == 404:
-            list_url = f"https://generativelanguage.googleapis.com/v1/models?key={api_key}"
-            models_res = requests.get(list_url).json()
-            return jsonify({
-                "respuesta": f"Error 404: Google dice que ese modelo no existe. Modelos que podés usar: {models_res}",
-                "audio": None
-            })
+        # 🚀 CEREBRO: CHATGPT (GPT-4o-mini)
+        url = "https://api.openai.com/v1/chat/completions"
+        headers = {"Authorization": f"Bearer {OPENAI_KEY}", "Content-Type": "application/json"}
+        payload = {
+            "model": "gpt-4o-mini",
+            "messages": [
+                {"role": "system", "content": "Sos Aurora, una IA de Mendoza. Hablás con tonada mendocina, sos muy amable y servicial con Gabriel."},
+                {"role": "user", "content": u_msg}
+            ]
+        }
 
-        if res.status_code != 200:
-            return jsonify({"respuesta": f"Google falló ({res.status_code}): {res.text}", "audio": None})
-            
-        txt = res.json()['candidates'][0]['content']['parts'][0]['text']
+        res = requests.post(url, json=payload, headers=headers, timeout=15)
+        txt = res.json()['choices'][0]['message']['content']
 
-        # --- VOZ ---
+        # --- VOZ: ELEVENLABS ---
         audio_b64 = None
-        if el_key:
-            voice_id = "EXAVITQu4vr4xnSDxMaL"
+        if ELEVEN_KEY:
             tts_res = requests.post(
-                f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
+                f"https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL",
                 json={"text": txt, "model_id": "eleven_multilingual_v2"},
-                headers={"xi-api-key": el_key},
+                headers={"xi-api-key": ELEVEN_KEY},
                 timeout=15
             )
             if tts_res.status_code == 200:
                 audio_b64 = base64.b64encode(tts_res.content).decode('utf-8')
 
         return jsonify({"respuesta": txt, "audio": audio_b64})
-        
     except Exception as e:
-        return jsonify({"respuesta": f"Error crítico: {str(e)}", "audio": None})
+        return jsonify({"respuesta": f"Error: {str(e)}", "audio": None})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
