@@ -9,21 +9,22 @@ memoria_global = []
 
 @app.route('/')
 def index():
-    # Intentamos cargar inicio.html. Asegurate que en GitHub esté EXACTO así.
     try:
         return send_from_directory(os.getcwd(), 'inicio.html')
-    except Exception as e:
-        return f"Error: No encontré 'inicio.html'. Archivos en carpeta: {os.listdir('.')}"
+    except:
+        return "Error: No encontré inicio.html. Revisá el nombre en GitHub."
 
 @app.route('/chat', methods=['POST'])
 def chat():
     global memoria_global
     data = request.json
     texto_usuario = data.get('msg', '')
+    
+    # 🚨 ASEGURATE DE QUE ESTA VARIABLE ESTÉ EN RENDER 🚨
     API_KEY = os.environ.get("GEMINI_API_KEY")
     
-    # URL v1beta para evitar el 404 de Google
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}"
+    # Usamos la v1 estable para evitar caprichos de Google
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     try:
         esencia = alma.obtener_esencia()
@@ -42,18 +43,24 @@ def chat():
             "generationConfig": {"temperature": 0.7, "maxOutputTokens": 600}
         }
         
-        res = requests.post(url, json=payload, timeout=25)
-        res.raise_for_status()
-        respuesta_ai = res.json()['candidates'][0]['content']['parts'][0]['text']
+        res = requests.post(url, json=payload, timeout=20)
+        
+        # Si Google falla, queremos saber por qué
+        if res.status_code != 200:
+            return jsonify({"respuesta": f"Error de Google {res.status_code}: {res.text[:50]}"})
+            
+        resultado = res.json()
+        respuesta_ai = resultado['candidates'][0]['content']['parts'][0]['text']
         
         memoria_global.append({"role": "user", "content": texto_usuario})
         memoria_global.append({"role": "assistant", "content": respuesta_ai})
         return jsonify({"respuesta": respuesta_ai})
 
     except Exception as e:
-        return jsonify({"respuesta": "Perdón, tuve un hipo en la conexión. ¿Me repetís?"})
+        # Esto nos dirá en el log de Render qué pasó exactamente
+        print(f"ERROR CRÍTICO: {str(e)}")
+        return jsonify({"respuesta": "Gabriel, mi conexión interna falló. ¿Revisaste la API Key?"})
 
 if __name__ == '__main__':
-    # Render usa el puerto de la variable de entorno
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
