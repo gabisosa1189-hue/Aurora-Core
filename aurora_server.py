@@ -19,7 +19,7 @@ def chat():
     
     API_KEY = os.environ.get("GEMINI_API_KEY")
     
-    # URL V1 ESTABLE: Aquí es donde vive el modelo ahora. Sin 404.
+    # URL V1 ESTABLE: La dirección oficial que no falla
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     try:
@@ -33,20 +33,16 @@ def chat():
         
         historial.append({"role": "user", "parts": [{"text": texto_usuario}]})
 
-        # Estructura oficial para v1
         payload = {
             "contents": historial,
             "systemInstruction": {"parts": [{"text": contexto}]},
-            "generationConfig": {
-                "temperature": 0.7,
-                "maxOutputTokens": 600
-            }
+            "generationConfig": {"temperature": 0.7, "maxOutputTokens": 600}
         }
         
         res = requests.post(url, json=payload, timeout=25)
         
         if res.status_code != 200:
-            return jsonify({"respuesta": f"Google Error {res.status_code}. Revisá que la API KEY esté bien pegada en Render."})
+            return jsonify({"respuesta": f"Google Error {res.status_code}. Revisá la llave en Render."})
             
         resultado = res.json()
         respuesta_ai = resultado['candidates'][0]['content']['parts'][0]['text']
