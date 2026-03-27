@@ -10,7 +10,8 @@ memoria_global = []
 
 @app.route('/')
 def index(): 
-    return send_from_directory(os.getcwd(), 'index.html')
+    # CAMBIO CLAVE: Ahora buscamos inicio.html para forzar la recarga del navegador
+    return send_from_directory(os.getcwd(), 'inicio.html')
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -22,7 +23,6 @@ def chat():
     API_KEY = os.environ.get("GEMINI_API_KEY")
     
     # 2. URL DEFINITIVA (v1beta + gemini-1.5-flash-latest)
-    # Esta es la dirección que acepta los modelos más nuevos sin tirar 404
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}"
     
     try:
@@ -51,9 +51,8 @@ def chat():
         # 4. Petición a Google
         res = requests.post(url, json=payload, timeout=25)
         
-        # Si Google nos da un error, lo mandamos al chat para verlo
         if res.status_code != 200:
-            return jsonify({"respuesta": f"DEBUG: Error de Google {res.status_code}. Mensaje: {res.text[:100]}"})
+            return jsonify({"respuesta": f"DEBUG: Error de Google {res.status_code}."})
             
         resultado = res.json()
         respuesta_ai = resultado['candidates'][0]['content']['parts'][0]['text']
@@ -64,7 +63,7 @@ def chat():
 
     except Exception as e:
         print(f"Error: {e}")
-        respuesta_ai = "Perdón, se me cortó la conexión un segundo. ¿Me repetís?"
+        respuesta_ai = "Perdón, tuve un pequeño problema de conexión. ¿Me repetís eso?"
 
     return jsonify({"respuesta": respuesta_ai})
 
