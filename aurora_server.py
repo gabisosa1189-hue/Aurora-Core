@@ -15,33 +15,43 @@ def chat():
         data = request.json
         u_msg = data.get('msg', '').strip()
         
-        # 🔎 REVISIÓN MÉDICA DE LA LLAVE
-        # Buscamos la llave y le sacamos cualquier espacio o comilla rara
-        raw_key = os.environ.get("GEMINI_API_KEY", "")
-        gemini_key = raw_key.strip().replace('"', '').replace("'", "")
+        # 🔑 BUSCAMOS LAS LLAVES (Ya sabemos que Render las ve)
+        gemini_key = os.environ.get("GEMINI_API_KEY", "").strip().replace('"', '').replace("'", "")
+        eleven_key = os.environ.get("ELEVENLABS_API_KEY", "").strip().replace('"', '').replace("'", "")
 
-        # 🚨 SI ESTÁ VACÍA, TE AVISO ANTES DE IR A GOOGLE
         if not gemini_key:
-            return jsonify({
-                "respuesta": "❌ ERROR CRÍTICO: El servidor no ve la llave. Render no la está pasando. Revisá el nombre en la pestaña Environment.",
-                "audio": None
-            })
+            return jsonify({"respuesta": "❌ Render no encuentra la llave. Revisá la pestaña Environment.", "audio": None})
 
-        # 🚀 LLAMADA A GOOGLE (Versión estable)
-        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
-        params = {'key': gemini_key}
-        payload = {"contents": [{"parts": [{"text": u_msg}]}]}
+        # 🚀 LA DIRECCIÓN CORRECTA (v1beta)
+        # Cambiamos v1 por v1beta para que no dé Error 404
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
         
-        res = requests.post(url, json=payload, params=params, timeout=15)
+        payload = {"contents": [{"parts": [{"text": u_msg}]}]}
+        res = requests.post(url, json=payload, timeout=15)
         
         if res.status_code != 200:
             return jsonify({"respuesta": f"⚠️ Google dice: {res.text}", "audio": None})
             
         txt = res.json()['candidates'][0]['content']['parts'][0]['text']
-        return jsonify({"respuesta": txt, "audio": None}) # Probemos primero el texto
+
+        # --- VOZ (ELEVENLABS) ---
+        audio_b64 = None
+        if eleven_key:
+            voice_id = "EXAVITQu4vr4xnSDxMaL"
+            tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+            tts_res = requests.post(
+                tts_url, 
+                json={"text": txt, "model_id": "eleven_multilingual_v2"}, 
+                headers={"xi-api-key": eleven_key}, 
+                timeout=15
+            )
+            if tts_res.status_code == 200:
+                audio_b64 = base64.b64encode(tts_res.content).decode('utf-8')
+
+        return jsonify({"respuesta": txt, "audio": audio_b64})
         
     except Exception as e:
-        return jsonify({"respuesta": f"Error del servidor: {str(e)}", "audio": None})
+        return jsonify({"respuesta": f"Error crítico: {str(e)}", "audio": None})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
