@@ -87,29 +87,33 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 FUNCIÓN HABLAR: RECALIBRACIÓN DEFINITIVA
+        // 🚨 FUNCIÓN HABLAR: MOTOR DE DULZURA INTELIGENTE
         function hablar(t) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
             u.lang = 'es-AR';
             
-            const voices = window.speechSynthesis.getVoices();
-            // Buscamos Sabina (Apple), Helena (Microsoft) o Luciana (Google Latam)
-            const vozOriginal = voices.find(v => 
-                (v.name.includes('Sabina') || v.name.includes('Helena') || 
-                 v.name.includes('Luciana') || v.name.includes('Google español')) && v.lang.includes('es')
-            );
+            // Función interna para buscar la mejor voz
+            const setBestVoice = () => {
+                const voices = window.speechSynthesis.getVoices();
+                const vozDulce = voices.find(v => 
+                    (v.name.includes('Sabina') || v.name.includes('Helena') || 
+                     v.name.includes('Luciana') || v.name.includes('Google español')) && v.lang.includes('es')
+                );
+                if (vozDulce) u.voice = vozDulce;
+            };
+
+            setBestVoice();
             
-            if (vozOriginal) u.voice = vozOriginal;
-            
-            // CONFIGURACIÓN ORIGINAL (TECNOLÓGICA)
-            u.pitch = 1.6;  
-            u.rate = 1.0;  
+            // CONFIGURACIÓN HUMANA
+            u.pitch = 1.0;  // Tono natural, nada de chillidos
+            u.rate = 0.95;  // Velocidad pausada para mayor dulzura
             u.volume = 1.0;
+            
             window.speechSynthesis.speak(u);
         }
 
-        // Obliga al navegador a refrescar las voces
+        // Refresco de voces automático
         window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
         function exterminarMail() {
@@ -147,13 +151,10 @@
                     document.getElementById('app-container').style.display = "flex";
                     setTimeout(() => {
                         document.getElementById('app-container').style.opacity = "1";
-                        
                         const nombreUsuario = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
                         const m = `Hola, ${nombreUsuario}. ¿Cómo puedo ayudarte hoy?`;
-                        
                         document.getElementById('saludo-ia').innerText = m;
                         hablar(m);
-
                         const chatInp = document.getElementById('chat-terminal');
                         chatInp.removeAttribute('readonly'); 
                         chatInp.placeholder = "Escribe a Aurora...";
