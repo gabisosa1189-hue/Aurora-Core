@@ -12,37 +12,51 @@
         :root { --accent: #00f2ff; }
         html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; }
         
-        /* Video de fondo siempre activo */
-        #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover !important; z-index: 1; opacity: 1; }
+        #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover !important; z-index: 1; }
 
-        /* Pantalla de Login con desenfoque de cristal */
+        /* PANTALLA DE LOGIN DE CRISTAL */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(20px); /* Desenfoque que deja ver la aurora atrás */
+            backdrop-filter: blur(20px);
             z-index: 9999; display: flex; align-items: center; justify-content: center;
             transition: all 0.8s ease-in-out;
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.05); padding: 40px 20px; border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05); padding: 40px 25px; border-radius: 35px;
             border: 1px solid rgba(0, 242, 255, 0.3); text-align: center;
-            max-width: 380px; width: 85%; box-shadow: 0 0 50px rgba(0, 242, 255, 0.2);
+            max-width: 400px; width: 88%; box-shadow: 0 0 50px rgba(0, 242, 255, 0.2);
         }
 
-        .titulo-login { font-family: 'Orbitron', sans-serif; letter-spacing: 5px; font-size: 1.1rem; margin-bottom: 5px; }
-        .subtitulo-login { font-weight: 300; font-size: 0.9rem; margin-bottom: 35px; color: rgba(255, 255, 255, 0.6); }
+        .titulo-login { font-family: 'Orbitron', sans-serif; letter-spacing: 4px; font-size: 1.2rem; margin-bottom: 8px; color: #fff; text-transform: uppercase; }
+        .subtitulo-login { font-weight: 300; font-size: 1rem; margin-bottom: 35px; color: rgba(255, 255, 255, 0.7); }
 
-        /* Botón de Google Profesional */
+        /* Botones Base */
         .btn-auth {
-            width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 15px; border: none;
-            background: #fff; color: #000; font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
-            transition: 0.3s; font-size: 1rem;
+            width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 18px; border: none;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            transition: 0.3s ease; font-size: 1rem;
         }
-        .btn-auth:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
 
-        /* App oculta hasta el login */
+        /* Botón de Google */
+        .btn-google { background: #ffffff; color: #000; }
+        .btn-google:hover { background: #f1f1f1; transform: scale(1.02); }
+
+        /* Botón de Email (Estilo Cristal) */
+        .btn-email { 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            color: #fff; 
+        }
+        .btn-email:hover { 
+            background: rgba(0, 242, 255, 0.2); 
+            border-color: var(--accent); 
+            transform: scale(1.02);
+        }
+
+        /* Resto de la interfaz (oculta al inicio) */
         #app-container { display: none; flex-direction: column; height: 100%; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1s; }
         header { padding: 25px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
         .titulo { font-family: 'Orbitron', sans-serif; letter-spacing: 12px; font-size: 1.4rem; }
@@ -63,10 +77,10 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <h1 class="titulo-login">AURORA CORP</h1>
-            <p class="subtitulo-login">Acceso seguro al sistema neuronal</p>
+            <h1 class="titulo-login">BIENVENIDO A AURORA</h1>
+            <p class="subtitulo-login">¿Cómo desea ingresar?</p>
             
-            <button onclick="loginGoogle()" class="btn-auth">
+            <button onclick="loginGoogle()" class="btn-auth btn-google">
                 <svg width="20" height="20" viewBox="0 0 18 18">
                     <path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.85 2.22c1.67-1.53 2.63-3.8 2.63-6.55z" fill="#4285F4"/>
                     <path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.85-2.22c-.79.53-1.8.85-3.11.85-2.39 0-4.41-1.61-5.14-3.78H.9v2.33C2.38 15.94 5.47 18 9 18z" fill="#34A853"/>
@@ -75,12 +89,17 @@
                 </svg>
                 Continuar con Google
             </button>
+
+            <button onclick="loginEmail()" class="btn-auth btn-email">
+                <span>📧</span>
+                Correo electrónico
+            </button>
         </div>
     </div>
 
     <div id="app-container">
         <header><div class="titulo">AURORA</div></header>
-        <div id="chat-window"><div class="msg aurora" id="saludo-ia">Conectando...</div></div>
+        <div id="chat-window"><div class="msg aurora" id="saludo-ia">Estableciendo conexión...</div></div>
         <div class="input-area">
             <div class="input-container">
                 <button style="background:none; border:none; color:var(--accent); font-size:1.2rem;">🎤</button>
@@ -94,7 +113,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <script>
-        // TUS DATOS REALES DE AURORA-AI-OFICIA
         const firebaseConfig = {
             apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo",
             authDomain: "aurora-ai-oficia.firebaseapp.com",
@@ -108,12 +126,19 @@
 
         function loginGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).catch(e => alert("Error: " + e.message));
+            firebase.auth().signInWithPopup(provider).catch(e => alert(e.message));
+        }
+
+        function loginEmail() {
+            const email = prompt("Ingrese su correo:");
+            const pass = prompt("Ingrese su contraseña:");
+            if(email && pass) {
+                firebase.auth().signInWithEmailAndPassword(email, pass).catch(e => alert("Error: " + e.message));
+            }
         }
 
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                // LOGUEADO: Animación para entrar
                 document.getElementById('login-overlay').style.opacity = "0";
                 setTimeout(() => {
                     document.getElementById('login-overlay').style.display = "none";
@@ -121,9 +146,8 @@
                     setTimeout(() => document.getElementById('app-container').style.opacity = "1", 50);
                     if(!window.saludoOk) {
                         window.saludoOk = true;
-                        const m = "Bienvenido Gabriel. Aurora está lista.";
-                        document.getElementById('saludo-ia').innerText = m;
-                        hablar(m);
+                        document.getElementById('saludo-ia').innerText = "Bienvenido Gabriel. Acceso concedido a Aurora.";
+                        hablar("Bienvenido Gabriel. Acceso concedido a Aurora.");
                     }
                 }, 800);
             }
@@ -149,7 +173,6 @@
             const d = document.createElement('div'); d.className = `msg ${cl}`; d.innerText = t;
             chatWin.appendChild(d); chatWin.scrollTo(0, chatWin.scrollHeight);
         }
-
         input.addEventListener('keypress', (e) => { if(e.key === 'Enter') enviar(); });
     </script>
 </body>
