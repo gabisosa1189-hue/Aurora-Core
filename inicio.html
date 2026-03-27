@@ -11,8 +11,9 @@
     <style>
         :root { --accent: #00f2ff; }
         
+        /* 🚨 AJUSTE CELULAR: 100vh para que no se tranque la pantalla */
         html, body { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
+            margin: 0; padding: 0; width: 100%; height: 100vh; 
             overflow: hidden; background-color: #000; 
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff;
         }
@@ -27,13 +28,13 @@
             object-fit: cover !important; 
             object-position: center center !important; 
             z-index: -999 !important; 
-            opacity: 0.85; /* Un poquito más claro para que se luzca */
+            opacity: 0.85; 
             pointer-events: none;
         }
 
         #app-container { display: flex; flex-direction: column; height: 100%; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; }
         
-        /* HEADER FORMAL Y LIMPIO */
+        /* HEADER FORMAL */
         header { padding: 25px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: transparent; backdrop-filter: blur(5px); }
         .titulo { font-family: 'Orbitron', sans-serif; letter-spacing: 12px; color: #fff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.5); font-size: 1.4rem; font-weight: 500; }
 
