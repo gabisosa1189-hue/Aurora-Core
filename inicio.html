@@ -9,110 +9,114 @@
         :root { --accent: #00f2ff; --bg-glass: rgba(255, 255, 255, 0.03); --border-glass: rgba(255, 255, 255, 0.08); }
         body { margin: 0; padding: 0; height: 100vh; background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overflow: hidden; }
         
-        /* Eliminamos el telón negro para asegurar que la app cargue visualmente de inmediato */
-        
-        #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.4); }
-        
+        /* 1. EFECTO AURORA DE FONDO */
+        .aurora-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: radial-gradient(circle at 50% -20%, #004d4d, transparent); opacity: 0.5; filter: blur(100px); animation: auroraMove 10s infinite alternate; }
+        @keyframes auroraMove { from { transform: translateX(-10%); } to { transform: translateX(10%); } }
+
+        #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.3); }
         #app-container { display: flex; flex-direction: column; height: 100vh; max-width: 800px; margin: 0 auto; position: relative; }
         
-        header { padding: 15px; text-align: center; border-bottom: 1px solid var(--border-glass); backdrop-filter: blur(10px); position: relative; }
-        .titulo { font-family: 'Orbitron'; letter-spacing: 6px; font-size: 1.2rem; color: var(--accent); }
+        header { padding: 15px; text-align: center; border-bottom: 1px solid var(--border-glass); backdrop-filter: blur(10px); }
+        .titulo { font-family: 'Orbitron'; letter-spacing: 6px; font-size: 1.2rem; color: var(--accent); text-shadow: 0 0 10px var(--accent); }
         
+        /* 2. BOTÓN DE VOZ MEJORADO */
         #btn-modo-voz {
             position: absolute; top: 50%; left: 15px; transform: translateY(-50%);
-            width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border-glass);
-            background: var(--bg-glass); color: var(--accent);
-            font-family: 'Orbitron'; font-size: 1.3rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--accent);
+            background: rgba(0, 242, 255, 0.1); color: var(--accent);
+            font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); transition: 0.3s;
         }
+        #btn-modo-voz:hover { transform: translateY(-50%) scale(1.1); box-shadow: 0 0 25px var(--accent); }
 
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
-        #chat-window::-webkit-scrollbar { display: none; }
-
         .msg { max-width: 85%; padding: 14px 20px; border-radius: 20px; line-height: 1.5; backdrop-filter: blur(15px); border: 1px solid var(--border-glass); animation: slideUp 0.3s ease-out; }
-        .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.02); border-bottom-left-radius: 2px; }
-        .user { align-self: flex-end; background: rgba(0, 242, 255, 0.05); border-bottom-right-radius: 2px; border-color: rgba(0, 242, 255, 0.1); }
+        .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.03); border-bottom-left-radius: 2px; }
+        .user { align-self: flex-end; background: rgba(0, 242, 255, 0.08); border-bottom-right-radius: 2px; border-color: rgba(0, 242, 255, 0.2); }
 
-        .input-area { padding: 10px 20px 15px 20px; background: transparent; display: flex; flex-direction: column; align-items: center;}
-        .input-container { 
-            width: 100%; background: var(--bg-glass); backdrop-filter: blur(25px);
-            border-radius: 30px; border: 1px solid var(--border-glass); 
-            display: flex; align-items: center; padding: 5px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
+        /* 3. BURBUJA DE PENSANDO */
+        .dot { height: 6px; width: 6px; background-color: var(--accent); border-radius: 50%; display: inline-block; animation: dotPulse 1.5s infinite ease-in-out; margin: 0 2px; }
+        @keyframes dotPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        .input-area { padding: 15px 20px; background: transparent; display: flex; flex-direction: column; align-items: center;}
+        .input-container { width: 100%; background: var(--bg-glass); backdrop-filter: blur(25px); border-radius: 30px; border: 1px solid var(--border-glass); display: flex; align-items: center; padding: 5px 15px; }
+        input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; }
+        .btn-enviar { background: transparent; border: none; color: var(--accent); cursor: pointer; font-size: 1.4rem; }
+
+        .panel-full { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); backdrop-filter: blur(20px); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .circulo-pulso { width: 120px; height: 120px; border-radius: 50%; border: 2px solid var(--accent); animation: pulso 2s infinite; }
+        @keyframes pulso { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
         
-        input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; font-family: inherit; }
-        .btn-enviar { background: transparent; border: none; color: var(--accent); cursor: pointer; padding: 8px 10px; font-size: 1.3rem; }
-
-        .disclaimer { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 10px; text-align: center; }
-
-        .panel-full { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .circulo-pulso { width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, var(--accent) 0%, transparent 70%); animation: pulso 2s infinite; }
-        @keyframes pulso { 0%, 100% { transform: scale(0.9); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } }
-        
-        .btn-cerrar { background: transparent; border: 1px solid var(--border-glass); color: #fff; padding: 10px 20px; border-radius: 20px; margin-top: 40px; cursor: pointer; }
-
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
+    <div class="aurora-bg"></div>
     <video autoplay muted loop playsinline id="bg-video"><source src="fondo.mp4" type="video/mp4"></video>
 
-    <button id="btn-modo-voz" onclick="abrirModoVoz()">A</button>
+    <button id="btn-modo-voz" onclick="abrirModoVoz()">🎤</button>
 
     <div id="panel-voz" class="panel-full">
         <div class="circulo-pulso"></div>
-        <h2 style="font-family:'Orbitron'; color:var(--accent); margin-top:20px;">AURORA LIVE</h2>
-        <p id="subtitulo-voz">Escuchando...</p>
-        <button class="btn-cerrar" onclick="cerrarPanel()">CERRAR</button>
+        <h2 style="font-family:'Orbitron'; color:var(--accent); margin-top:30px;">AURORA LIVE</h2>
+        <p id="subtitulo-voz">Te escucho...</p>
+        <button onclick="cerrarPanel()" style="background:transparent; color:#fff; border:1px solid #444; padding:10px 20px; border-radius:20px; margin-top:40px; cursor:pointer;">CERRAR</button>
     </div>
 
     <div id="app-container">
         <header><div class="titulo">AURORA</div></header>
         <div id="chat-window">
-            <div class="msg aurora">Hola. Soy Aurora. ¿En qué puedo ayudarte hoy?</div>
+            <div class="msg aurora">Hola Gabriel. Soy Aurora. ¿En qué puedo ayudarte?</div>
         </div>
         
         <div class="input-area">
+            <div id="typing-indicator" style="display:none; margin-bottom:10px;">
+                <span class="dot" style="animation-delay: 0s"></span>
+                <span class="dot" style="animation-delay: 0.2s"></span>
+                <span class="dot" style="animation-delay: 0.4s"></span>
+            </div>
             <div class="input-container">
-                <input type="text" id="user-input" placeholder="Escribe un mensaje..." autocomplete="off">
+                <input type="text" id="user-input" placeholder="Escribí un mensaje..." autocomplete="off">
                 <button class="btn-enviar" onclick="enviar()">➤</button>
             </div>
-            <div class="disclaimer">Aurora AI v1.0 | Mendoza, Argentina</div>
         </div>
     </div>
 
     <script>
         const chatWin = document.getElementById('chat-window');
         const input = document.getElementById('user-input');
-        let vozFemenina = null;
+        const typing = document.getElementById('typing-indicator');
 
-        function cargarVoces() {
-            const voces = window.speechSynthesis.getVoices();
-            vozFemenina = voces.find(v => v.lang.startsWith('es') && (v.name.includes('Google') || v.name.includes('female') || v.name.includes('Paulina') || v.name.includes('Helena')));
-            if (!vozFemenina) vozFemenina = voces.find(v => v.lang.startsWith('es'));
-        }
-        
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = cargarVoces;
-            cargarVoces();
-        }
-
+        // VOZ BLINDADA: Forzamos la búsqueda de voces femeninas
         function hablar(texto, callback) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(texto);
-            if(vozFemenina) u.voice = vozFemenina;
-            u.pitch = 1.3;
+            const voces = window.speechSynthesis.getVoices();
+            
+            // Buscamos voz femenina o de Google
+            let voz = voces.find(v => v.lang.startsWith('es') && (v.name.includes('Google') || v.name.includes('female') || v.name.includes('Helena') || v.name.includes('Paulina') || v.name.includes('Lucia')));
+            if (!voz) voz = voces.find(v => v.lang.startsWith('es'));
+            
+            if(voz) u.voice = voz;
+            u.pitch = 1.5; // Tono más agudo para que suene femenino
+            u.rate = 1.0;
             u.lang = 'es-AR';
             u.onend = callback;
             window.speechSynthesis.speak(u);
         }
+        
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {}; 
+        }
 
-        async function enviar(textoOverride) {
-            const msg = textoOverride || input.value.trim();
+        async function enviar() {
+            const msg = input.value.trim();
             if(!msg) return;
 
-            if(!textoOverride) { addMsg(msg, 'user'); input.value = ''; }
-            
+            addMsg(msg, 'user');
+            input.value = '';
+            typing.style.display = 'block'; // Mostramos que está pensando
+
             try {
                 const res = await fetch('/chat', { 
                     method: 'POST', 
@@ -120,10 +124,12 @@
                     body: JSON.stringify({msg}) 
                 });
                 const data = await res.json();
+                typing.style.display = 'none';
                 addMsg(data.respuesta, 'aurora');
                 hablar(data.respuesta);
             } catch (err) {
-                addMsg("Error de conexión. Inténtalo de nuevo.", 'aurora');
+                typing.style.display = 'none';
+                addMsg("Error de conexión. Revisá Render.", 'aurora');
             }
         }
 
@@ -133,7 +139,6 @@
             d.innerText = t;
             chatWin.appendChild(d);
             chatWin.scrollTo(0, chatWin.scrollHeight);
-            return d;
         }
 
         function abrirModoVoz() { document.getElementById('panel-voz').style.display = 'flex'; }
