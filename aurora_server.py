@@ -1,66 +1,57 @@
 from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
 import os, requests, datetime
 
-# Intentamos importar tus archivos de lógica (alma, internet, etc.)
-try:
-    import alma
-except ImportError:
-    alma = None
+app = Flask(__name__, static_folder='.')
 
-# Creamos la App y le decimos la carpeta donde están los archivos
-app = Flask(__name__, static_folder='.', static_url_path='')
-CORS(app)
+# MEMORIA TEMPORAL
+memoria_global = []
 
-memoria_global = [] 
+# 1. RUTA PARA EL VIDEO Y ARCHIVOS (INMORTAL)
+@app.route('/<path:path>')
+def servirlos(path):
+    return send_from_directory('.', path)
 
-# RUTA PARA EL HOME (Muestra el inicio.html)
+# 2. RUTA PRINCIPAL
 @app.route('/')
 def index():
-    return send_from_directory(os.getcwd(), 'inicio.html')
+    return send_from_directory('.', 'inicio.html')
 
-# 🚨 ESTA ES LA RUTA QUE FALTABA: Entrega el video y CUALQUIER archivo de la carpeta
-@app.route('/<path:path>')
-def send_static(path):
-    # Si le piden un archivo, lo busca en la carpeta de Render y lo entrega
-    return send_from_directory(os.getcwd(), path)
-
+# 3. EL CHAT CON DETECTOR DE ERRORES
 @app.route('/chat', methods=['POST'])
 def chat():
     global memoria_global
     try:
         data = request.json
         u_msg = data.get('msg', '').strip()
-        API_KEY = os.environ.get("GEMINI_API_KEY") # 🚨 ASEGURATE DE PONERLA EN RENDER
         
-        if not API_KEY:
-            return jsonify({"respuesta": "Falta la API KEY en Render."})
+        # BUSCAMOS LA LLAVE
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            return jsonify({"respuesta": "ERROR: Falta la GEMINI_API_KEY en Render (Environment Variables)."})
 
-        # Buscador de internet (puedes volver a integrar 'internet.py' aquí)
-        busqueda_info = "" 
-        # Si tienes 'internet.py', agrégalo aquí
-
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
         
-        esencia = alma.obtener_esencia() if alma else "Eres Aurora, una IA de Mendoza."
-        contexto = f"{esencia}\nHora: {datetime.datetime.now().strftime('%H:%M')}\nInfo: {busqueda_info}"
+        # CONTEXTO SIMPLE PARA QUE NO FALLE NADA
+        contexto = f"Eres Aurora, una IA avanzada de Mendoza. Hora actual: {datetime.datetime.now().strftime('%H:%M')}"
         
-        historial = [{"role": "user" if m["role"] == "user" else "model", "parts": [{"text": m["content"]}]} for m in memoria_global[-6:]]
-        historial.append({"role": "user", "parts": [{"text": u_msg}]})
+        payload = {
+            "contents": [{"role": "user", "parts": [{"text": f"{contexto}\nUsuario: {u_msg}"}]}],
+            "generationConfig": {"temperature": 0.7}
+        }
 
-        payload = {"contents": historial, "systemInstruction": {"parts": [{"text": contexto}]}, "generationConfig": {"temperature": 0.7}}
         res = requests.post(url, json=payload, timeout=15)
-        res_json = res.json()
-        
-        txt_ai = res_json['candidates'][0]['content']['parts'][0]['text']
-        memoria_global.append({"role": "user", "content": u_msg})
-        memoria_global.append({"role": "model", "content": txt_ai})
-        
+        res_data = res.json()
+
+        if res.status_code != 200:
+            return jsonify({"respuesta": f"Error de Google: {res_data.get('error', {}).get('message', 'Desconocido')}"})
+
+        txt_ai = res_data['candidates'][0]['content']['parts'][0]['text']
         return jsonify({"respuesta": txt_ai})
+
     except Exception as e:
-        return jsonify({"respuesta": "Aurora está reconectando... ¡Reintentá en un toque!"})
+        # ESTO TE VA A DECIR EL ERROR REAL EN EL CHAT
+        return jsonify({"respuesta": f"Error interno: {str(e)}"})
 
 if __name__ == '__main__':
-    # Esto es solo para tu compu local
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
