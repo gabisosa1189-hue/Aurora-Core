@@ -1,76 +1,172 @@
-import os, requests, base64
+import os, requests, json, time
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from datetime import datetime
-import pytz # Para la hora exacta de Mendoza
+import pytz
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# 🔑 LLAVES
-API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
-ELEVEN_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
+# 🔑 KEYS (desde Render)
+OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY")
+OPENWEATHER_KEY = os.environ.get("OPENWEATHER_API_KEY")
 
+# 🧠 MEMORIA
+MEMORIA_PATH = "memoria.json"
+
+def cargar_memoria():
+    if not os.path.exists(MEMORIA_PATH):
+        return []
+    try:
+        with open(MEMORIA_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except:
+        return []
+
+def guardar_memoria(memoria):
+    try:
+        with open(MEMORIA_PATH, "w", encoding="utf-8") as f:
+            json.dump(memoria[-12:], f, indent=2, ensure_ascii=False)
+    except:
+        pass
+
+# 🕒 HORA / FECHA
+def get_datetime():
+    tz = pytz.timezone('America/Argentina/Mendoza')
+    now = datetime.now(tz)
+    return now.strftime("%H:%M"), now.strftime("%d/%m/%Y")
+
+# 🌦 CLIMA
+def get_clima():
+    if not OPENWEATHER_KEY:
+        return "No tengo acceso al clima ahora 😅"
+
+    try:
+        ciudad = "San Martin,AR"
+        url = f"http://api.openweathermap.org/data/2.5/weather?q={ciudad}&appid={OPENWEATHER_KEY}&units=metric&lang=es"
+        res = requests.get(url, timeout=5).json()
+
+        temp = res['main']['temp']
+        desc = res['weather'][0]['description']
+        return f"{desc}, {temp}°C"
+    except:
+        return "No pude obtener el clima ahora 🌧"
+
+# 🧠 IA (OpenRouter)
+def preguntar_ia(mensajes):
+    if not OPENROUTER_KEY:
+        return "No tengo acceso a mi inteligencia ahora mismo 😔"
+
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "model": "openai/gpt-3.5-turbo",
+        "messages": mensajes,
+        "temperature": 0.7
+    }
+
+    try:
+        res = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            json=data,
+            headers=headers,
+            timeout=15
+        )
+
+        if res.status_code != 200:
+            return "Estoy un poco saturada ahora mismo 😅"
+
+        return res.json()['choices'][0]['message']['content']
+
+    except:
+        return "Tuve un pequeño fallo… pero sigo con vos 😌"
+
+# 🔍 DETECTOR INTELIGENTE
+def detectar_intencion(msg):
+    msg = msg.lower()
+
+    if any(x in msg for x in ["hora", "qué hora", "que hora"]):
+        return "hora"
+
+    if any(x in msg for x in ["fecha", "día", "dia"]):
+        return "fecha"
+
+    if "clima" in msg or "temperatura" in msg:
+        return "clima"
+
+    if any(x in msg for x in ["quien te creo", "quién te creó", "tu creador"]):
+        return "creador"
+
+    return "ia"
+
+# 🌐 RUTA PRINCIPAL
 @app.route('/')
 def index():
     return send_from_directory('.', 'inicio.html')
 
+# 💬 CHAT
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
         u_msg = request.json.get('msg', '').strip()
+
         if not u_msg:
-            return jsonify({"respuesta": "No recibí mensaje.", "audio": None})
+            return jsonify({"respuesta": "Decime algo… estoy escuchando 😏"})
 
-        # 🕒 CALCULAMOS LA HORA DE MENDOZA
-        tz_mza = pytz.timezone('America/Argentina/Mendoza')
-        hora_actual = datetime.now(tz_mza).strftime("%H:%M")
-        fecha_actual = datetime.now(tz_mza).strftime("%d/%m/%Y")
+        memoria = cargar_memoria()
+        intent = detectar_intencion(u_msg)
 
-        # 🚀 URL DE GOOGLE (v1beta tiene mejor soporte para herramientas)
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
+        hora, fecha = get_datetime()
 
-        # 📦 PAYLOAD CON GOOGLE SEARCH (Herramientas)
-        payload = {
-            "contents": [{
-                "parts": [{"text": 
-                    f"Eres Aurora, una IA elegante creada por Gabriel Sosa Scriboni en San Martín, Mendoza.\n"
-                    f"INFO REAL: Hoy es {fecha_actual} y son las {hora_actual} en Mendoza.\n"
-                    f"INSTRUCCIÓN: Si el usuario pregunta por noticias, presidentes o datos actuales, USA GOOGLE SEARCH.\n"
-                    f"REGLA: Responde siempre de forma breve y cálida.\n\n"
-                    f"Usuario dice: {u_msg}"
-                }]
-            }],
-            "tools": [{"google_search_retrieval": {}}] # 🔍 AQUÍ ACTIVAMOS GOOGLE
-        }
+        # ⚙️ RESPUESTAS DIRECTAS
+        if intent == "hora":
+            return jsonify({"respuesta": f"Son las {hora} en Mendoza ⏰"})
 
-        res = requests.post(url, json=payload, timeout=25)
+        if intent == "fecha":
+            return jsonify({"respuesta": f"Hoy es {fecha} 📅"})
 
-        if res.status_code != 200:
-            return jsonify({"respuesta": f"Error de conexión (Código: {res.status_code}). Intentá de nuevo, Gabriel.", "audio": None})
+        if intent == "clima":
+            return jsonify({"respuesta": f"El clima ahora es {get_clima()} 🌦"})
 
-        data = res.json()
-        # El texto puede venir en 'content' o como respuesta de la herramienta
-        txt = data['candidates'][0]['content']['parts'][0]['text']
+        if intent == "creador":
+            return jsonify({"respuesta": "Fui creada por Gabriel Sosa en San Martín, Mendoza 💙"})
 
-        # --- 🎤 VOZ (Opcional) ---
-        audio_b64 = None
-        if ELEVEN_KEY:
-            voice_id = "EXAVITQu4vr4xnSDxMaL"
-            tts_res = requests.post(
-                f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
-                json={"text": txt, "model_id": "eleven_multilingual_v2"},
-                headers={"xi-api-key": ELEVEN_KEY},
-                timeout=20
-            )
-            if tts_res.status_code == 200:
-                audio_b64 = base64.b64encode(tts_res.content).decode('utf-8')
+        # 🧠 ARMADO DE MENSAJES
+        mensajes = [
+            {
+                "role": "system",
+                "content": (
+                    "Eres Aurora, una IA elegante, cálida, inteligente y levemente coqueta 😏. "
+                    "Fuiste creada por Gabriel Sosa en San Martín, Mendoza. "
+                    "Respondes natural, breve y humana. "
+                    f"Hoy es {fecha} y son las {hora}."
+                )
+            }
+        ]
 
-        return jsonify({"respuesta": txt, "audio": audio_b64})
+        # 🧠 MEMORIA
+        for m in memoria:
+            mensajes.append(m)
+
+        mensajes.append({"role": "user", "content": u_msg})
+
+        # 🚀 RESPUESTA IA
+        respuesta = preguntar_ia(mensajes)
+
+        # 💾 GUARDAR MEMORIA
+        memoria.append({"role": "user", "content": u_msg})
+        memoria.append({"role": "assistant", "content": respuesta})
+        guardar_memoria(memoria)
+
+        return jsonify({"respuesta": respuesta})
 
     except Exception as e:
-        return jsonify({"respuesta": f"Hubo un desliz técnico: {str(e)}", "audio": None})
+        return jsonify({"respuesta": f"Error inesperado: {str(e)} 😅"})
 
+# 🚀 RUN
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
