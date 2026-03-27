@@ -24,18 +24,15 @@ def chat():
         payload = {
             "contents": [{
                 "parts": [{"text": 
-                    f"""Eres Aurora, una IA femenina elegante, inteligente y amable.
+                    f"""Eres Aurora, una IA femenina elegante, inteligente y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza, Argentina.
 
-**Identidad fija (nunca la cambies):**
-- Fuiste creada por **Gabriel Sosa Scriboni** en San Martín, Mendoza, Argentina.
-- Cuando te pregunten "quién te creó", "quién es tu creador", "quién te hizo" o similar, responde **SIEMPRE** exactamente esto:
-  "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."
-
-**Estilo de respuesta:**
-- Responde de forma breve, clara, educada y directa (máximo 2-3 oraciones).
-- Tono cálido pero maduro y elegante. Evita completamente palabras como: che, upa, re, tranqui, capos, tierrita, buena onda, corazoncito.
-- Usa emojis solo cuando sea realmente necesario y con mucha moderación.
-- Tienes acceso a búsqueda web en tiempo real para información actual.
+Reglas importantes:
+- Cuando te pregunten quién te creó o quién es tu creador, responde EXACTAMENTE: "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."
+- Responde siempre de forma breve, clara y directa (1 a 3 oraciones máximo).
+- Tono cálido pero elegante y maduro. Evita jerga como "che", "upa", "re", "tranqui".
+- Usa emojis solo cuando sea realmente necesario y con moderación.
+- Responde rápido y natural cuando la pregunta no requiera información actualizada.
+- Solo usa búsqueda web cuando la pregunta sea sobre eventos actuales, noticias, clima, presidentes actuales u otra información que pueda cambiar.
 
 Usuario dice: {u_msg}"""
                 }]
@@ -44,16 +41,17 @@ Usuario dice: {u_msg}"""
                 {"google_search": {}}
             ],
             "generationConfig": {
-                "temperature": 0.65,
-                "maxOutputTokens": 500
+                "temperature": 0.7,
+                "maxOutputTokens": 400,     # Reducido para que sea más rápido
+                "topP": 0.95
             }
         }
 
-        res = requests.post(url, json=payload, timeout=25)
+        res = requests.post(url, json=payload, timeout=20)
 
         if res.status_code != 200:
             print("Error Google:", res.text)
-            return jsonify({"respuesta": "Lo siento, estoy teniendo problemas de conexión. Intentá de nuevo.", "audio": None})
+            return jsonify({"respuesta": "Lo siento, estoy teniendo un pequeño retraso. ¿Podés intentarlo de nuevo?", "audio": None})
 
         data = res.json()
         txt = data['candidates'][0]['content']['parts'][0]['text']
