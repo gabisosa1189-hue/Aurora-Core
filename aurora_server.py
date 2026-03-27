@@ -5,13 +5,6 @@ import os, requests, base64
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# =========================================================
-# 🔑 TUS LLAVES (Usa llaves NUEVAS, las anteriores ya son públicas y peligrosas)
-# =========================================================
-GOOGLE_KEY = "TU_NUEVA_LLAVE_AQUÍ"
-ELEVEN_KEY = "TU_NUEVA_LLAVE_AQUÍ"
-# =========================================================
-
 @app.route('/')
 def index():
     return send_from_directory('.', 'inicio.html')
@@ -22,32 +15,35 @@ def chat():
         data = request.json
         u_msg = data.get('msg', '').strip()
         
-        # 🚀 DIRECCIÓN ESTABLE 2026 (v1 + gemini-2.0-flash)
-        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={GOOGLE_KEY}"
+        # 🔑 BUSCAMOS LAS LLAVES EN EL "CAJÓN" DE RENDER
+        gemini_key = os.environ.get("GEMINI_API_KEY")
+        eleven_key = os.environ.get("ELEVENLABS_API_KEY")
+
+        if not gemini_key:
+            return jsonify({"respuesta": "Error: No configuraste GEMINI_API_KEY en Render.", "audio": None})
+
+        # 🚀 MOTOR GEMINI 2026 (Ruta estable)
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
         
         payload = {"contents": [{"parts": [{"text": u_msg}]}]}
         res = requests.post(url, json=payload, timeout=15)
         
         if res.status_code != 200:
-            return jsonify({"respuesta": f"Google dice error {res.status_code}: {res.text}", "audio": None})
+            return jsonify({"respuesta": f"Google falló ({res.status_code}). Revisá la llave en Render.", "audio": None})
             
         txt = res.json()['candidates'][0]['content']['parts'][0]['text']
 
         # --- VOZ (ELEVENLABS) ---
         audio_b64 = None
-        if ELEVEN_KEY and "TU_NUEVA" not in ELEVEN_KEY:
-            voice_id = "EXAVITQu4vr4xnSDxMaL"
+        if eleven_key:
+            voice_id = "EXAVITQu4vr4xnSDxMaL" # Bella
             tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-            
-            # Ajustamos para máxima calidad en español
-            tts_payload = {
-                "text": txt,
-                "model_id": "eleven_multilingual_v2",
-                "voice_settings": {"stability": 0.5, "similarity_boost": 0.8}
-            }
-            
-            tts_res = requests.post(tts_url, json=tts_payload, headers={"xi-api-key": ELEVEN_KEY}, timeout=15)
-            
+            tts_res = requests.post(
+                tts_url, 
+                json={"text": txt, "model_id": "eleven_multilingual_v2"}, 
+                headers={"xi-api-key": eleven_key}, 
+                timeout=15
+            )
             if tts_res.status_code == 200:
                 audio_b64 = base64.b64encode(tts_res.content).decode('utf-8')
 
