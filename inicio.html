@@ -87,23 +87,24 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 FUNCIÓN HABLAR RESTAURADA A VOZ FEMENINA
+        // 🚨 FUNCIÓN HABLAR: AHORA SÍ, VOZ FEMENINA
         function hablar(t) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
             u.lang = 'es-AR';
             
             const voices = window.speechSynthesis.getVoices();
-            // Filtramos específicamente por voces femeninas (Helena, Google español, etc.)
+            // Buscamos voces femeninas (Google español, Helena, Sabina, Luciana, etc.)
             const femaleVoice = voices.find(v => 
                 (v.name.includes('Google español') || 
                  v.name.includes('Helena') || 
-                 v.name.includes('Female') || 
-                 v.name.includes('Sabina')) && v.lang.includes('es')
+                 v.name.includes('Sabina') || 
+                 v.name.includes('Luciana') || 
+                 v.name.includes('Female')) && v.lang.includes('es')
             );
             
             if (femaleVoice) u.voice = femaleVoice;
-            u.pitch = 1.6; // Tono más agudo/femenino de IA
+            u.pitch = 1.7; // Tono femenino de IA
             u.rate = 1.0; 
             window.speechSynthesis.speak(u);
         }
@@ -145,6 +146,8 @@
                     document.getElementById('app-container').style.display = "flex";
                     setTimeout(() => {
                         document.getElementById('app-container').style.opacity = "1";
+                        
+                        // BIENVENIDA PERSONALIZADA
                         const nombreUsuario = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
                         const m = `Bienvenido, ${nombreUsuario}. El sistema Aurora ha sido reactivado. Estoy a su servicio.`;
                         
