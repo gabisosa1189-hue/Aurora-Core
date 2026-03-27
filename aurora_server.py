@@ -1,67 +1,87 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import os, requests, datetime, alma, internet
+import os
+import requests
+import datetime
+import alma
+
+try:
+    import internet
+    INTERNET_ACTIVO = True
+except:
+    INTERNET_ACTIVO = False
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# Memoria ultra-corta para evitar que Render se trabe (Solo 2 vueltas)
+BASE_PATH = os.getcwd() 
 historial = [] 
 
 @app.route('/')
 def index(): 
-    return send_from_directory(os.getcwd(), 'index.html')
+    return send_from_directory(BASE_PATH, 'index.html')
 
 @app.route('/chat', methods=['POST'])
 def chat():
     global historial
     data = request.json
-    user_msg = data.get('msg', '')
+    texto_usuario = data.get('msg', '')
+    msg_limpio = texto_usuario.lower()
     
-    # 1. Datos de Realidad (Presidente, Dólar, Clima)
-    # Forzamos a que internet.py busque la verdad actual
-    datos_actuales = internet.obtener_datos_api(user_msg)
+    GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     
-    # 2. Reloj del Servidor
-    now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3)))
-    fecha_hoy = f"FECHA Y HORA REAL: {now.strftime('%d/%m/%Y %H:%M')}"
-
-    # 3. Limpieza de Memoria (Si hay más de 4 mensajes, borramos)
-    if len(historial) > 4:
-        historial = historial[-4:]
-
-    # 4. Prompt de Hierro (Ordenamos que no mienta con el presidente)
-    prompt_seguro = (
-        f"{alma.obtener_esencia()}\n"
-        f"{fecha_hoy}\n"
-        f"INFORMACIÓN DE INTERNET (OBLIGATORIA): {datos_actuales}\n"
-        "REGLA CRÍTICA: El presidente de Argentina es Javier Milei. No menciones a presidentes anteriores."
-    )
-    
-    headers = {
-        "Authorization": f"Bearer {os.environ.get('GROQ_API_KEY')}",
-        "Content-Type": "application/json"
-    }
-    
-    payload = {
-        "model": "llama-3.1-8b-instant",
-        "messages": [{"role": "system", "content": prompt_seguro}] + historial + [{"role": "user", "content": user_msg}],
-        "temperature": 0.3, # Bajamos la temperatura para que sea más precisa
-        "max_tokens": 200
-    }
-
     try:
-        res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=15)
-        res.raise_for_status()
-        ai_res = res.json()['choices'][0]['message']['content']
+        zona_ar = datetime.timezone(datetime.timedelta(hours=-3))
+        ahora = datetime.datetime.now(zona_ar)
+        reloj = f"Sistema: Hoy es {ahora.strftime('%d/%m/%Y')} y la hora es {ahora.strftime('%H:%M')}."
     except:
-        ai_res = "Mi conexión se saturó un segundo. ¿Podrías repetir?"
+        reloj = ""
 
-    historial.append({"role": "user", "content": user_msg})
-    historial.append({"role": "assistant", "content": ai_res})
+    # Limpiador de memoria: Solo recuerda los últimos 6 mensajes para no trabarse
+    if len(historial) > 6:
+        historial = historial[-6:]
+
+    esencia = alma.obtener_esencia()
+    system_prompt = f"{esencia}\n{reloj}"
     
-    return jsonify({"respuesta": ai_res})
+    if INTERNET_ACTIVO:
+        try:
+            datos_api = internet.obtener_datos_api(texto_usuario)
+            system_prompt += f"\nDATOS ACTUALES:\n{datos_api}"
+        except: pass
+        
+        palabras_clave = ["noticia", "clima", "quien", "paso", "mundo", "temperatura"]
+        if len(texto_usuario.split()) >= 2 and any(p in msg_limpio for p in palabras_clave):
+            try:
+                datos_red = internet.buscar_en_red(texto_usuario)
+                if datos_red != "Sin datos extra de internet.":
+                    system_prompt += f"\nBÚSQUEDA PROFUNDA:\n{datos_red}"
+            except: pass
+
+    mensajes = [{"role": "system", "content": system_prompt}]
+    mensajes.extend(historial) 
+    mensajes.append({"role": "user", "content": texto_usuario})
+    
+    try:
+        data_req = {
+            "model": "llama-3.1-8b-instant", 
+            "messages": mensajes, 
+            "temperature": 0.4,
+            "max_tokens": 400
+        }
+        res = requests.post(url, headers=headers, json=data_req, timeout=25)
+        res.raise_for_status()
+        respuesta_ai = res.json()['choices'][0]['message']['content']
+    except:
+        respuesta_ai = "Disculpe, mi red se saturó un segundo. ¿Podemos retomar?"
+
+    historial.append({"role": "user", "content": texto_usuario})
+    historial.append({"role": "assistant", "content": respuesta_ai})
+    
+    return jsonify({"respuesta": respuesta_ai})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(port=port, host='0.0.0.0')
+    app.run(port=port, host='0.0.0.0', debug=False)
