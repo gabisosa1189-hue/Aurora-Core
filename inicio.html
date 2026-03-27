@@ -87,28 +87,34 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 FUNCIÓN HABLAR: AHORA SÍ, VOZ FEMENINA
+        // 🚨 FUNCIÓN HABLAR BLINDADA PARA VOZ FEMENINA
         function hablar(t) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
             u.lang = 'es-AR';
             
-            const voices = window.speechSynthesis.getVoices();
-            // Buscamos voces femeninas (Google español, Helena, Sabina, Luciana, etc.)
-            const femaleVoice = voices.find(v => 
+            // Forzamos la obtención de voces
+            let voices = window.speechSynthesis.getVoices();
+            
+            // Buscamos cualquier voz que suene femenina en español
+            let femaleVoice = voices.find(v => 
                 (v.name.includes('Google español') || 
                  v.name.includes('Helena') || 
                  v.name.includes('Sabina') || 
                  v.name.includes('Luciana') || 
+                 v.name.includes('Microsoft Laura') ||
                  v.name.includes('Female')) && v.lang.includes('es')
             );
             
             if (femaleVoice) u.voice = femaleVoice;
-            u.pitch = 1.7; // Tono femenino de IA
-            u.rate = 1.0; 
+            
+            u.pitch = 1.5; // Elevamos el tono para asegurar sonido femenino
+            u.rate = 1.0;  
+            u.volume = 1.0;
             window.speechSynthesis.speak(u);
         }
 
+        // Asegurar que las voces carguen antes del primer saludo
         window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
         function exterminarMail() {
@@ -149,13 +155,14 @@
                         
                         // BIENVENIDA PERSONALIZADA
                         const nombreUsuario = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
-                        const m = `Bienvenido, ${nombreUsuario}. El sistema Aurora ha sido reactivado. Estoy a su servicio.`;
+                        const m = `Bienvenida concedida. Soy Aurora, y el sistema ya está operativo. ¿En qué puedo ayudarte hoy, ${nombreUsuario}?`;
                         
                         document.getElementById('saludo-ia').innerText = m;
                         hablar(m);
 
                         const chatInp = document.getElementById('chat-terminal');
-                        chatInp.removeAttribute('readonly'); chatInp.placeholder = "Escribe a Aurora...";
+                        chatInp.removeAttribute('readonly'); 
+                        chatInp.placeholder = "Escribe a Aurora...";
                         exterminarMail();
                     }, 500);
                 }, 600);
@@ -168,8 +175,10 @@
             addMsg(msg, 'user'); inp.value = '';
             try {
                 const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg}) });
-                const data = await res.json(); addMsg(data.respuesta, 'aurora'); hablar(data.respuesta);
-            } catch(e) { addMsg("Error en la conexión.", 'aurora'); }
+                const data = await res.json(); 
+                addMsg(data.respuesta, 'aurora'); 
+                hablar(data.respuesta);
+            } catch(e) { addMsg("Error en la conexión neuronal.", 'aurora'); }
         }
 
         function addMsg(t, cl) {
