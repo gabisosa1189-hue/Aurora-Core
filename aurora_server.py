@@ -1,11 +1,13 @@
 import os, requests, base64
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from datetime import datetime
+import pytz # Para la hora exacta de Mendoza
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# 🔑 LLAVES (Sacalas de Environment en Render)
+# 🔑 LLAVES
 API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 ELEVEN_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
 
@@ -20,41 +22,46 @@ def chat():
         if not u_msg:
             return jsonify({"respuesta": "No recibí mensaje.", "audio": None})
 
-        # 🚀 MODELO ESTABLE (2.0 Flash no falla en v1)
-        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={API_KEY}"
+        # 🕒 CALCULAMOS LA HORA DE MENDOZA
+        tz_mza = pytz.timezone('America/Argentina/Mendoza')
+        hora_actual = datetime.now(tz_mza).strftime("%H:%M")
+        fecha_actual = datetime.now(tz_mza).strftime("%d/%m/%Y")
 
+        # 🚀 URL DE GOOGLE (v1beta tiene mejor soporte para herramientas)
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
+
+        # 📦 PAYLOAD CON GOOGLE SEARCH (Herramientas)
         payload = {
             "contents": [{
                 "parts": [{"text": 
-                    f"Eres Aurora, una IA femenina elegante y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza.\n\n"
-                    f"Reglas:\n"
-                    f"- Si te preguntan quién te creó, responde: 'Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza.'\n"
-                    f"- Responde de forma breve, clara y educada.\n"
-                    f"- Tono cálido pero maduro.\n\n"
+                    f"Eres Aurora, una IA elegante creada por Gabriel Sosa Scriboni en San Martín, Mendoza.\n"
+                    f"INFO REAL: Hoy es {fecha_actual} y son las {hora_actual} en Mendoza.\n"
+                    f"INSTRUCCIÓN: Si el usuario pregunta por noticias, presidentes o datos actuales, USA GOOGLE SEARCH.\n"
+                    f"REGLA: Responde siempre de forma breve y cálida.\n\n"
                     f"Usuario dice: {u_msg}"
                 }]
-            }]
+            }],
+            "tools": [{"google_search_retrieval": {}}] # 🔍 AQUÍ ACTIVAMOS GOOGLE
         }
 
-        res = requests.post(url, json=payload, timeout=15)
+        res = requests.post(url, json=payload, timeout=25)
 
         if res.status_code != 200:
-            # Esto nos dirá qué dice Google exactamente si falla
-            return jsonify({"respuesta": f"Error de Google: {res.status_code}", "audio": None})
+            return jsonify({"respuesta": f"Error de conexión (Código: {res.status_code}). Intentá de nuevo, Gabriel.", "audio": None})
 
         data = res.json()
+        # El texto puede venir en 'content' o como respuesta de la herramienta
         txt = data['candidates'][0]['content']['parts'][0]['text']
 
-        # --- 🎤 MOTOR DE VOZ (Opcional) ---
+        # --- 🎤 VOZ (Opcional) ---
         audio_b64 = None
         if ELEVEN_KEY:
-            voice_id = "EXAVITQu4vr4xnSDxMaL" # Tu ID de voz
-            tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+            voice_id = "EXAVITQu4vr4xnSDxMaL"
             tts_res = requests.post(
-                tts_url,
+                f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
                 json={"text": txt, "model_id": "eleven_multilingual_v2"},
                 headers={"xi-api-key": ELEVEN_KEY},
-                timeout=15
+                timeout=20
             )
             if tts_res.status_code == 200:
                 audio_b64 = base64.b64encode(tts_res.content).decode('utf-8')
@@ -62,7 +69,7 @@ def chat():
         return jsonify({"respuesta": txt, "audio": audio_b64})
 
     except Exception as e:
-        return jsonify({"respuesta": f"Error interno: {str(e)}", "audio": None})
+        return jsonify({"respuesta": f"Hubo un desliz técnico: {str(e)}", "audio": None})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
