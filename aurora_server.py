@@ -5,7 +5,7 @@ import os, requests, datetime, alma
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# Memoria de la charla (Para que Aurora se acuerde de todo)
+# Memoria de la charla para que Aurora no sea "olvidadiza"
 memoria_global = [] 
 
 @app.route('/')
@@ -18,17 +18,21 @@ def chat():
     data = request.json
     texto_usuario = data.get('msg', '')
     
+    # 1. Traemos la llave de Render
     API_KEY = os.environ.get("GEMINI_API_KEY")
-    # DIRECCIÓN ACTUALIZADA (v1 en lugar de v1beta y modelo flash-latest)
-    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+    
+    # 2. URL DEFINITIVA (v1beta + gemini-1.5-flash-latest)
+    # Esta es la dirección que acepta los modelos más nuevos sin tirar 404
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}"
     
     try:
         esencia = alma.obtener_esencia()
-        contexto = f"{esencia}\nHora en Mendoza: {datetime.datetime.now().strftime('%H:%M')}"
+        reloj = f"Sistema: Hora actual {datetime.datetime.now().strftime('%H:%M')}."
+        contexto = f"{esencia}\n{reloj}"
 
-        # Formato de memoria para que la charla sea fluida
+        # 3. Construcción de memoria para charla fluida
         contenidos = []
-        for m in memoria_global[-8:]: # Recordamos los últimos 8 mensajes
+        for m in memoria_global[-6:]:
             rol = "user" if m["role"] == "user" else "model"
             contenidos.append({"role": rol, "parts": [{"text": m["content"]}]})
         
@@ -37,27 +41,30 @@ def chat():
         payload = {
             "contents": contenidos,
             "systemInstruction": {"parts": [{"text": contexto}]},
-            "generationConfig": {"temperature": 0.7, "maxOutputTokens": 600}
+            "generationConfig": {
+                "temperature": 0.7, 
+                "maxOutputTokens": 600,
+                "topP": 0.95
+            }
         }
         
-        headers = {'Content-Type': 'application/json'}
-        res = requests.post(url, json=payload, headers=headers, timeout=20)
+        # 4. Petición a Google
+        res = requests.post(url, json=payload, timeout=25)
         
-        # Si falla, lanzamos el error para verlo en el log
-        res.raise_for_status()
-        
+        # Si Google nos da un error, lo mandamos al chat para verlo
+        if res.status_code != 200:
+            return jsonify({"respuesta": f"DEBUG: Error de Google {res.status_code}. Mensaje: {res.text[:100]}"})
+            
         resultado = res.json()
         respuesta_ai = resultado['candidates'][0]['content']['parts'][0]['text']
         
-        # GUARDAMOS EN MEMORIA (El secreto de la fluidez)
+        # 5. Guardamos en memoria para la fluidez
         memoria_global.append({"role": "user", "content": texto_usuario})
         memoria_global.append({"role": "assistant", "content": respuesta_ai})
 
     except Exception as e:
-        print(f"--- ERROR DETECTADO ---")
-        print(f"Detalle: {str(e)}")
-        # Si hay error 404, Aurora te lo dirá para que sepamos
-        respuesta_ai = "Perdón, Gabriel. Todavía tengo un problemita en mi conexión con Google. ¿Revisaste que la API Key esté activa?"
+        print(f"Error: {e}")
+        respuesta_ai = "Perdón, se me cortó la conexión un segundo. ¿Me repetís?"
 
     return jsonify({"respuesta": respuesta_ai})
 
