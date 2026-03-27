@@ -10,73 +10,15 @@
     
     <style>
         :root { --accent: #00f2ff; }
-        
-        /* 1. CARGA INSTANTÁNEA: La imagen es el fondo del body */
-        html, body { 
-            margin: 0; padding: 0; width: 100%; height: 100vh; 
-            overflow: hidden; 
-            background-image: url('poster.jpg'); 
-            background-size: cover;
-            background-position: center;
-            background-color: #000;
-            font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
-        }
-        
-        /* 2. VIDEO CON FADE-IN */
-        #bg-video { 
-            position: fixed !important; top: 0; left: 0; 
-            width: 100vw; height: 100vh; 
-            object-fit: cover !important; 
-            z-index: 1; 
-            opacity: 0; 
-            transition: opacity 2s ease-in-out; 
-        }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background-image: url('poster.jpg'); background-size: cover; background-position: center; background-color: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; }
+        #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover !important; z-index: 1; opacity: 0; transition: opacity 2s ease; }
 
-        /* INTERFAZ DE CRISTAL */
-        #login-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px);
-            z-index: 9999; display: flex; align-items: center; justify-content: center;
-            transition: all 0.6s ease;
-        }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: all 0.6s ease; }
+        .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.25); text-align: center; max-width: 380px; width: 85%; box-shadow: 0 0 60px rgba(0, 242, 255, 0.15); }
 
-        .login-card {
-            background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px;
-            border: 1px solid rgba(0, 242, 255, 0.25); text-align: center;
-            max-width: 380px; width: 85%; box-shadow: 0 0 60px rgba(0, 242, 255, 0.15);
-        }
-
-        .titulo-login { font-family: 'Orbitron', sans-serif; letter-spacing: 5px; font-size: 1.2rem; margin-bottom: 30px; }
-
-        #main-auth { display: flex; flex-direction: column; gap: 15px; }
-        #email-form { display: none; flex-direction: column; gap: 12px; animation: fadeIn 0.4s ease; }
-
-        .input-login {
-            background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px; border-radius: 18px; color: #fff; outline: none; font-size: 1rem;
-        }
-        .input-login:focus { border-color: var(--accent); }
-
-        .btn-auth {
-            width: 100%; padding: 16px; border-radius: 18px; border: none;
-            font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: 0.3s; font-size: 1rem;
-        }
-        .btn-google { background: #fff; color: #000; }
-        .btn-email-toggle { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); }
-        .btn-submit { background: var(--accent); color: #000; margin-top: 10px; }
-
-        .links-container { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .toggle-link { font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); cursor: pointer; text-decoration: underline; }
-
-        /* INTERFAZ CHAT */
-        #app-container { 
-            display: none; flex-direction: column; height: 100vh; 
-            max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1s; 
-        }
+        #app-container { display: none; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1s; }
         header { padding: 30px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); position: relative; }
         .titulo { font-family: 'Orbitron', sans-serif; letter-spacing: 12px; font-size: 1.5rem; text-shadow: 0 0 15px var(--accent); }
-        
         .btn-logout { position: absolute; right: 20px; top: 35px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 0.7rem; cursor: pointer; }
 
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
@@ -89,7 +31,6 @@
         #user-input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; }
 
         @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -100,22 +41,18 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <h1 class="titulo-login" id="card-title">BIENVENIDO A AURORA</h1>
+            <h1 style="font-family:'Orbitron'; letter-spacing:5px;">AURORA</h1>
             <div id="main-auth">
-                <button onclick="loginGoogle()" class="btn-auth btn-google">
-                    <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.85 2.22c1.67-1.53 2.63-3.8 2.63-6.55z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.85-2.22c-.79.53-1.8.85-3.11.85-2.39 0-4.41-1.61-5.14-3.78H.9v2.33C2.38 15.94 5.47 18 9 18z" fill="#34A853"/><path d="M3.86 10.67c-.19-.56-.3-1.16-.3-1.77s.11-1.21.3-1.77V4.8H.9A8.98 8.98 0 0 0 0 9c0 1.45.35 2.82.9 4.05l2.96-2.38z" fill="#FBBC05"/><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.89 11.43 0 9 0 5.47 0 2.38 2.06.9 5.07L3.86 7.4c.73-2.17 2.75-3.82 5.14-3.82z" fill="#EA4335"/></svg>
-                    Continuar con Google
+                <button onclick="loginGoogle()" style="width:100%; padding:16px; border-radius:18px; border:none; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#000;">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="18"> Continuar con Google
                 </button>
-                <button onclick="mostrarFormulario()" class="btn-auth btn-email-toggle">📧 Correo electrónico</button>
+                <button onclick="mostrarFormulario()" style="width:100%; margin-top:15px; padding:16px; border-radius:18px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.05); color:#fff; cursor:pointer;">📧 Por Correo</button>
             </div>
-            <div id="email-form">
-                <input type="email" id="email-input" class="input-login" placeholder="Tu correo">
-                <input type="password" id="pass-input" class="input-login" placeholder="Tu contraseña">
-                <button id="submit-auth" onclick="ejecutarAuth()" class="btn-auth btn-submit">Ingresar</button>
-                <div class="links-container">
-                    <p class="toggle-link" id="toggle-btn" onclick="cambiarModo()">¿No tienes cuenta? Regístrate</p>
-                    <p class="toggle-link" onclick="volverInicio()">← Volver atrás</p>
-                </div>
+            <div id="email-form" style="display:none; flex-direction:column; gap:12px; margin-top:20px;">
+                <input type="email" id="email-input" class="input-login" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:15px; color:#fff;" placeholder="Email">
+                <input type="password" id="pass-input" class="input-login" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:15px; color:#fff;" placeholder="Contraseña">
+                <button onclick="ejecutarAuth()" style="background:var(--accent); color:#000; padding:16px; border-radius:15px; border:none; font-weight:600; cursor:pointer;">Ingresar</button>
+                <p onclick="volverInicio()" style="color:rgba(255,255,255,0.5); font-size:0.8rem; cursor:pointer; margin-top:10px;">← Volver</p>
             </div>
         </div>
     </div>
@@ -160,32 +97,17 @@
             window.speechSynthesis.speak(u);
         }
 
-        let esRegistro = false;
-        function mostrarFormulario() {
-            document.getElementById('main-auth').style.display = 'none';
-            document.getElementById('email-form').style.display = 'flex';
-            document.getElementById('card-title').innerText = "ACCESO POR EMAIL";
-        }
-        function volverInicio() {
-            document.getElementById('main-auth').style.display = 'flex';
-            document.getElementById('email-form').style.display = 'none';
-            document.getElementById('card-title').innerText = "BIENVENIDO A AURORA";
-        }
-        function cambiarModo() {
-            esRegistro = !esRegistro;
-            document.getElementById('card-title').innerText = esRegistro ? "CREAR CUENTA" : "ACCESO POR EMAIL";
-            document.getElementById('submit-auth').innerText = esRegistro ? "Registrarme" : "Ingresar";
-            document.getElementById('toggle-btn').innerText = esRegistro ? "¿Ya tienes cuenta? Ingresa" : "¿No tienes cuenta? Regístrate";
-        }
+        // LIMPIEZA INICIAL: Forzamos que el input esté vacío al cargar
+        window.onload = () => { document.getElementById('user-input').value = ''; };
+
+        function mostrarFormulario() { document.getElementById('main-auth').style.display='none'; document.getElementById('email-form').style.display='flex'; }
+        function volverInicio() { document.getElementById('main-auth').style.display='flex'; document.getElementById('email-form').style.display='none'; }
 
         async function ejecutarAuth() {
             const email = document.getElementById('email-input').value;
             const pass = document.getElementById('pass-input').value;
-            if(!email || !pass) return alert("Completa los campos.");
-            try {
-                if(esRegistro) await firebase.auth().createUserWithEmailAndPassword(email, pass);
-                else await firebase.auth().signInWithEmailAndPassword(email, pass);
-            } catch(e) { alert("Error: " + e.message); }
+            try { await firebase.auth().signInWithEmailAndPassword(email, pass); } 
+            catch(e) { alert("Error: " + e.message); }
         }
 
         function loginGoogle() {
@@ -193,19 +115,21 @@
             firebase.auth().signInWithPopup(provider).catch(e => alert(e.message));
         }
 
-        function cerrarSesion() {
-            firebase.auth().signOut().then(() => location.reload());
-        }
+        function cerrarSesion() { firebase.auth().signOut().then(() => location.reload()); }
 
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
+                // Borramos cualquier rastro del mail en el input antes de mostrar el chat
+                document.getElementById('user-input').value = '';
+                
                 document.getElementById('login-overlay').style.opacity = "0";
                 setTimeout(() => {
                     document.getElementById('login-overlay').style.display = "none";
                     document.getElementById('app-container').style.display = "flex";
                     setTimeout(() => {
                         document.getElementById('app-container').style.opacity = "1";
-                        const m = "Bienvenido de nuevo, Gabriel. El sistema Aurora está operativo.";
+                        // Saludo Limpio
+                        const m = "Bienvenido al sistema. Aurora está operativa y lista para tu comando.";
                         document.getElementById('saludo-ia').innerText = m;
                         hablar(m);
                     }, 50);
@@ -215,27 +139,22 @@
 
         async function enviar() {
             const inp = document.getElementById('user-input');
-            const msg = inp.value.trim(); if(!msg) return;
-            addMsg(msg, 'user'); inp.value = '';
+            const msg = inp.value.trim(); 
+            // Si el mensaje es vacío o parece un email por error, no enviamos nada
+            if(!msg || msg.includes('@')) { inp.value = ''; return; }
             
+            addMsg(msg, 'user'); inp.value = '';
             try {
-                const res = await fetch('/chat', { 
-                    method:'POST', 
-                    headers:{'Content-Type':'application/json'}, 
-                    body:JSON.stringify({msg}) 
-                });
+                const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg}) });
                 const data = await res.json();
                 addMsg(data.respuesta, 'aurora');
                 hablar(data.respuesta);
-            } catch(e) {
-                addMsg("Error en la conexión neuronal.", 'aurora');
-            }
+            } catch(e) { addMsg("Error de conexión neuronal.", 'aurora'); }
         }
 
         function addMsg(t, cl) {
             const d = document.createElement('div'); d.className = `msg ${cl}`; d.innerText = t;
-            const win = document.getElementById('chat-window');
-            win.appendChild(d);
+            const win = document.getElementById('chat-window'); win.appendChild(d);
             win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
         
