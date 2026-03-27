@@ -5,9 +5,9 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# 🔑 LLAVES (Asegurate que en Render diga GEMINI_API_KEY)
+# 🔑 LLAVES (Sacalas de la pestaña Environment de Render)
 API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
-ELEVEN_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
+EL_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
 
 @app.route('/')
 def index():
@@ -20,35 +20,42 @@ def chat():
         u_msg = data.get('msg', '').strip()
         
         if not API_KEY:
-            return jsonify({"respuesta": "❌ Error: No encontré la llave en Render.", "audio": None})
+            return jsonify({"respuesta": "Falta la llave GEMINI_API_KEY en Render.", "audio": None})
 
-        # 🚀 LA RUTA QUE NO FALLA (v1 estable)
-        # Cambiamos v1beta por v1 y usamos gemini-1.5-flash-latest
-        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+        # 🚀 ESTRATEGIA DE TRIPLE INTENTO (Para matar el Error 404)
+        # Probamos diferentes modelos y versiones hasta que uno ande
+        modelos_a_probar = [
+            "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent",
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+            "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent"
+        ]
         
-        payload = {
-            "contents": [{
-                "parts": [{"text": u_msg}]
-            }]
-        }
-        
-        res = requests.post(url, json=payload, timeout=15)
-        
-        # Si vuelve a dar error, que nos diga exactamente qué pasó
-        if res.status_code != 200:
-            error_detail = res.json().get('error', {}).get('message', 'Error desconocido')
-            return jsonify({"respuesta": f"Google dice: {error_detail}", "audio": None})
-            
-        txt = res.json()['candidates'][0]['content']['parts'][0]['text']
+        txt = None
+        error_final = ""
+
+        for url in modelos_a_probar:
+            res = requests.post(f"{url}?key={API_KEY}", 
+                                json={"contents": [{"parts": [{"text": f"Sos Aurora, una IA de Mendoza. Respondé corto: {u_msg}"}]}]}, 
+                                timeout=10)
+            if res.status_code == 200:
+                txt = res.json()['candidates'][0]['content']['parts'][0]['text']
+                break # ¡LO LOGRAMOS! Salimos del bucle
+            else:
+                error_final = res.text
+
+        if not txt:
+            return jsonify({"respuesta": f"Google sigue rechazando: {error_final}", "audio": None})
 
         # --- VOZ: ELEVENLABS ---
         audio_b64 = None
-        if ELEVEN_KEY:
-            voice_id = "EXAVITQu4vr4xnSDxMaL"
+        if EL_KEY:
+            # Tu Voice ID de ElevenLabs
+            voice_id = "EXAVITQu4vr4xnSDxMaL" 
+            tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
             tts_res = requests.post(
-                f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
+                tts_url,
                 json={"text": txt, "model_id": "eleven_multilingual_v2"},
-                headers={"xi-api-key": ELEVEN_KEY},
+                headers={"xi-api-key": EL_KEY},
                 timeout=15
             )
             if tts_res.status_code == 200:
@@ -57,7 +64,7 @@ def chat():
         return jsonify({"respuesta": txt, "audio": audio_b64})
         
     except Exception as e:
-        return jsonify({"respuesta": f"Error del servidor: {str(e)}", "audio": None})
+        return jsonify({"respuesta": f"Error crítico: {str(e)}", "audio": None})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
