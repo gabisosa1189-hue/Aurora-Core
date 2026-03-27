@@ -11,7 +11,6 @@
     <style>
         :root { --accent: #00f2ff; }
         
-        /* 1. GRADIENTE DE RESPALDO: Adiós al negro total */
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100vh; 
             overflow: hidden; 
@@ -19,17 +18,15 @@
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
         }
         
-        /* 2. VIDEO CON FADE-IN: Empieza invisible y aparece suave */
         #bg-video { 
             position: fixed !important; top: 0; left: 0; 
             width: 100vw; height: 100vh; 
             object-fit: cover !important; 
             z-index: 1; 
-            opacity: 0; /* Invisible al inicio */
+            opacity: 0; 
             transition: opacity 1.5s ease-in-out; 
         }
 
-        /* PANTALLA DE LOGIN DE CRISTAL */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px);
@@ -68,7 +65,20 @@
         .toggle-link { font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); cursor: pointer; text-decoration: underline; }
         .toggle-link:hover { color: var(--accent); }
 
-        #app-container { display: none; flex-direction: column; height: 100%; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1s; }
+        /* INTERFAZ DEL CHAT */
+        #app-container { 
+            display: none; flex-direction: column; height: 100%; 
+            max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1s; 
+        }
+        header { padding: 25px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); }
+        .titulo { font-family: 'Orbitron', sans-serif; letter-spacing: 12px; color: #fff; font-size: 1.4rem; }
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
+        .msg { max-width: 85%; padding: 14px 20px; border-radius: 20px; backdrop-filter: blur(10px); }
+        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
+        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .input-area { padding: 20px; }
+        .input-container { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 30px; display: flex; align-items: center; padding: 5px 20px; backdrop-filter: blur(15px); }
+        #user-input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -82,7 +92,6 @@
     <div id="login-overlay">
         <div class="login-card">
             <h1 class="titulo-login" id="card-title">BIENVENIDO A AURORA</h1>
-            
             <div id="main-auth">
                 <button onclick="loginGoogle()" class="btn-auth btn-google">
                     <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.85 2.22c1.67-1.53 2.63-3.8 2.63-6.55z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.85-2.22c-.79.53-1.8.85-3.11.85-2.39 0-4.41-1.61-5.14-3.78H.9v2.33C2.38 15.94 5.47 18 9 18z" fill="#34A853"/><path d="M3.86 10.67c-.19-.56-.3-1.16-.3-1.77s.11-1.21.3-1.77V4.8H.9A8.98 8.98 0 0 0 0 9c0 1.45.35 2.82.9 4.05l2.96-2.38z" fill="#FBBC05"/><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.89 11.43 0 9 0 5.47 0 2.38 2.06.9 5.07L3.86 7.4c.73-2.17 2.75-3.82 5.14-3.82z" fill="#EA4335"/></svg>
@@ -90,13 +99,10 @@
                 </button>
                 <button onclick="mostrarFormulario()" class="btn-auth btn-email-toggle">📧 Correo electrónico</button>
             </div>
-
             <div id="email-form">
                 <input type="email" id="email-input" class="input-login" placeholder="Correo electrónico">
                 <input type="password" id="pass-input" class="input-login" placeholder="Contraseña">
-                
                 <button id="submit-auth" onclick="ejecutarAuth()" class="btn-auth btn-submit">Ingresar</button>
-                
                 <div class="links-container">
                     <p class="toggle-link" id="toggle-btn" onclick="cambiarModo()">¿No tienes cuenta? Regístrate</p>
                     <p class="toggle-link" onclick="volverInicio()">← Volver atrás</p>
@@ -106,7 +112,18 @@
     </div>
 
     <div id="app-container">
+        <header><div class="titulo">AURORA</div></header>
+        <div id="chat-window">
+            <div class="msg aurora" id="saludo-ia">Estableciendo conexión neuronal...</div>
         </div>
+        <div class="input-area">
+            <div class="input-container">
+                <button style="background:none; border:none; color:var(--accent); font-size:1.2rem;">🎤</button>
+                <input type="text" id="user-input" placeholder="Pregúntale a Aurora..." autocomplete="off">
+                <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.6rem; cursor:pointer;">➤</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -122,11 +139,8 @@
         };
         firebase.initializeApp(firebaseConfig);
 
-        // 4. TRIGGER DE FADE-IN: El video aparece cuando realmente arranca
         const bgVideo = document.getElementById('bg-video');
-        bgVideo.onplay = () => {
-            bgVideo.style.opacity = "1";
-        };
+        bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
         let esRegistro = false;
 
@@ -152,14 +166,10 @@
         async function ejecutarAuth() {
             const email = document.getElementById('email-input').value;
             const pass = document.getElementById('pass-input').value;
-            if(!email || !pass) return alert("Por favor, completa los campos.");
-
+            if(!email || !pass) return alert("Completa los campos.");
             try {
-                if(esRegistro) {
-                    await firebase.auth().createUserWithEmailAndPassword(email, pass);
-                } else {
-                    await firebase.auth().signInWithEmailAndPassword(email, pass);
-                }
+                if(esRegistro) await firebase.auth().createUserWithEmailAndPassword(email, pass);
+                else await firebase.auth().signInWithEmailAndPassword(email, pass);
             } catch(e) { alert("Error: " + e.message); }
         }
 
@@ -175,9 +185,26 @@
                     document.getElementById('login-overlay').style.display = "none";
                     document.getElementById('app-container').style.display = "flex";
                     setTimeout(() => document.getElementById('app-container').style.opacity = "1", 50);
+                    // Saludo Aurora
+                    const m = "Bienvenido de nuevo. Aurora está lista.";
+                    document.getElementById('saludo-ia').innerText = m;
                 }, 600);
             }
         });
+
+        // Lógica de envío (Falta la función enviar() para que funcione el chat)
+        async function enviar() {
+            const inp = document.getElementById('user-input');
+            const msg = inp.value.trim(); if(!msg) return;
+            addMsg(msg, 'user'); inp.value = '';
+            const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg}) });
+            const data = await res.json();
+            addMsg(data.respuesta, 'aurora');
+        }
+        function addMsg(t, cl) {
+            const d = document.createElement('div'); d.className = `msg ${cl}`; d.innerText = t;
+            const win = document.getElementById('chat-window'); win.appendChild(d); win.scrollTo(0, win.scrollHeight);
+        }
     </script>
 </body>
 </html>
