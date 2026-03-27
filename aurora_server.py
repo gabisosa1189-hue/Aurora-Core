@@ -24,8 +24,8 @@ def chat():
         if not gemini_api_key:
             return jsonify({"respuesta": "ERROR: Me falta la llave GEMINI_API_KEY en Render.", "audio": None})
             
-        # 🚨 CORRECCIÓN AQUÍ: Usamos gemini-1.5-flash a secas
-        gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_api_key}"
+        # URL ESTABLE (v1)
+        gemini_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={gemini_api_key}"
         
         gemini_payload = {"contents": [{"role": "user", "parts": [{"text": u_msg}]}]}
         res = requests.post(gemini_url, json=gemini_payload, timeout=10)
