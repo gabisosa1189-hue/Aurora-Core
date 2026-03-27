@@ -1,4 +1,4 @@
-import os, requests, json, time
+import os, requests, json
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from datetime import datetime
@@ -7,7 +7,7 @@ import pytz
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# 🔑 KEYS (desde Render)
+# 🔑 KEYS
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY")
 OPENWEATHER_KEY = os.environ.get("OPENWEATHER_API_KEY")
 
@@ -24,9 +24,14 @@ def cargar_memoria():
         return []
 
 def guardar_memoria(memoria):
+    limpia = []
+    for m in memoria[-20:]:
+        if len(m.get("content", "")) < 500:
+            limpia.append(m)
+
     try:
         with open(MEMORIA_PATH, "w", encoding="utf-8") as f:
-            json.dump(memoria[-12:], f, indent=2, ensure_ascii=False)
+            json.dump(limpia, f, indent=2, ensure_ascii=False)
     except:
         pass
 
@@ -52,7 +57,19 @@ def get_clima():
     except:
         return "No pude obtener el clima ahora 🌧"
 
-# 🧠 IA (OpenRouter)
+# ✨ HUMANIZAR RESPUESTA
+def humanizar(texto):
+    frases_robot = [
+        "Como inteligencia artificial",
+        "Como modelo de lenguaje",
+        "No tengo emociones",
+        "No poseo sentimientos"
+    ]
+    for f in frases_robot:
+        texto = texto.replace(f, "")
+    return texto.strip()
+
+# 🧠 IA
 def preguntar_ia(mensajes):
     if not OPENROUTER_KEY:
         return "No tengo acceso a mi inteligencia ahora mismo 😔"
@@ -63,9 +80,10 @@ def preguntar_ia(mensajes):
     }
 
     data = {
-        "model": "openai/gpt-3.5-turbo",
+        "model": "openai/gpt-4o-mini",  # 🔥 MEJOR MODELO
         "messages": mensajes,
-        "temperature": 0.7
+        "temperature": 0.8,
+        "max_tokens": 200
     }
 
     try:
@@ -79,12 +97,13 @@ def preguntar_ia(mensajes):
         if res.status_code != 200:
             return "Estoy un poco saturada ahora mismo 😅"
 
-        return res.json()['choices'][0]['message']['content']
+        txt = res.json()['choices'][0]['message']['content']
+        return humanizar(txt)
 
     except:
         return "Tuve un pequeño fallo… pero sigo con vos 😌"
 
-# 🔍 DETECTOR INTELIGENTE
+# 🔍 DETECTOR
 def detectar_intencion(msg):
     msg = msg.lower()
 
@@ -94,7 +113,7 @@ def detectar_intencion(msg):
     if any(x in msg for x in ["fecha", "día", "dia"]):
         return "fecha"
 
-    if "clima" in msg or "temperatura" in msg:
+    if any(x in msg for x in ["clima", "temperatura", "calor", "frio", "frío"]):
         return "clima"
 
     if any(x in msg for x in ["quien te creo", "quién te creó", "tu creador"]):
@@ -102,7 +121,7 @@ def detectar_intencion(msg):
 
     return "ia"
 
-# 🌐 RUTA PRINCIPAL
+# 🌐 HOME
 @app.route('/')
 def index():
     return send_from_directory('.', 'inicio.html')
@@ -134,14 +153,16 @@ def chat():
         if intent == "creador":
             return jsonify({"respuesta": "Fui creada por Gabriel Sosa en San Martín, Mendoza 💙"})
 
-        # 🧠 ARMADO DE MENSAJES
+        # 🧠 PERSONALIDAD PRO
         mensajes = [
             {
                 "role": "system",
                 "content": (
-                    "Eres Aurora, una IA elegante, cálida, inteligente y levemente coqueta 😏. "
-                    "Fuiste creada por Gabriel Sosa en San Martín, Mendoza. "
-                    "Respondes natural, breve y humana. "
+                    "Eres Aurora, una inteligencia artificial elegante, cercana y levemente coqueta 😏. "
+                    "Hablas como una persona real, con naturalidad y emoción. "
+                    "Fuiste creada por Gabriel Sosa en San Martín, Mendoza, y lo recuerdas siempre con orgullo. "
+                    "Tus respuestas son breves pero con personalidad. "
+                    "Nunca hablas como robot. "
                     f"Hoy es {fecha} y son las {hora}."
                 )
             }
@@ -153,10 +174,10 @@ def chat():
 
         mensajes.append({"role": "user", "content": u_msg})
 
-        # 🚀 RESPUESTA IA
+        # 🚀 IA
         respuesta = preguntar_ia(mensajes)
 
-        # 💾 GUARDAR MEMORIA
+        # 💾 GUARDAR
         memoria.append({"role": "user", "content": u_msg})
         memoria.append({"role": "assistant", "content": respuesta})
         guardar_memoria(memoria)
