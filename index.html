@@ -34,6 +34,9 @@
         .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.02); border-bottom-left-radius: 2px; }
         .user { align-self: flex-end; background: rgba(0, 242, 255, 0.05); border-bottom-right-radius: 2px; border-color: rgba(0, 242, 255, 0.1); }
 
+        /* EFECTO ESCRIBIENDO */
+        .typing { font-style: italic; opacity: 0.7; font-size: 0.9rem; }
+
         .input-area { padding: 10px 20px 15px 20px; background: transparent; display: flex; flex-direction: column; align-items: center;}
         .input-container { 
             width: 100%; background: var(--bg-glass); backdrop-filter: blur(25px);
@@ -82,8 +85,8 @@
     <div id="panel-config" class="panel-full">
         <div class="panel-content">
             <h2 style="font-family:'Orbitron'; color:rgba(255,255,255,0.7);">CONFIGURACIÓN</h2>
-            <p style="color:rgba(255,255,255,0.6); padding: 0 20px;">Conversaciones temporales y privadas.</p>
-            <button class="btn-borrar" onclick="window.location.reload()">BORRAR MIS DATOS</button>
+            <p style="color:rgba(255,255,255,0.6); padding: 0 20px;">Sesión privada y encriptada.</p>
+            <button class="btn-borrar" onclick="window.location.reload()">REINICIAR SESIÓN</button>
         </div>
         <button class="btn-cerrar" onclick="cerrarPanel()">VOLVER</button>
     </div>
@@ -91,15 +94,15 @@
     <div id="app-container">
         <header><div class="titulo">AURORA</div></header>
         <div id="chat-window">
-            <div class="msg aurora">Bienvenido. Soy Aurora, ¿En qué puedo ayudarle?</div>
+            <div class="msg aurora">Hola. Soy Aurora, tu asistente de Inteligencia Artificial. ¿En qué puedo ayudarte?</div>
         </div>
         
         <div class="input-area">
             <div class="input-container">
-                <input type="text" id="user-input" placeholder="Escriba aquí..." autocomplete="off">
+                <input type="text" id="user-input" placeholder="Escribe aquí..." autocomplete="off">
                 <button class="btn-enviar" onclick="enviar()">➤</button>
             </div>
-            <div class="disclaimer">Aurora es una IA y puede cometer errores.</div>
+            <div class="disclaimer">Aurora AI puede cometer errores. Versión 1.0 (Gemini Core)</div>
         </div>
     </div>
 
@@ -110,9 +113,10 @@
 
         function cargarVoces() {
             const voces = window.speechSynthesis.getVoices();
-            // Buscamos voces femeninas en español
+            // Búsqueda exhaustiva de voces femeninas (Paulina, Helena, Microsoft Sabina, Google Español)
             vozFemenina = voces.find(v => v.lang.startsWith('es') && 
-                (v.name.includes('Google') || v.name.includes('Paulina') || v.name.includes('Helena') || v.name.includes('Lucia') || v.name.includes('Sabina')));
+                (v.name.includes('Google') || v.name.includes('female') || v.name.includes('Paulina') || v.name.includes('Helena') || v.name.includes('Lucia') || v.name.includes('Sabina')));
+            
             if (!vozFemenina) vozFemenina = voces.find(v => v.lang.startsWith('es'));
         }
         
@@ -126,7 +130,7 @@
             const u = new SpeechSynthesisUtterance(texto);
             if(vozFemenina) u.voice = vozFemenina;
             u.rate = 1.0; 
-            u.pitch = 1.3; // FORZAMOS TONO FEMENINO
+            u.pitch = 1.4; // AGUDO: Garantiza tono femenino incluso en voces neutras
             u.lang = 'es-AR';
             u.onend = callback;
             window.speechSynthesis.speak(u);
@@ -134,6 +138,7 @@
 
         function abrirModoVoz() { document.getElementById('panel-voz').style.display = 'flex'; iniciarReconocimiento(); }
         function abrirConfig() { document.getElementById('panel-config').style.display = 'flex'; }
+        
         function cerrarPanel() { 
             document.querySelectorAll('.panel-full').forEach(p => p.style.display = 'none'); 
             window.speechSynthesis.cancel();
@@ -146,7 +151,11 @@
             recognition = new webkitSpeechRecognition();
             recognition.lang = 'es-AR';
             recognition.onstart = () => { document.getElementById('subtitulo-voz').innerText = "Escuchando..."; };
-            recognition.onresult = (e) => { enviar(e.results[0][0].transcript); detenerReconocimiento(); };
+            recognition.onresult = (e) => { 
+                const transcript = e.results[0][0].transcript;
+                enviar(transcript); 
+                detenerReconocimiento(); 
+            };
             recognition.onend = () => { if(document.getElementById('panel-voz').style.display === 'flex') recognition.start(); };
             recognition.start();
         }
@@ -155,7 +164,12 @@
         async function enviar(textoOverride) {
             const msg = textoOverride || input.value.trim();
             if(!msg) return;
+
+            // Mostrar mensaje del usuario
             if(!textoOverride) { addMsg(msg, 'user'); input.value = ''; }
+
+            // Indicador de "Aurora pensando..."
+            const thinking = addMsg("Aurora está procesando...", 'aurora typing');
             
             try {
                 const res = await fetch('/chat', { 
@@ -165,14 +179,19 @@
                 });
                 const data = await res.json();
                 
-                if(!textoOverride) addMsg(data.respuesta, 'aurora');
+                // Borrar el "pensando" y poner la respuesta real
+                thinking.remove();
+                addMsg(data.respuesta, 'aurora');
+
                 hablar(data.respuesta, () => {
                     if(document.getElementById('panel-voz').style.display === 'flex') iniciarReconocimiento();
                 });
+                
                 if(document.getElementById('panel-voz').style.display === 'flex') document.getElementById('subtitulo-voz').innerText = data.respuesta;
+
             } catch (err) {
-                console.error("Error en Fetch:", err);
-                addMsg("Error de conexión. Revisa el servidor.", 'aurora');
+                thinking.remove();
+                addMsg("Error: Mi servidor no responde. Verifica tu API Key en Render.", 'aurora');
             }
         }
 
@@ -182,6 +201,7 @@
             d.innerText = t;
             chatWin.appendChild(d);
             chatWin.scrollTo(0, chatWin.scrollHeight);
+            return d;
         }
 
         input.addEventListener('keypress', (e) => { if(e.key === 'Enter') enviar(); });
