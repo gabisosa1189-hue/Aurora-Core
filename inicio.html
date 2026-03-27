@@ -15,20 +15,20 @@
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100vh; 
             overflow: hidden; 
-            background-image: url('poster.jpg'); /* Aparece al toque */
+            background-image: url('poster.jpg'); 
             background-size: cover;
             background-position: center;
             background-color: #000;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
         }
         
-        /* 2. VIDEO CON FADE-IN: Aparece suave sobre la foto */
+        /* 2. VIDEO CON FADE-IN */
         #bg-video { 
             position: fixed !important; top: 0; left: 0; 
             width: 100vw; height: 100vh; 
             object-fit: cover !important; 
             z-index: 1; 
-            opacity: 0; /* Empieza invisible */
+            opacity: 0; 
             transition: opacity 2s ease-in-out; 
         }
 
@@ -62,30 +62,33 @@
             font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
             transition: 0.3s; font-size: 1rem;
         }
-
         .btn-google { background: #fff; color: #000; }
         .btn-email-toggle { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); }
         .btn-submit { background: var(--accent); color: #000; margin-top: 10px; }
 
         .links-container { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
         .toggle-link { font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); cursor: pointer; text-decoration: underline; }
-        .toggle-link:hover { color: var(--accent); }
 
         /* INTERFAZ CHAT */
         #app-container { 
-            display: none; flex-direction: column; height: 100%; 
+            display: none; flex-direction: column; height: 100vh; 
             max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1s; 
         }
-        header { padding: 25px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .titulo { font-family: 'Orbitron', sans-serif; letter-spacing: 12px; font-size: 1.4rem; }
+        header { padding: 30px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); position: relative; }
+        .titulo { font-family: 'Orbitron', sans-serif; letter-spacing: 12px; font-size: 1.5rem; text-shadow: 0 0 15px var(--accent); }
+        
+        .btn-logout { position: absolute; right: 20px; top: 35px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 0.7rem; cursor: pointer; }
+
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
-        .msg { max-width: 85%; padding: 14px 20px; border-radius: 20px; backdrop-filter: blur(10px); }
+        .msg { max-width: 85%; padding: 15px 20px; border-radius: 20px; backdrop-filter: blur(15px); animation: slide 0.3s ease; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); }
-        .input-area { padding: 20px; }
-        .input-container { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 30px; display: flex; align-items: center; padding: 5px 20px; }
-        #user-input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; }
 
+        .input-area { padding: 25px 20px; }
+        .input-container { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 242, 255, 0.4); border-radius: 35px; display: flex; align-items: center; padding: 5px 20px; backdrop-filter: blur(20px); }
+        #user-input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; }
+
+        @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -118,8 +121,13 @@
     </div>
 
     <div id="app-container">
-        <header><div class="titulo">AURORA</div></header>
-        <div id="chat-window"><div class="msg aurora" id="saludo-ia">Iniciando sistema...</div></div>
+        <header>
+            <div class="titulo">AURORA</div>
+            <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </header>
+        <div id="chat-window">
+            <div class="msg aurora" id="saludo-ia">Estableciendo conexión...</div>
+        </div>
         <div class="input-area">
             <div class="input-container">
                 <button style="background:none; border:none; color:var(--accent); font-size:1.2rem;">🎤</button>
@@ -143,9 +151,14 @@
         };
         firebase.initializeApp(firebaseConfig);
 
-        // 3. TRIGGER FADE-IN: Aparece cuando el video empieza a rodar
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
+
+        function hablar(t) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(t); u.lang = 'es-AR'; u.pitch = 1.6; u.rate = 1;
+            window.speechSynthesis.speak(u);
+        }
 
         let esRegistro = false;
         function mostrarFormulario() {
@@ -180,14 +193,22 @@
             firebase.auth().signInWithPopup(provider).catch(e => alert(e.message));
         }
 
+        function cerrarSesion() {
+            firebase.auth().signOut().then(() => location.reload());
+        }
+
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 document.getElementById('login-overlay').style.opacity = "0";
                 setTimeout(() => {
                     document.getElementById('login-overlay').style.display = "none";
                     document.getElementById('app-container').style.display = "flex";
-                    setTimeout(() => document.getElementById('app-container').style.opacity = "1", 50);
-                    document.getElementById('saludo-ia').innerText = "Acceso concedido. Aurora en línea.";
+                    setTimeout(() => {
+                        document.getElementById('app-container').style.opacity = "1";
+                        const m = "Bienvenido de nuevo, Gabriel. El sistema Aurora está operativo.";
+                        document.getElementById('saludo-ia').innerText = m;
+                        hablar(m);
+                    }, 50);
                 }, 600);
             }
         });
@@ -196,13 +217,29 @@
             const inp = document.getElementById('user-input');
             const msg = inp.value.trim(); if(!msg) return;
             addMsg(msg, 'user'); inp.value = '';
-            const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg}) });
-            const data = await res.json(); addMsg(data.respuesta, 'aurora');
+            
+            try {
+                const res = await fetch('/chat', { 
+                    method:'POST', 
+                    headers:{'Content-Type':'application/json'}, 
+                    body:JSON.stringify({msg}) 
+                });
+                const data = await res.json();
+                addMsg(data.respuesta, 'aurora');
+                hablar(data.respuesta);
+            } catch(e) {
+                addMsg("Error en la conexión neuronal.", 'aurora');
+            }
         }
+
         function addMsg(t, cl) {
             const d = document.createElement('div'); d.className = `msg ${cl}`; d.innerText = t;
-            const win = document.getElementById('chat-window'); win.appendChild(d); win.scrollTo(0, win.scrollHeight);
+            const win = document.getElementById('chat-window');
+            win.appendChild(d);
+            win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
+        
+        document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') enviar(); });
     </script>
 </body>
 </html>
