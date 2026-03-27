@@ -28,17 +28,17 @@
         .input-area { padding: 25px 20px; }
         .input-container { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 242, 255, 0.4); border-radius: 35px; display: flex; align-items: center; padding: 5px 20px; backdrop-filter: blur(20px); }
         
-        /* Estilizamos para que parezca activo aunque esté en readonly al principio */
-        #terminal-input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; }
+        /* Input con estilo formal */
+        #aurora-comms-channel { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1rem; }
 
         @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div style="position: absolute; overflow: hidden; height: 0; width: 0;">
-        <input type="text" name="fake_user" tabindex="-1">
-        <input type="password" name="fake_pass" tabindex="-1">
+    <div style="position: absolute; top: -500px; left: -500px; opacity: 0;">
+        <input type="text" name="email">
+        <input type="password" name="password">
     </div>
 
     <video autoplay muted loop playsinline preload="auto" poster="poster.jpg" id="bg-video">
@@ -51,7 +51,7 @@
             <button onclick="loginGoogle()" style="width:100%; padding:16px; border-radius:18px; border:none; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#000;">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="18"> Entrar con Google
             </button>
-            <p onclick="mostrarEmail()" style="margin-top:20px; font-size:0.8rem; cursor:pointer; opacity:0.5;">Usar correo</p>
+            <p onclick="mostrarFormulario()" style="margin-top:20px; font-size:0.8rem; cursor:pointer; opacity:0.5;">Usar correo</p>
         </div>
     </div>
 
@@ -63,7 +63,7 @@
         <div class="input-area">
             <div class="input-container">
                 <button style="background:none; border:none; color:var(--accent); font-size:1.2rem;">🎤</button>
-                <input type="text" id="terminal-input" readonly placeholder="Cargando sistema..." autocomplete="new-password">
+                <input type="text" id="aurora-comms-channel" readonly placeholder="Iniciando interfaz..." autocomplete="off">
                 <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.6rem; cursor:pointer;">➤</button>
             </div>
         </div>
@@ -89,48 +89,42 @@
         function hablar(t) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
-            u.lang = 'es-AR';
-            u.pitch = 1.5; // Voz más femenina/aguda
+            u.lang = 'es-AR'; u.pitch = 1.6; u.rate = 1;
             window.speechSynthesis.speak(u);
         }
 
-        // 🚨 EL "EXTERMINADOR" DE TEXTO
-        function limpiarTodo() {
-            const input = document.getElementById('terminal-input');
-            // Borramos obsesivamente durante 2 segundos
-            let contador = 0;
-            const intervalo = setInterval(() => {
-                input.value = '';
-                contador++;
-                if(contador > 10) clearInterval(intervalo);
-            }, 200);
+        // 🚨 LIMPIEZA TOTAL POR INTERVALO
+        function exterminarMail() {
+            const input = document.getElementById('aurora-comms-channel');
+            let t = setInterval(() => { input.value = ''; }, 50);
+            setTimeout(() => { clearInterval(t); }, 3000); // Limpia durante 3 segundos
         }
 
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                limpiarTodo();
+                exterminarMail();
                 document.getElementById('login-overlay').style.opacity = "0";
                 setTimeout(() => {
                     document.getElementById('login-overlay').style.display = "none";
                     document.getElementById('app-container').style.display = "flex";
                     setTimeout(() => {
                         document.getElementById('app-container').style.opacity = "1";
-                        const m = "Bienvenido, Gabriel. El sistema Aurora está operativo.";
+                        const m = "Bienvenido, Gabriel. El sistema Aurora está operativo. ¿En qué puedo ayudarte hoy?";
                         document.getElementById('saludo-ia').innerText = m;
                         hablar(m);
                         
-                        // 🚨 DESBLOQUEAMOS EL CHAT SOLO CUANDO YA CARGÓ TODO
-                        const chatInp = document.getElementById('terminal-input');
+                        // 🚨 DESBLOQUEAMOS Y PONEMOS TEXTO FORMAL
+                        const chatInp = document.getElementById('aurora-comms-channel');
                         chatInp.removeAttribute('readonly');
-                        chatInp.placeholder = "Pregúntale a Aurora...";
-                        limpiarTodo();
-                    }, 800);
+                        chatInp.placeholder = "Escribe a Aurora...";
+                        exterminarMail();
+                    }, 500);
                 }, 600);
             }
         });
 
         async function enviar() {
-            const inp = document.getElementById('terminal-input');
+            const inp = document.getElementById('aurora-comms-channel');
             const msg = inp.value.trim(); 
             if(!msg || msg.includes('@')) { inp.value = ''; return; }
             
@@ -140,7 +134,7 @@
                 const data = await res.json();
                 addMsg(data.respuesta, 'aurora');
                 hablar(data.respuesta);
-            } catch(e) { addMsg("Error neuronal.", 'aurora'); }
+            } catch(e) { addMsg("Error en la conexión.", 'aurora'); }
         }
 
         function addMsg(t, cl) {
@@ -149,7 +143,7 @@
             win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
         
-        document.getElementById('terminal-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') enviar(); });
+        document.getElementById('aurora-comms-channel').addEventListener('keypress', (e) => { if(e.key === 'Enter') enviar(); });
     </script>
 </body>
 </html>
