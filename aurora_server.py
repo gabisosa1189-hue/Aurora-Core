@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os, requests, datetime
 
-# Intentamos importar tus archivos, si fallan, la app arranca igual
+# Intentamos importar tus archivos de lógica
 try:
     import alma, internet
 except ImportError:
@@ -14,11 +14,10 @@ CORS(app)
 
 memoria_global = [] 
 
-# RUTA DE SALUDO (Health Check)
-# Esto es lo que Render necesita ver para saber que la app vive
-@app.route('/health')
-def health():
-    return "OK", 200
+# 🚨 ESTA ES LA RUTA QUE FALTABA: Entrega el video y cualquier archivo de la carpeta
+@app.route('/<path:path>')
+def send_static(path):
+    return send_from_directory(os.getcwd(), path)
 
 @app.route('/')
 def index():
@@ -30,14 +29,13 @@ def chat():
     try:
         data = request.json
         u_msg = data.get('msg', '').strip()
-        API_KEY = os.environ.get("GEMINI_API_KEY") # 🚨 ASEGURATE DE PONERLA EN RENDER (Environment Variables)
+        API_KEY = os.environ.get("GEMINI_API_KEY") 
         
         if not API_KEY:
-            return jsonify({"respuesta": "Falta la API KEY en la configuración de Render."})
+            return jsonify({"respuesta": "Falta la API KEY en Render (Environment Variables)."})
 
-        # Buscador de internet (solo si el archivo existe)
         busqueda_info = ""
-        if internet and any(p in u_msg.lower() for p in ["busca", "internet", "clima", "quien es"]):
+        if internet and any(p in u_msg.lower() for p in ["busca", "internet", "noticias", "clima"]):
             busqueda_info = internet.buscar(u_msg)
 
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}"
@@ -58,8 +56,9 @@ def chat():
         
         return jsonify({"respuesta": txt_ai})
     except Exception as e:
-        return jsonify({"respuesta": "Aurora está reconectando sus neuronas..."})
+        return jsonify({"respuesta": "Aurora está reconectando... reintentá en un segundo."})
 
 if __name__ == '__main__':
-    # Esto es solo para tu compu local
-    app.run(host='0.0.0.0', port=10000)
+    # Puerto 10000 fijo para Render
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
