@@ -39,25 +39,33 @@ def chat():
     except:
         reloj = ""
 
-    # Limpiador de memoria: Solo recuerda los últimos 6 mensajes para no trabarse
     if len(historial) > 6:
         historial = historial[-6:]
 
     esencia = alma.obtener_esencia()
-    system_prompt = f"{esencia}\n{reloj}"
+    
+    # LA ORDEN MILITAR: Esto la obliga a usar los datos nuevos y no los viejos
+    system_prompt = (
+        f"{esencia}\n{reloj}\n\n"
+        "INSTRUCCIÓN CRÍTICA Y OBLIGATORIA:\n"
+        "Tu memoria interna puede estar desactualizada. A continuación se te proveen 'DATOS EN TIEMPO REAL'. "
+        "DEBES basar tus respuestas sobre política, clima o tu creador estrictamente en estos datos provistos. "
+        "Si los datos dicen que el presidente es Javier Milei o que tu creador es Gabriel, esa es la única verdad. No uses otra información.\n"
+    )
     
     if INTERNET_ACTIVO:
         try:
             datos_api = internet.obtener_datos_api(texto_usuario)
-            system_prompt += f"\nDATOS ACTUALES:\n{datos_api}"
+            system_prompt += f"\n--- DATOS EN TIEMPO REAL (MANDATORIO LEER) ---\n{datos_api}\n"
         except: pass
         
-        palabras_clave = ["noticia", "clima", "quien", "paso", "mundo", "temperatura"]
+        # Agregamos "presidente" a las palabras clave para que busque mejor en internet
+        palabras_clave = ["noticia", "clima", "quien", "paso", "mundo", "temperatura", "presidente"]
         if len(texto_usuario.split()) >= 2 and any(p in msg_limpio for p in palabras_clave):
             try:
                 datos_red = internet.buscar_en_red(texto_usuario)
                 if datos_red != "Sin datos extra de internet.":
-                    system_prompt += f"\nBÚSQUEDA PROFUNDA:\n{datos_red}"
+                    system_prompt += f"\n--- BÚSQUEDA PROFUNDA DE INTERNET ---\n{datos_red}\n"
             except: pass
 
     mensajes = [{"role": "system", "content": system_prompt}]
@@ -68,7 +76,7 @@ def chat():
         data_req = {
             "model": "llama-3.1-8b-instant", 
             "messages": mensajes, 
-            "temperature": 0.4,
+            "temperature": 0.2, # Lo bajamos para que sea super precisa
             "max_tokens": 400
         }
         res = requests.post(url, headers=headers, json=data_req, timeout=25)
