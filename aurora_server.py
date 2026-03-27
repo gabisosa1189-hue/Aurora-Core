@@ -11,7 +11,6 @@ memoria_global = []
 def index():
     return send_from_directory(os.getcwd(), 'inicio.html')
 
-# Esto es vital para que cargue la App (PWA)
 @app.route('/<path:path>')
 def send_static(path):
     return send_from_directory(os.getcwd(), path)
@@ -22,17 +21,14 @@ def chat():
     data = request.json
     u_msg = data.get('msg', '').strip()
     
-    # Llama a tu nueva llave de Google en Render
+    # ACÁ LLAMA A GOOGLE (Ya no existe OpenAI en este código)
     API_KEY = os.environ.get("GEMINI_API_KEY")
-    
-    # Usamos la v1beta que ACEPTA systemInstruction sin dar Error 400
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     try:
         esencia = alma.obtener_esencia()
         contexto = f"{esencia}\nHora en San Martín, Mendoza: {datetime.datetime.now().strftime('%H:%M')}"
 
-        # Limpieza de memoria (Google es estricto con los roles)
         historial = []
         for m in memoria_global[-6:]:
             rol = "user" if m["role"] == "user" else "model"
@@ -61,7 +57,7 @@ def chat():
         return jsonify({"respuesta": txt_ai})
 
     except Exception as e:
-        return jsonify({"respuesta": "Error técnico: Me quedé sin señal, che."})
+        return jsonify({"respuesta": "Error de red, che."})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
