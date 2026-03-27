@@ -28,9 +28,10 @@ def chat():
     texto_usuario = data.get('msg', '')
     msg_limpio = texto_usuario.lower()
     
-    GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
+    # Nos conectamos a los servidores de Google Gemini
+    GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    headers = {"Content-Type": "application/json"}
     
     try:
         zona_ar = datetime.timezone(datetime.timedelta(hours=-3))
@@ -63,21 +64,32 @@ def chat():
                     system_prompt += f"\n--- BÚSQUEDA PROFUNDA DE INTERNET ---\n{datos_red}\n"
             except: pass
 
-    mensajes = [{"role": "system", "content": system_prompt}]
-    mensajes.extend(historial) 
-    mensajes.append({"role": "user", "content": texto_usuario})
+    # Adaptamos la memoria al formato que exige Google
+    contenidos = []
+    for msg in historial:
+        rol = "user" if msg["role"] == "user" else "model"
+        contenidos.append({"role": rol, "parts": [{"text": msg["content"]}]})
+    
+    contenidos.append({"role": "user", "parts": [{"text": texto_usuario}]})
+
+    data_req = {
+        "contents": contenidos,
+        "systemInstruction": {
+            "role": "user",
+            "parts": [{"text": system_prompt}]
+        },
+        "generationConfig": {
+            "temperature": 0.2,
+            "maxOutputTokens": 400
+        }
+    }
     
     try:
-        data_req = {
-            "model": "llama-3.1-8b-instant", 
-            "messages": mensajes, 
-            "temperature": 0.2, 
-            "max_tokens": 400
-        }
         res = requests.post(url, headers=headers, json=data_req, timeout=25)
         res.raise_for_status()
-        respuesta_ai = res.json()['choices'][0]['message']['content']
-    except:
+        respuesta_ai = res.json()['candidates'][0]['content']['parts'][0]['text']
+    except Exception as e:
+        print(f"Error en servidor: {e}")
         respuesta_ai = "Disculpe, mi red se saturó un segundo. ¿Podemos retomar?"
 
     historial.append({"role": "user", "content": texto_usuario})
