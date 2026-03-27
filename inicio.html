@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AURORA - Acceso Neuronal</title>
+    <title>AURORA - Acceso</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#00f2ff">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
@@ -14,48 +14,46 @@
         
         #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover !important; z-index: 1; }
 
-        /* PANTALLA DE ACCESO CRISTAL */
+        /* PANTALLA DE LOGIN DE CRISTAL */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px);
             z-index: 9999; display: flex; align-items: center; justify-content: center;
-            transition: all 0.8s ease-in-out;
+            transition: all 0.6s ease;
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.03); padding: 40px 30px; border-radius: 40px;
+            background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px;
             border: 1px solid rgba(0, 242, 255, 0.25); text-align: center;
-            max-width: 400px; width: 85%; box-shadow: 0 0 60px rgba(0, 242, 255, 0.15);
-            transition: all 0.5s ease;
+            max-width: 380px; width: 85%; box-shadow: 0 0 60px rgba(0, 242, 255, 0.15);
         }
 
         .titulo-login { font-family: 'Orbitron', sans-serif; letter-spacing: 5px; font-size: 1.2rem; margin-bottom: 30px; }
 
-        /* Formulario oculto por defecto */
-        #email-form { display: none; flex-direction: column; gap: 15px; margin-top: 20px; animation: fadeIn 0.5s ease; }
-        
-        .input-login {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 14px; border-radius: 15px; color: #fff; outline: none; font-family: inherit;
-        }
-        .input-login:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.05); }
+        /* Contenedores de botones y forms */
+        #main-auth { display: flex; flex-direction: column; gap: 15px; }
+        #email-form { display: none; flex-direction: column; gap: 12px; animation: fadeIn 0.4s ease; }
 
-        .auth-buttons { display: flex; flex-direction: column; gap: 12px; }
+        .input-login {
+            background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px; border-radius: 18px; color: #fff; outline: none; font-size: 1rem;
+        }
+        .input-login:focus { border-color: var(--accent); }
 
         .btn-auth {
             width: 100%; padding: 16px; border-radius: 18px; border: none;
             font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: 0.3s; font-size: 0.95rem;
+            transition: 0.3s; font-size: 1rem;
         }
 
         .btn-google { background: #fff; color: #000; }
-        .btn-email-toggle { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.15); }
-        .btn-main { background: var(--accent); color: #000; margin-top: 10px; }
+        .btn-email-toggle { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-submit { background: var(--accent); color: #000; margin-top: 10px; }
 
-        .toggle-link { font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); cursor: pointer; margin-top: 15px; text-decoration: underline; }
+        .links-container { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .toggle-link { font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); cursor: pointer; text-decoration: underline; }
         .toggle-link:hover { color: var(--accent); }
 
-        /* App Container */
         #app-container { display: none; flex-direction: column; height: 100%; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1s; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -66,23 +64,27 @@
     <video autoplay muted loop playsinline id="bg-video"><source src="fondo.mp4" type="video/mp4"></video>
 
     <div id="login-overlay">
-        <div class="login-card" id="card">
-            <h1 class="titulo-login" id="login-title">BIENVENIDO A AURORA</h1>
+        <div class="login-card">
+            <h1 class="titulo-login" id="card-title">BIENVENIDO A AURORA</h1>
             
-            <div id="main-auth" class="auth-buttons">
+            <div id="main-auth">
                 <button onclick="loginGoogle()" class="btn-auth btn-google">
                     <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.85 2.22c1.67-1.53 2.63-3.8 2.63-6.55z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.85-2.22c-.79.53-1.8.85-3.11.85-2.39 0-4.41-1.61-5.14-3.78H.9v2.33C2.38 15.94 5.47 18 9 18z" fill="#34A853"/><path d="M3.86 10.67c-.19-.56-.3-1.16-.3-1.77s.11-1.21.3-1.77V4.8H.9A8.98 8.98 0 0 0 0 9c0 1.45.35 2.82.9 4.05l2.96-2.38z" fill="#FBBC05"/><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.89 11.43 0 9 0 5.47 0 2.38 2.06.9 5.07L3.86 7.4c.73-2.17 2.75-3.82 5.14-3.82z" fill="#EA4335"/></svg>
                     Continuar con Google
                 </button>
-                <button onclick="showEmailForm()" class="btn-auth btn-email-toggle">📧 Correo electrónico</button>
+                <button onclick="mostrarFormulario()" class="btn-auth btn-email-toggle">📧 Correo electrónico</button>
             </div>
 
             <div id="email-form">
-                <input type="email" id="email" class="input-login" placeholder="Tu correo">
-                <input type="password" id="pass" class="input-login" placeholder="Tu contraseña">
-                <button id="btn-submit" onclick="handleAuth()" class="btn-auth btn-main">Ingresar</button>
-                <p class="toggle-link" id="toggle-text" onclick="toggleMode()">¿No tienes cuenta? Regístrate</p>
-                <p class="toggle-link" onclick="backToMain()">← Volver</p>
+                <input type="email" id="email-input" class="input-login" placeholder="Correo electrónico">
+                <input type="password" id="pass-input" class="input-login" placeholder="Contraseña">
+                
+                <button id="submit-auth" onclick="ejecutarAuth()" class="btn-auth btn-submit">Ingresar</button>
+                
+                <div class="links-container">
+                    <p class="toggle-link" id="toggle-btn" onclick="cambiarModo()">¿No tienes cuenta? Regístrate</p>
+                    <p class="toggle-link" onclick="volverInicio()">← Volver atrás</p>
+                </div>
             </div>
         </div>
     </div>
@@ -104,39 +106,43 @@
         };
         firebase.initializeApp(firebaseConfig);
 
-        let isRegisterMode = false;
+        let esRegistro = false;
 
-        function showEmailForm() {
+        // 1. Mostrar el formulario de cristal
+        function mostrarFormulario() {
             document.getElementById('main-auth').style.display = 'none';
             document.getElementById('email-form').style.display = 'flex';
-            document.getElementById('login-title').innerText = "ACCESO POR EMAIL";
+            document.getElementById('card-title').innerText = "ACCESO POR EMAIL";
         }
 
-        function backToMain() {
+        // 2. Volver a los botones de Google
+        function volverInicio() {
             document.getElementById('main-auth').style.display = 'flex';
             document.getElementById('email-form').style.display = 'none';
-            document.getElementById('login-title').innerText = "BIENVENIDO A AURORA";
+            document.getElementById('card-title').innerText = "BIENVENIDO A AURORA";
         }
 
-        function toggleMode() {
-            isRegisterMode = !isRegisterMode;
-            document.getElementById('login-title').innerText = isRegisterMode ? "CREAR CUENTA" : "ACCESO POR EMAIL";
-            document.getElementById('btn-submit').innerText = isRegisterMode ? "Registrarme" : "Ingresar";
-            document.getElementById('toggle-text').innerText = isRegisterMode ? "¿Ya tienes cuenta? Ingresa" : "¿No tienes cuenta? Regístrate";
+        // 3. Cambiar entre Login y Registro
+        function cambiarModo() {
+            esRegistro = !esRegistro;
+            document.getElementById('card-title').innerText = esRegistro ? "CREAR CUENTA" : "ACCESO POR EMAIL";
+            document.getElementById('submit-auth').innerText = esRegistro ? "Registrarme" : "Ingresar";
+            document.getElementById('toggle-btn').innerText = esRegistro ? "¿Ya tienes cuenta? Ingresa" : "¿No tienes cuenta? Regístrate";
         }
 
-        async function handleAuth() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
-            if(!email || !pass) return alert("Completa los campos");
+        // 4. Ejecutar la acción en Firebase
+        async function ejecutarAuth() {
+            const email = document.getElementById('email-input').value;
+            const pass = document.getElementById('pass-input').value;
+            if(!email || !pass) return alert("Por favor, completa los campos.");
 
             try {
-                if(isRegisterMode) {
+                if(esRegistro) {
                     await firebase.auth().createUserWithEmailAndPassword(email, pass);
                 } else {
                     await firebase.auth().signInWithEmailAndPassword(email, pass);
                 }
-            } catch(e) { alert(e.message); }
+            } catch(e) { alert("Error: " + e.message); }
         }
 
         function loginGoogle() {
@@ -151,7 +157,7 @@
                     document.getElementById('login-overlay').style.display = "none";
                     document.getElementById('app-container').style.display = "flex";
                     setTimeout(() => document.getElementById('app-container').style.opacity = "1", 50);
-                }, 800);
+                }, 600);
             }
         });
     </script>
