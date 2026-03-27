@@ -2,17 +2,10 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os, requests, datetime, alma
 
-# Intentamos cargar internet.py
-try:
-    import internet
-    INTERNET_ACTIVO = True
-except:
-    INTERNET_ACTIVO = False
-
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-historial_memoria = [] 
+memoria_global = [] 
 
 @app.route('/')
 def index(): 
@@ -20,31 +13,24 @@ def index():
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    global historial_memoria
+    global memoria_global
     data = request.json
     texto_usuario = data.get('msg', '')
     
-    # 1. VALIDAR LLAVE (Revisá que en Render diga exactamente GEMINI_API_KEY)
     API_KEY = os.environ.get("GEMINI_API_KEY")
     if not API_KEY:
-        return jsonify({"respuesta": "DEBUG: No encontré la variable GEMINI_API_KEY en Render."})
+        return jsonify({"respuesta": "ERROR: No configuraste GEMINI_API_KEY en Render."})
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     try:
+        # 1. Armamos el contexto
         esencia = alma.obtener_esencia()
-        reloj = f"Sistema: Hora {datetime.datetime.now().strftime('%H:%M')}."
-        system_prompt = f"{esencia}\n{reloj}"
-        
-        if INTERNET_ACTIVO:
-            try:
-                datos_api = internet.obtener_datos_api(texto_usuario)
-                system_prompt += f"\nDATOS: {datos_api}"
-            except: pass
+        contexto = f"{esencia}\nHora actual: {datetime.datetime.now().strftime('%H:%M')}"
 
-        # Memoria fluida
+        # 2. Formato de memoria Gemini
         contenidos = []
-        for m in historial_memoria[-6:]:
+        for m in memoria_global[-6:]:
             rol = "user" if m["role"] == "user" else "model"
             contenidos.append({"role": rol, "parts": [{"text": m["content"]}]})
         
@@ -52,25 +38,30 @@ def chat():
 
         payload = {
             "contents": contenidos,
-            "systemInstruction": {"parts": [{"text": system_prompt}]},
-            "generationConfig": {"temperature": 0.7, "maxOutputTokens": 450}
+            "systemInstruction": {"parts": [{"text": contexto}]},
+            "generationConfig": {"temperature": 0.7, "maxOutputTokens": 500}
         }
         
-        # 2. PETICIÓN A GOOGLE
-        res = requests.post(url, json=payload, timeout=15)
+        # 3. La llamada (Aquí es donde está fallando)
+        res = requests.post(url, json=payload, timeout=20)
         
+        # SI GOOGLE RECHAZA LA PETICIÓN, ESTO NOS DIRÁ POR QUÉ
         if res.status_code != 200:
-            # SI GOOGLE RECHAZA LA LLAVE, NOS VA A DECIR ACÁ
-            return jsonify({"respuesta": f"DEBUG Google Error {res.status_code}: {res.text[:100]}"})
+            print(f"--- ERROR DE GOOGLE ---")
+            print(f"Status: {res.status_code}")
+            print(f"Respuesta: {res.text}")
+            return jsonify({"respuesta": f"Google respondió con error {res.status_code}. Revisá los logs."})
             
         respuesta_ai = res.json()['candidates'][0]['content']['parts'][0]['text']
         
-        historial_memoria.append({"role": "user", "content": texto_usuario})
-        historial_memoria.append({"role": "assistant", "content": respuesta_ai})
+        memoria_global.append({"role": "user", "content": texto_usuario})
+        memoria_global.append({"role": "assistant", "content": respuesta_ai})
 
     except Exception as e:
-        # SI HAY UN ERROR DE CÓDIGO, NOS LO DICE EN EL CHAT
-        return jsonify({"respuesta": f"DEBUG Python Error: {str(e)}"})
+        # ESTO ES LO QUE NECESITO QUE ME PASES
+        print(f"--- ERROR CRÍTICO DE PYTHON ---")
+        print(str(e))
+        respuesta_ai = f"Error técnico: {str(e)}"
 
     return jsonify({"respuesta": respuesta_ai})
 
