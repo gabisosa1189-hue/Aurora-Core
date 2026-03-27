@@ -23,19 +23,19 @@ def chat():
         if not gemini_api_key:
             return jsonify({"respuesta": "ERROR: Me falta la llave GEMINI_API_KEY en Render.", "audio": None})
             
-        # 🚀 MOTOR ACTUALIZADO: Gemini 3 Flash (Versión 2026)
-        gemini_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-3-flash:generateContent?key={gemini_api_key}"
+        # 🚀 MODELO 2026: Gemini 3 Flash
+        # Usamos la versión v1beta que es donde siempre están los modelos más nuevos
+        gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key={gemini_api_key}"
         
         gemini_payload = {"contents": [{"role": "user", "parts": [{"text": u_msg}]}]}
         res = requests.post(gemini_url, json=gemini_payload, timeout=10)
         
         if res.status_code != 200:
-            # Este mensaje nos dirá si Google acepta el nombre o si hay otro drama
-            return jsonify({"respuesta": f"ERROR DE GEMINI (URL: {gemini_url}): {res.text}", "audio": None})
+            return jsonify({"respuesta": f"ERROR DE GOOGLE (URL: {gemini_url}): {res.text}", "audio": None})
             
         txt = res.json()['candidates'][0]['content']['parts'][0]['text']
 
-        # --- CUERDAS VOCALES (ELEVENLABS) ---
+        # --- ELEVENLABS ---
         elevenlabs_api_key = os.environ.get("ELEVENLABS_API_KEY")
         audio_b64 = None
         if elevenlabs_api_key:
