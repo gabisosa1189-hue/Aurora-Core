@@ -87,13 +87,12 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 FUNCIÓN HABLAR: MOTOR DE DULZURA INTELIGENTE
+        // 🚨 PLAN B: Función hablar() por si falla el servidor o no hay llave
         function hablar(t) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
             u.lang = 'es-AR';
             
-            // Función interna para buscar la mejor voz
             const setBestVoice = () => {
                 const voices = window.speechSynthesis.getVoices();
                 const vozDulce = voices.find(v => 
@@ -104,16 +103,12 @@
             };
 
             setBestVoice();
-            
-            // CONFIGURACIÓN HUMANA
-            u.pitch = 1.0;  // Tono natural, nada de chillidos
-            u.rate = 0.95;  // Velocidad pausada para mayor dulzura
+            u.pitch = 1.0;  
+            u.rate = 0.95;  
             u.volume = 1.0;
-            
             window.speechSynthesis.speak(u);
         }
 
-        // Refresco de voces automático
         window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
         function exterminarMail() {
@@ -154,7 +149,10 @@
                         const nombreUsuario = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
                         const m = `Hola, ${nombreUsuario}. ¿Cómo puedo ayudarte hoy?`;
                         document.getElementById('saludo-ia').innerText = m;
+                        
+                        // OJO: El saludo inicial usa el Plan B porque no se envía al servidor
                         hablar(m);
+                        
                         const chatInp = document.getElementById('chat-terminal');
                         chatInp.removeAttribute('readonly'); 
                         chatInp.placeholder = "Escribe a Aurora...";
@@ -164,6 +162,7 @@
             }
         });
 
+        // 🚨 LA MAGIA NEURONAL ESTÁ ACÁ
         async function enviar() {
             const inp = document.getElementById('chat-terminal');
             const msg = inp.value.trim(); if(!msg || msg.includes('@')) { inp.value = ''; return; }
@@ -172,7 +171,16 @@
                 const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg}) });
                 const data = await res.json(); 
                 addMsg(data.respuesta, 'aurora'); 
-                hablar(data.respuesta);
+                
+                // Si el servidor nos mandó el audio MP3 en vivo...
+                if (data.audio) {
+                    const audioReal = new Audio("data:audio/mpeg;base64," + data.audio);
+                    audioReal.play();
+                } else {
+                    // Si no mandó audio, usamos el sintetizador del navegador
+                    hablar(data.respuesta);
+                }
+                
             } catch(e) { addMsg("Error en la conexión neuronal.", 'aurora'); }
         }
 
