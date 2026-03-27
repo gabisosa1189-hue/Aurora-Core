@@ -9,9 +9,9 @@
         :root { --accent: #00f2ff; --bg-glass: rgba(255, 255, 255, 0.03); --border-glass: rgba(255, 255, 255, 0.08); }
         body { margin: 0; padding: 0; height: 100vh; background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overflow: hidden; }
         
-        /* DISEÑO 1: EFECTO AURORA EN MOVIMIENTO */
-        .aurora-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: radial-gradient(circle at 50% -20%, #004d4d, transparent); opacity: 0.4; filter: blur(80px); animation: moveAurora 8s infinite alternate ease-in-out; }
-        @keyframes moveAurora { from { transform: scale(1) translateY(0); } to { transform: scale(1.1) translateY(5%); } }
+        /* EFECTO AURORA FONDO */
+        .aurora-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: radial-gradient(circle at 50% -20%, #004d4d, transparent); opacity: 0.5; filter: blur(80px); animation: auroraFlow 10s infinite alternate; }
+        @keyframes auroraFlow { from { transform: scale(1); } to { transform: scale(1.1) translateY(5%); } }
 
         #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.3); }
         #app-container { display: flex; flex-direction: column; height: 100vh; max-width: 800px; margin: 0 auto; position: relative; }
@@ -19,25 +19,14 @@
         header { padding: 15px; text-align: center; border-bottom: 1px solid var(--border-glass); backdrop-filter: blur(10px); }
         .titulo { font-family: 'Orbitron'; letter-spacing: 6px; font-size: 1.2rem; color: var(--accent); text-shadow: 0 0 10px var(--accent); }
         
-        /* DISEÑO 2: MICRÓFONO CON GLOW */
-        #btn-modo-voz { 
-            position: absolute; top: 50%; left: 15px; transform: translateY(-50%); 
-            width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--accent); 
-            background: rgba(0, 242, 255, 0.1); color: var(--accent); font-size: 1.3rem; 
-            cursor: pointer; display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); transition: 0.3s;
-        }
-        #btn-modo-voz:hover { box-shadow: 0 0 25px var(--accent); transform: translateY(-50%) scale(1.1); }
+        #btn-modo-voz { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--accent); background: rgba(0, 242, 255, 0.1); color: var(--accent); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px var(--accent); }
 
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
         .msg { max-width: 85%; padding: 14px 20px; border-radius: 20px; line-height: 1.5; backdrop-filter: blur(15px); border: 1px solid var(--border-glass); animation: slideUp 0.3s ease-out; }
         .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.03); border-bottom-left-radius: 2px; }
         .user { align-self: flex-end; background: rgba(0, 242, 255, 0.08); border-bottom-right-radius: 2px; border-color: rgba(0, 242, 255, 0.2); }
 
-        /* DISEÑO 3: BURBUJAS DE PENSANDO */
-        .typing { display: none; margin: 10px 0 10px 20px; }
-        .dot { height: 7px; width: 7px; background: var(--accent); border-radius: 50%; display: inline-block; animation: jump 0.6s infinite alternate; margin: 0 3px; }
-        @keyframes jump { from { transform: translateY(0); opacity: 0.3; } to { transform: translateY(-5px); opacity: 1; } }
+        .typing { display: none; margin: 10px 25px; font-size: 0.8rem; color: var(--accent); }
 
         .input-area { padding: 15px 20px; background: transparent; display: flex; flex-direction: column; align-items: center;}
         .input-container { width: 100%; background: var(--bg-glass); backdrop-filter: blur(25px); border-radius: 30px; border: 1px solid var(--border-glass); display: flex; align-items: center; padding: 5px 15px; }
@@ -50,16 +39,15 @@
 <body>
     <div class="aurora-bg"></div>
     <video autoplay muted loop playsinline id="bg-video"><source src="fondo.mp4" type="video/mp4"></video>
-    <button id="btn-modo-voz" onclick="alert('Modo Voz activado')">🎤</button>
+
+    <button id="btn-modo-voz" onclick="alert('Iniciando escucha...')">🎤</button>
 
     <div id="app-container">
         <header><div class="titulo">AURORA</div></header>
         <div id="chat-window">
-            <div class="msg aurora" id="saludo-inicial">Cargando...</div>
+            <div class="msg aurora" id="saludo">Cargando...</div>
         </div>
-        <div class="typing" id="dots">
-            <span class="dot"></span><span class="dot" style="animation-delay:0.2s"></span><span class="dot" style="animation-delay:0.4s"></span>
-        </div>
+        <div class="typing" id="dots">Aurora está pensando...</div>
         <div class="input-area">
             <div class="input-container">
                 <input type="text" id="user-input" placeholder="Escribí aquí..." autocomplete="off">
@@ -72,22 +60,35 @@
         const chatWin = document.getElementById('chat-window');
         const input = document.getElementById('user-input');
         const dots = document.getElementById('dots');
+        let vozFemenina = null;
 
-        // LÓGICA DE SALUDO PERSONALIZADO
-        window.onload = () => {
-            // Buscamos el nombre que guardó Firebase (ejemplo: 'Gabriel')
-            const nombreUsuario = localStorage.getItem('userName') || 'Gabriel'; 
-            document.getElementById('saludo-inicial').innerText = `Hola ${nombreUsuario}. Soy Aurora. ¿En qué puedo ayudarte?`;
-            hablar(`Hola ${nombreUsuario}. Soy Aurora. ¿En qué puedo ayudarte?`);
-        };
+        // BUSCAMOS EL NOMBRE DEL USUARIO (Firebase suele guardarlo así)
+        function obtenerNombre() {
+            return localStorage.getItem('userName') || 'Gabriel';
+        }
+
+        function cargarVoces() {
+            const voces = window.speechSynthesis.getVoices();
+            vozFemenina = voces.find(v => v.lang.startsWith('es') && (v.name.includes('female') || v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Paulina') || v.name.includes('Lucia')));
+            if (!vozFemenina) vozFemenina = voces.find(v => v.lang.startsWith('es'));
+            
+            // Una vez cargadas las voces, saludamos
+            const nombre = obtenerNombre();
+            document.getElementById('saludo').innerText = `Hola ${nombre}. Soy Aurora. ¿En qué puedo ayudarte?`;
+            hablar(document.getElementById('saludo').innerText);
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = cargarVoces;
+            cargarVoces();
+        }
 
         function hablar(texto) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(texto);
-            const voces = window.speechSynthesis.getVoices();
-            let voz = voces.find(v => v.lang.startsWith('es') && (v.name.includes('female') || v.name.includes('Google') || v.name.includes('Helena')));
-            if(voz) u.voice = voz;
-            u.pitch = 1.7; // Voz bien aguda/femenina
+            if(vozFemenina) u.voice = vozFemenina;
+            u.pitch = 1.7; // Tono agudo/femenino
+            u.rate = 1.0;
             u.lang = 'es-AR';
             window.speechSynthesis.speak(u);
         }
