@@ -19,34 +19,42 @@ def chat():
     
     API_KEY = os.environ.get("GEMINI_API_KEY")
     
-    # URL V1 ESTABLE: La dirección que Google pide ahora.
+    # URL V1 ESTABLE: La dirección oficial que no falla en 2026
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     try:
         esencia = alma.obtener_esencia()
         contexto = f"{esencia}\nHora en Mendoza: {datetime.datetime.now().strftime('%H:%M')}"
 
+        # Formateo estricto para evitar el Error 400
         historial = []
         for m in memoria_global[-6:]:
-            rol = "user" if m["role"] == "user" else "model"
-            historial.append({"role": rol, "parts": [{"text": m["content"]}]})
+            # Cambiamos 'assistant' por 'model' para que Google no se queje
+            rol_gemini = "user" if m["role"] == "user" else "model"
+            historial.append({"role": rol_gemini, "parts": [{"text": m["content"]}]})
         
         historial.append({"role": "user", "parts": [{"text": texto_usuario}]})
 
         payload = {
             "contents": historial,
             "systemInstruction": {"parts": [{"text": contexto}]},
-            "generationConfig": {"temperature": 0.7, "maxOutputTokens": 600}
+            "generationConfig": {
+                "temperature": 0.7,
+                "maxOutputTokens": 600
+            }
         }
         
-        res = requests.post(url, json=payload, timeout=25)
+        headers = {'Content-Type': 'application/json'}
+        res = requests.post(url, json=payload, headers=headers, timeout=25)
         
         if res.status_code != 200:
-            return jsonify({"respuesta": f"Error técnico ({res.status_code}). Revisá la llave en Render."})
+            # Si hay error, lo mostramos para saber qué pasa
+            return jsonify({"respuesta": f"Error {res.status_code}: Google no aceptó el formato."})
             
         resultado = res.json()
         respuesta_ai = resultado['candidates'][0]['content']['parts'][0]['text']
         
+        # Guardamos en memoria con roles limpios
         memoria_global.append({"role": "user", "content": texto_usuario})
         memoria_global.append({"role": "model", "content": respuesta_ai})
         
