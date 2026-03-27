@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AURORA AI</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f2ff">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #00f2ff; --aurora: #008080; }
         body { margin: 0; padding: 0; height: 100vh; background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overflow: hidden; }
         
-        /* 🌌 EL FONDO DE LA AURORA (Reforzado) */
+        /* 🌌 EL FONDO ANIMADO BLINDADO */
         .aurora-master {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -10; background: #000; overflow: hidden;
@@ -45,7 +47,7 @@
         
         #btn-mic { 
             background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent); color: var(--accent);
-            border-radius: 50%; width: 45px; height: 45px; cursor: pointer; transition: 0.3s; margin-right: 10px;
+            border-radius: 50%; width: 45px; height: 45px; cursor: pointer; transition: 0.3s; margin-right: 10px; display:flex; justify-content:center; align-items:center;
         }
         #btn-mic:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--accent); }
 
@@ -70,6 +72,11 @@
     </div>
 
     <script>
+        // Registra el Service Worker para que el celu la reconozca como App
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+
         const chatWin = document.getElementById('chat-window');
         const input = document.getElementById('user-input');
 
@@ -84,7 +91,7 @@
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
             const voces = window.speechSynthesis.getVoices();
-            u.voice = voces.find(v => v.lang.startsWith('es') && v.name.includes('Google')) || voces[0];
+            u.voice = voces.find(v => v.lang.startsWith('es') && v.name.includes('Google')) || voces.find(v => v.lang.startsWith('es'));
             u.pitch = 1.6;
             u.lang = 'es-AR';
             window.speechSynthesis.speak(u);
@@ -106,7 +113,7 @@
                 addMsg(data.respuesta, 'aurora');
                 hablar(data.respuesta);
             } catch (err) {
-                addMsg("Se cortó la conexión. Revisá Render.", 'aurora');
+                addMsg("Error de red. Render se quedó dormido.", 'aurora');
             }
         }
 
