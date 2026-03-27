@@ -7,7 +7,7 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#00f2ff">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
-    
+   
     <style>
         :root { --accent: #00f2ff; }
         html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background-image: url('poster.jpg'); background-size: cover; background-position: center; background-color: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; }
@@ -33,15 +33,12 @@
     </style>
 </head>
 <body>
-
     <div style="position: absolute; top: -1000px; left: -1000px; opacity: 0; pointer-events: none;">
         <input type="text" name="f1"><input type="password" name="f2">
     </div>
-
     <video autoplay muted loop playsinline preload="auto" poster="poster.jpg" id="bg-video">
         <source src="fondo.mp4" type="video/mp4">
     </video>
-
     <div id="login-overlay">
         <div class="login-card">
             <h1 class="titulo-login">BIENVENIDO A AURORA</h1>
@@ -62,7 +59,6 @@
             </div>
         </div>
     </div>
-
     <div id="app-container">
         <header><div class="titulo-app">AURORA</div></header>
         <div id="chat-window"><div class="msg aurora" id="saludo-ia">Conectando...</div></div>
@@ -77,39 +73,65 @@
             </p>
         </div>
     </div>
-
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481" };
         firebase.initializeApp(firebaseConfig);
-
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 PLAN B: Función hablar() por si falla el servidor o no hay llave
+        // ==================== VOZ FEMENINA MEJORADA ====================
         function hablar(t) {
+            if (!t || !('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(t);
-            u.lang = 'es-AR';
-            
-            const setBestVoice = () => {
-                const voices = window.speechSynthesis.getVoices();
-                const vozDulce = voices.find(v => 
-                    (v.name.includes('Sabina') || v.name.includes('Helena') || 
-                     v.name.includes('Luciana') || v.name.includes('Google español')) && v.lang.includes('es')
-                );
-                if (vozDulce) u.voice = vozDulce;
-            };
 
-            setBestVoice();
-            u.pitch = 1.0;  
-            u.rate = 0.95;  
-            u.volume = 1.0;
+            const u = new SpeechSynthesisUtterance(t);
+            const voices = window.speechSynthesis.getVoices();
+
+            // Filtro agresivo para voz femenina
+            let vozFemenina = voices.find(v =>
+                (v.lang.includes('es') || v.lang.includes('AR') || v.lang.includes('MX')) &&
+                (v.name.includes('Google') ||
+                 v.name.toLowerCase().includes('lucia') ||
+                 v.name.toLowerCase().includes('camila') ||
+                 v.name.toLowerCase().includes('sofia') ||
+                 v.name.toLowerCase().includes('helena') ||
+                 v.name.toLowerCase().includes('paulina') ||
+                 v.name.toLowerCase().includes('victoria') ||
+                 v.name.toLowerCase().includes('monica') ||
+                 v.name.toLowerCase().includes('sabina') ||
+                 v.name.toLowerCase().includes('luciana') ||
+                 v.name.toLowerCase().includes('female') ||
+                 v.name.toLowerCase().includes('alba'))
+            );
+
+            // Fallback fuerte
+            if (!vozFemenina) {
+                vozFemenina = voices.find(v => 
+                    v.lang.includes('es') &&
+                    !v.name.toLowerCase().includes('male') &&
+                    !v.name.toLowerCase().includes('hombre')
+                );
+            }
+
+            if (vozFemenina) {
+                u.voice = vozFemenina;
+                console.log("🎤 Aurora usando voz:", vozFemenina.name);
+            }
+
+            // Configuración para sonar más femenina
+            u.lang = 'es-AR';
+            u.pitch = 1.75;      // Agudo → voz claramente femenina
+            u.rate = 1.04;
+            u.volume = 0.96;
+
             window.speechSynthesis.speak(u);
         }
 
-        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+        window.speechSynthesis.onvoiceschanged = () => { 
+            window.speechSynthesis.getVoices(); 
+        };
 
         function exterminarMail() {
             const input = document.getElementById('chat-terminal');
@@ -122,20 +144,39 @@
             modoRegistro = !modoRegistro;
             const btn = document.getElementById('auth-btn-main');
             const link = document.getElementById('toggle-auth-text');
-            if(modoRegistro) { btn.innerText = "Crear Cuenta"; link.innerText = "¿Ya tienes cuenta? Inicia sesión"; }
-            else { btn.innerText = "Ingresar"; link.innerText = "¿No tienes cuenta? Regístrate aquí"; }
+            if(modoRegistro) { 
+                btn.innerText = "Crear Cuenta"; 
+                link.innerText = "¿Ya tienes cuenta? Inicia sesión"; 
+            } else { 
+                btn.innerText = "Ingresar"; 
+                link.innerText = "¿No tienes cuenta? Regístrate aquí"; 
+            }
         }
-        function mostrarEmail() { document.getElementById('main-auth').style.display='none'; document.getElementById('email-form').style.display='flex'; }
-        function volverInicio() { document.getElementById('main-auth').style.display='flex'; document.getElementById('email-form').style.display='none'; }
+
+        function mostrarEmail() { 
+            document.getElementById('main-auth').style.display='none'; 
+            document.getElementById('email-form').style.display='flex'; 
+        }
+
+        function volverInicio() { 
+            document.getElementById('main-auth').style.display='flex'; 
+            document.getElementById('email-form').style.display='none'; 
+        }
 
         async function ejecutarAuth() {
             const email = document.getElementById('email-input').value;
             const pass = document.getElementById('pass-input').value;
-            try { if(modoRegistro) await firebase.auth().createUserWithEmailAndPassword(email, pass); else await firebase.auth().signInWithEmailAndPassword(email, pass); } 
+            try { 
+                if(modoRegistro) await firebase.auth().createUserWithEmailAndPassword(email, pass); 
+                else await firebase.auth().signInWithEmailAndPassword(email, pass); 
+            }
             catch(e) { alert("Error: " + e.message); }
         }
 
-        function loginGoogle() { const provider = new firebase.auth.GoogleAuthProvider(); firebase.auth().signInWithPopup(provider); }
+        function loginGoogle() { 
+            const provider = new firebase.auth.GoogleAuthProvider(); 
+            firebase.auth().signInWithPopup(provider); 
+        }
 
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
@@ -149,12 +190,10 @@
                         const nombreUsuario = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
                         const m = `Hola, ${nombreUsuario}. ¿Cómo puedo ayudarte hoy?`;
                         document.getElementById('saludo-ia').innerText = m;
-                        
-                        // OJO: El saludo inicial usa el Plan B porque no se envía al servidor
-                        hablar(m);
+                        hablar(m);  // Ahora usa la voz mejorada también en el saludo
                         
                         const chatInp = document.getElementById('chat-terminal');
-                        chatInp.removeAttribute('readonly'); 
+                        chatInp.removeAttribute('readonly');
                         chatInp.placeholder = "Escribe a Aurora...";
                         exterminarMail();
                     }, 500);
@@ -162,34 +201,47 @@
             }
         });
 
-        // 🚨 LA MAGIA NEURONAL ESTÁ ACÁ
         async function enviar() {
             const inp = document.getElementById('chat-terminal');
-            const msg = inp.value.trim(); if(!msg || msg.includes('@')) { inp.value = ''; return; }
-            addMsg(msg, 'user'); inp.value = '';
+            const msg = inp.value.trim(); 
+            if(!msg || msg.includes('@')) { 
+                inp.value = ''; 
+                return; 
+            }
+            addMsg(msg, 'user'); 
+            inp.value = '';
             try {
-                const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg}) });
-                const data = await res.json(); 
-                addMsg(data.respuesta, 'aurora'); 
-                
-                // Si el servidor nos mandó el audio MP3 en vivo...
+                const res = await fetch('/chat', { 
+                    method:'POST', 
+                    headers:{'Content-Type':'application/json'}, 
+                    body:JSON.stringify({msg}) 
+                });
+                const data = await res.json();
+                addMsg(data.respuesta, 'aurora');
+               
                 if (data.audio) {
                     const audioReal = new Audio("data:audio/mpeg;base64," + data.audio);
                     audioReal.play();
                 } else {
-                    // Si no mandó audio, usamos el sintetizador del navegador
                     hablar(data.respuesta);
                 }
-                
-            } catch(e) { addMsg("Error en la conexión neuronal.", 'aurora'); }
+            } catch(e) { 
+                addMsg("Error en la conexión neuronal.", 'aurora'); 
+            }
         }
 
         function addMsg(t, cl) {
-            const d = document.createElement('div'); d.className = `msg ${cl}`; d.innerText = t;
-            const win = document.getElementById('chat-window'); win.appendChild(d);
+            const d = document.createElement('div'); 
+            d.className = `msg ${cl}`; 
+            d.innerText = t;
+            const win = document.getElementById('chat-window'); 
+            win.appendChild(d);
             win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
-        document.getElementById('chat-terminal').addEventListener('keypress', (e) => { if(e.key === 'Enter') enviar(); });
+
+        document.getElementById('chat-terminal').addEventListener('keypress', (e) => { 
+            if(e.key === 'Enter') enviar(); 
+        });
     </script>
 </body>
 </html>
