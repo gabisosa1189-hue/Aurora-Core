@@ -11,13 +11,17 @@ memoria_global = []
 def index():
     return send_from_directory(os.getcwd(), 'inicio.html')
 
+@app.route('/<path:path>')
+def send_static(path):
+    return send_from_directory(os.getcwd(), path)
+
 @app.route('/chat', methods=['POST'])
 def chat():
     global memoria_global
     data = request.json
     u_msg = data.get('msg', '').strip()
     
-    # Render le pasa la llave al código de forma secreta aquí:
+    # 🚨 ASEGURATE DE TENER "OPENAI_API_KEY" EN RENDER
     API_KEY = os.environ.get("OPENAI_API_KEY")
     url = "https://api.openai.com/v1/chat/completions"
     
@@ -25,7 +29,6 @@ def chat():
         esencia = alma.obtener_esencia()
         contexto = f"{esencia}\nHora en Mendoza: {datetime.datetime.now().strftime('%H:%M')}"
 
-        # Formato para ChatGPT
         mensajes = [{"role": "system", "content": contexto}]
         for m in memoria_global[-6:]:
             mensajes.append({"role": m["role"], "content": m["content"]})
@@ -47,14 +50,13 @@ def chat():
         
         respuesta_texto = res_json['choices'][0]['message']['content']
         
-        # Guardamos memoria
         memoria_global.append({"role": "user", "content": u_msg})
         memoria_global.append({"role": "assistant", "content": respuesta_texto})
         
         return jsonify({"respuesta": respuesta_texto})
 
     except Exception as e:
-        return jsonify({"respuesta": "Hubo un problema de conexión. Revisá la llave en Render."})
+        return jsonify({"respuesta": "Gabriel, revisá si la llave de OpenAI está bien puesta en Render."})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
