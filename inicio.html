@@ -81,7 +81,7 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // ==================== VOZ FEMENINA MEJORADA ====================
+        // ==================== VOZ SUAVE Y LINDA PARA AURORA ====================
         function hablar(t) {
             if (!t || !('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -89,42 +89,41 @@
             const u = new SpeechSynthesisUtterance(t);
             const voices = window.speechSynthesis.getVoices();
 
-            // Filtro agresivo para voz femenina
-            let vozFemenina = voices.find(v =>
+            // Filtro priorizado para voz suave y femenina elegante
+            let vozSuave = voices.find(v =>
                 (v.lang.includes('es') || v.lang.includes('AR') || v.lang.includes('MX')) &&
-                (v.name.includes('Google') ||
-                 v.name.toLowerCase().includes('lucia') ||
+                (v.name.toLowerCase().includes('lucia') ||
+                 v.name.toLowerCase().includes('paulina') ||
                  v.name.toLowerCase().includes('camila') ||
                  v.name.toLowerCase().includes('sofia') ||
                  v.name.toLowerCase().includes('helena') ||
-                 v.name.toLowerCase().includes('paulina') ||
-                 v.name.toLowerCase().includes('victoria') ||
                  v.name.toLowerCase().includes('monica') ||
+                 v.name.toLowerCase().includes('victoria') ||
                  v.name.toLowerCase().includes('sabina') ||
                  v.name.toLowerCase().includes('luciana') ||
                  v.name.toLowerCase().includes('female') ||
-                 v.name.toLowerCase().includes('alba'))
+                 v.name.includes('Google'))
             );
 
-            // Fallback fuerte
-            if (!vozFemenina) {
-                vozFemenina = voices.find(v => 
+            // Fallback seguro
+            if (!vozSuave) {
+                vozSuave = voices.find(v => 
                     v.lang.includes('es') &&
                     !v.name.toLowerCase().includes('male') &&
                     !v.name.toLowerCase().includes('hombre')
                 );
             }
 
-            if (vozFemenina) {
-                u.voice = vozFemenina;
-                console.log("🎤 Aurora usando voz:", vozFemenina.name);
+            if (vozSuave) {
+                u.voice = vozSuave;
+                console.log("🎤 Aurora usando voz suave:", vozSuave.name);
             }
 
-            // Configuración para sonar más femenina
+            // Configuración para voz suave, linda y elegante (como IA premium)
             u.lang = 'es-AR';
-            u.pitch = 1.75;      // Agudo → voz claramente femenina
-            u.rate = 1.04;
-            u.volume = 0.96;
+            u.pitch = 1.48;      // Suave y femenino elegante
+            u.rate = 0.96;       // Más lento = más suave y natural
+            u.volume = 0.94;
 
             window.speechSynthesis.speak(u);
         }
@@ -190,7 +189,7 @@
                         const nombreUsuario = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
                         const m = `Hola, ${nombreUsuario}. ¿Cómo puedo ayudarte hoy?`;
                         document.getElementById('saludo-ia').innerText = m;
-                        hablar(m);  // Ahora usa la voz mejorada también en el saludo
+                        hablar(m);
                         
                         const chatInp = document.getElementById('chat-terminal');
                         chatInp.removeAttribute('readonly');
