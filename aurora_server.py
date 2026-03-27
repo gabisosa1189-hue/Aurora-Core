@@ -19,38 +19,54 @@ def chat():
         data = request.json
         u_msg = data.get('msg', '').strip()
         
+        # 1. LLAVE DE SEGURIDAD
         gemini_api_key = os.environ.get("GEMINI_API_KEY")
         if not gemini_api_key:
-            return jsonify({"respuesta": "ERROR: Me falta la llave GEMINI_API_KEY en Render.", "audio": None})
+            return jsonify({"respuesta": "ERROR: Falta la clave GEMINI_API_KEY en Render.", "audio": None})
             
-        # 🚀 MODELO 2026: Gemini 3 Flash
-        # Usamos la versión v1beta que es donde siempre están los modelos más nuevos
+        # 2. CONFIGURACIÓN GEMINI 3 FLASH (2026 Standard)
+        # Importante: v1beta es la única que reconoce al modelo 3 Flash actualmente
         gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key={gemini_api_key}"
         
-        gemini_payload = {"contents": [{"role": "user", "parts": [{"text": u_msg}]}]}
-        res = requests.post(gemini_url, json=gemini_payload, timeout=10)
+        payload = {
+            "contents": [{"parts": [{"text": u_msg}]}],
+            "generationConfig": {
+                "temperature": 0.7,
+                "maxOutputTokens": 800
+            }
+        }
+        
+        res = requests.post(gemini_url, json=payload, timeout=15)
         
         if res.status_code != 200:
-            return jsonify({"respuesta": f"ERROR DE GOOGLE (URL: {gemini_url}): {res.text}", "audio": None})
+            return jsonify({"respuesta": f"Error de Google ({res.status_code}): {res.text}", "audio": None})
             
-        txt = res.json()['candidates'][0]['content']['parts'][0]['text']
+        res_json = res.json()
+        txt = res_json['candidates'][0]['content']['parts'][0]['text']
 
-        # --- ELEVENLABS ---
-        elevenlabs_api_key = os.environ.get("ELEVENLABS_API_KEY")
+        # 3. VOZ DE ELEVENLABS
         audio_b64 = None
-        if elevenlabs_api_key:
-            voice_id = "EXAVITQu4vr4xnSDxMaL"
+        el_key = os.environ.get("ELEVENLABS_API_KEY")
+        
+        if el_key:
+            voice_id = "EXAVITQu4vr4xnSDxMaL" # Voz de Bella
             tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-            headers = {"Accept": "audio/mpeg", "Content-Type": "application/json", "xi-api-key": elevenlabs_api_key}
-            tts_payload = {"text": txt, "model_id": "eleven_multilingual_v2", "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}}
-            tts_res = requests.post(tts_url, json=tts_payload, headers=headers, timeout=15)
+            tts_payload = {
+                "text": txt,
+                "model_id": "eleven_multilingual_v2",
+                "voice_settings": {"stability": 0.5, "similarity_boost": 0.8}
+            }
+            tts_res = requests.post(tts_url, json=tts_payload, headers={"xi-api-key": el_key}, timeout=20)
+            
             if tts_res.status_code == 200:
                 audio_b64 = base64.b64encode(tts_res.content).decode('utf-8')
+            else:
+                txt += f" (Nota: Mi voz falló, pero aquí estoy: {tts_res.status_code})"
 
         return jsonify({"respuesta": txt, "audio": audio_b64})
         
     except Exception as e:
-        return jsonify({"respuesta": f"ERROR DEL SERVIDOR: {str(e)}", "audio": None})
+        return jsonify({"respuesta": f"Error crítico: {str(e)}", "audio": None})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
