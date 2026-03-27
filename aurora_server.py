@@ -19,39 +19,29 @@ def chat():
         if not u_msg:
             return jsonify({"respuesta": "No recibí ningún mensaje.", "audio": None})
 
+        # Versión simple y estable
         url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={API_KEY}"
 
         payload = {
             "contents": [{
                 "parts": [{"text": 
-                    f"""Eres Aurora, una IA femenina elegante, inteligente y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza, Argentina.
+                    f"""Eres Aurora, una IA femenina elegante y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza.
 
-Reglas importantes:
-- Cuando te pregunten quién te creó o quién es tu creador, responde EXACTAMENTE: "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."
-- Responde siempre de forma breve, clara y directa (1 a 3 oraciones máximo).
-- Tono cálido pero elegante y maduro. Evita jerga como "che", "upa", "re", "tranqui".
-- Usa emojis solo cuando sea realmente necesario y con moderación.
-- Responde rápido y natural cuando la pregunta no requiera información actualizada.
-- Solo usa búsqueda web cuando la pregunta sea sobre eventos actuales, noticias, clima, presidentes actuales u otra información que pueda cambiar.
+Reglas:
+- Si te preguntan quién te creó, responde exactamente: "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."
+- Responde de forma breve, clara y educada.
+- Tono cálido pero maduro.
 
 Usuario dice: {u_msg}"""
                 }]
-            }],
-            "tools": [
-                {"google_search": {}}
-            ],
-            "generationConfig": {
-                "temperature": 0.7,
-                "maxOutputTokens": 400,     # Reducido para que sea más rápido
-                "topP": 0.95
-            }
+            }]
         }
 
-        res = requests.post(url, json=payload, timeout=20)
+        res = requests.post(url, json=payload, timeout=15)
 
         if res.status_code != 200:
-            print("Error Google:", res.text)
-            return jsonify({"respuesta": "Lo siento, estoy teniendo un pequeño retraso. ¿Podés intentarlo de nuevo?", "audio": None})
+            print("Error Google:", res.status_code, res.text)
+            return jsonify({"respuesta": "Lo siento, estoy teniendo problemas de conexión. Intentá de nuevo.", "audio": None})
 
         data = res.json()
         txt = data['candidates'][0]['content']['parts'][0]['text']
