@@ -87,14 +87,16 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 FUNCIÓN HABLAR: REACONDICIONADA PARA DULZURA MÁXIMA
+        // 🚨 MOTOR DE VOZ DULCE Y HUMANA
         function hablar(t) {
             window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(t);
+            
+            // Agregamos una pausa sutil después del nombre para humanizar
+            const textoConPausa = t.replace(',', '... ');
+            const u = new SpeechSynthesisUtterance(textoConPausa);
             u.lang = 'es-AR';
             
             const voices = window.speechSynthesis.getVoices();
-            // Priorizamos Sabina, Helena o Luciana por ser las más naturales
             const vozDulce = voices.find(v => 
                 (v.name.includes('Sabina') || v.name.includes('Helena') || 
                  v.name.includes('Luciana') || v.name.includes('Google español')) && v.lang.includes('es')
@@ -102,10 +104,11 @@
             
             if (vozDulce) u.voice = vozDulce;
             
-            // CONFIGURACIÓN DE SEDA:
-            u.pitch = 0.85;  // ⬇️ Bajamos el pitch para dar profundidad y quitar lo chillón
-            u.rate = 0.85;   // ⬇️ Un ritmo más pausado genera una sensación de dulzura y calma
+            // CALIBRACIÓN DE SEDA
+            u.pitch = 0.82; // ⬇️ Tono más bajo = Voz más cálida y menos robótica
+            u.rate = 0.80;  // ⬇️ Velocidad pausada = Sensación de dulzura y atención
             u.volume = 1.0;
+            
             window.speechSynthesis.speak(u);
         }
 
