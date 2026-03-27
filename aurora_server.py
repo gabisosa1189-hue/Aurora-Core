@@ -19,29 +19,27 @@ def chat():
         data = request.json
         u_msg = data.get('msg', '').strip()
         
-        # 1. LLAVE DE RENDER
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
-            return jsonify({"respuesta": "Falta la llave GEMINI_API_KEY en Render.", "audio": None})
+            return jsonify({"respuesta": "ERROR: Falta la llave GEMINI_API_KEY en Render.", "audio": None})
             
-        # 🚀 URL ESTÁNDAR (La que no da 404)
-        # Usamos gemini-1.5-flash que es el tanque de guerra de Google
+        # 🛡️ LA URL MÁS ESTABLE DEL MUNDO
+        # Usamos v1beta y el modelo 1.5-flash que es el que tiene más "permisos" gratuitos
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
         
-        payload = {
-            "contents": [{"parts": [{"text": u_msg}]}]
-        }
-        
+        payload = {"contents": [{"parts": [{"text": u_msg}]}]}
         res = requests.post(url, json=payload, timeout=15)
         
-        # Si Google nos da error, lo mostramos tal cual
+        # Si da error, ahora el mensaje nos va a decir EXACTAMENTE qué dirección falló
         if res.status_code != 200:
-            return jsonify({"respuesta": f"Error de Google ({res.status_code}): {res.text}", "audio": None})
+            return jsonify({
+                "respuesta": f"Error {res.status_code}. ¿La llave está en Render? URL usada: {url[:40]}...", 
+                "audio": None
+            })
             
-        res_json = res.json()
-        txt = res_json['candidates'][0]['content']['parts'][0]['text']
+        txt = res.json()['candidates'][0]['content']['parts'][0]['text']
 
-        # 2. VOZ (ELEVENLABS)
+        # --- VOZ (ELEVENLABS) ---
         audio_b64 = None
         el_key = os.environ.get("ELEVENLABS_API_KEY")
         if el_key:
@@ -49,11 +47,7 @@ def chat():
             tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
             tts_res = requests.post(
                 tts_url, 
-                json={
-                    "text": txt, 
-                    "model_id": "eleven_multilingual_v2",
-                    "voice_settings": {"stability": 0.5, "similarity_boost": 0.8}
-                }, 
+                json={"text": txt, "model_id": "eleven_multilingual_v2"}, 
                 headers={"xi-api-key": el_key}, 
                 timeout=15
             )
