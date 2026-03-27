@@ -7,7 +7,11 @@ def obtener_datos_api(texto_usuario=""):
     
     msg = texto_usuario.lower()
     familia_creador = ""
-    if any(p in msg for p in ["creador", "gabriel", "sosa", "scriboni", "padres", "quien te hizo"]):
+    
+    # ACÁ ESTÁ EL ARREGLO: Agregamos TODAS las formas en las que alguien puede preguntar por vos
+    palabras_gatillo = ["creador", "gabriel", "sosa", "scriboni", "padres", "quien te hizo", "creo", "creó", "creaste", "invento", "inventó", "programo", "programó", "desarrollo", "desarrolló"]
+    
+    if any(p in msg for p in palabras_gatillo):
         familia_creador = (
             "\n--- CREADOR Y FAMILIA ---\n"
             "Mi único Creador y Desarrollador es Gabriel Sosa Scriboni, residente en San Martín, Mendoza. "
