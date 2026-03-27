@@ -19,7 +19,7 @@ def chat():
     
     API_KEY = os.environ.get("GEMINI_API_KEY")
     
-    # URL V1 ESTABLE: La dirección oficial que no falla
+    # URL V1 ESTABLE: La dirección que Google pide ahora.
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     
     try:
@@ -42,7 +42,7 @@ def chat():
         res = requests.post(url, json=payload, timeout=25)
         
         if res.status_code != 200:
-            return jsonify({"respuesta": f"Google Error {res.status_code}. Revisá la llave en Render."})
+            return jsonify({"respuesta": f"Error técnico ({res.status_code}). Revisá la llave en Render."})
             
         resultado = res.json()
         respuesta_ai = resultado['candidates'][0]['content']['parts'][0]['text']
@@ -53,7 +53,7 @@ def chat():
         return jsonify({"respuesta": respuesta_ai})
 
     except Exception as e:
-        return jsonify({"respuesta": f"Error técnico: {str(e)}"})
+        return jsonify({"respuesta": f"Error de conexión: {str(e)}"})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
