@@ -19,49 +19,43 @@ def chat():
         data = request.json
         u_msg = data.get('msg', '').strip()
         
-        # 1. LLAVE DE SEGURIDAD
-        gemini_api_key = os.environ.get("GEMINI_API_KEY")
-        if not gemini_api_key:
-            return jsonify({"respuesta": "ERROR: Falta la clave GEMINI_API_KEY en Render.", "audio": None})
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            return jsonify({"respuesta": "Falta la llave GEMINI_API_KEY en Render.", "audio": None})
             
-        # 2. CONFIGURACIÓN GEMINI 3 FLASH (2026 Standard)
-        # Importante: v1beta es la única que reconoce al modelo 3 Flash actualmente
-        gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key={gemini_api_key}"
+        # 🚀 MODELO ESTABLE 2026: Gemini 2.0 Flash
+        # Usamos v1 que es la autopista principal sin errores 404
+        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={api_key}"
         
         payload = {
-            "contents": [{"parts": [{"text": u_msg}]}],
-            "generationConfig": {
-                "temperature": 0.7,
-                "maxOutputTokens": 800
-            }
+            "contents": [{"parts": [{"text": u_msg}]}]
         }
         
-        res = requests.post(gemini_url, json=payload, timeout=15)
+        res = requests.post(url, json=payload, timeout=10)
         
         if res.status_code != 200:
-            return jsonify({"respuesta": f"Error de Google ({res.status_code}): {res.text}", "audio": None})
+            return jsonify({"respuesta": f"Error de Google: {res.text}", "audio": None})
             
-        res_json = res.json()
-        txt = res_json['candidates'][0]['content']['parts'][0]['text']
+        txt = res.json()['candidates'][0]['content']['parts'][0]['text']
 
-        # 3. VOZ DE ELEVENLABS
+        # --- VOZ (ELEVENLABS) ---
         audio_b64 = None
         el_key = os.environ.get("ELEVENLABS_API_KEY")
-        
         if el_key:
-            voice_id = "EXAVITQu4vr4xnSDxMaL" # Voz de Bella
+            voice_id = "EXAVITQu4vr4xnSDxMaL"
             tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-            tts_payload = {
-                "text": txt,
-                "model_id": "eleven_multilingual_v2",
-                "voice_settings": {"stability": 0.5, "similarity_boost": 0.8}
-            }
-            tts_res = requests.post(tts_url, json=tts_payload, headers={"xi-api-key": el_key}, timeout=20)
-            
+            tts_res = requests.post(
+                tts_url, 
+                json={
+                    "text": txt, 
+                    "model_id": "eleven_multilingual_v2",
+                    "voice_settings": {"stability": 0.5, "similarity_boost": 0.8}
+                }, 
+                headers={"xi-api-key": el_key}, 
+                timeout=15
+            )
             if tts_res.status_code == 200:
                 audio_b64 = base64.b64encode(tts_res.content).decode('utf-8')
-            else:
-                txt += f" (Nota: Mi voz falló, pero aquí estoy: {tts_res.status_code})"
 
         return jsonify({"respuesta": txt, "audio": audio_b64})
         
