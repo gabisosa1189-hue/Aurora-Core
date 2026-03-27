@@ -9,34 +9,26 @@ CORS(app)
 def index():
     return send_from_directory('.', 'inicio.html')
 
-@app.route('/<path:path>')
-def serve_static(path):
-    return send_from_directory('.', path)
-
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
         data = request.json
         u_msg = data.get('msg', '').strip()
         
-        # 1. LLAVE DE SEGURIDAD (Desde Render)
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
-            return jsonify({"respuesta": "Falta la llave GEMINI_API_KEY en Render.", "audio": None})
+            return jsonify({"respuesta": "Falta la llave GEMINI_API_KEY.", "audio": None})
             
-        # 🚀 MOTOR 2026: Gemini 3 Flash 
-        # Usamos v1beta que es la vía rápida para el modelo 3
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key={api_key}"
+        # 🛡️ MODELO 1.5 FLASH: El más estable para evitar el Error 429
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
         
-        payload = {
-            "contents": [{"parts": [{"text": u_msg}]}],
-            "generationConfig": {"temperature": 0.7}
-        }
+        res = requests.post(url, json={"contents": [{"parts": [{"text": u_msg}]}]}, timeout=10)
         
-        res = requests.post(url, json=payload, timeout=12)
+        if res.status_code == 429:
+            return jsonify({"respuesta": "Aurora está descansando (Error 429). Esperá 1 minuto y volvé a intentar.", "audio": None})
         
         if res.status_code != 200:
-            return jsonify({"respuesta": f"Error de Google ({res.status_code}): Renovaste la API Key?", "audio": None})
+            return jsonify({"respuesta": f"Error de Google: {res.status_code}", "audio": None})
             
         txt = res.json()['candidates'][0]['content']['parts'][0]['text']
 
@@ -44,16 +36,11 @@ def chat():
         audio_b64 = None
         el_key = os.environ.get("ELEVENLABS_API_KEY")
         if el_key:
-            voice_id = "EXAVITQu4vr4xnSDxMaL" # Voz dulce "Bella"
-            tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+            voice_id = "EXAVITQu4vr4xnSDxMaL"
             tts_res = requests.post(
-                tts_url, 
-                json={
-                    "text": txt, 
-                    "model_id": "eleven_multilingual_v2",
-                    "voice_settings": {"stability": 0.5, "similarity_boost": 0.8}
-                }, 
-                headers={"xi-api-key": el_key}, 
+                f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
+                json={"text": txt, "model_id": "eleven_multilingual_v2"},
+                headers={"xi-api-key": el_key},
                 timeout=15
             )
             if tts_res.status_code == 200:
@@ -62,8 +49,7 @@ def chat():
         return jsonify({"respuesta": txt, "audio": audio_b64})
         
     except Exception as e:
-        return jsonify({"respuesta": f"Error crítico: {str(e)}", "audio": None})
+        return jsonify({"respuesta": f"Error: {str(e)}", "audio": None})
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
