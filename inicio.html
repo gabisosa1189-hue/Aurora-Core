@@ -87,25 +87,24 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // 🚨 FUNCIÓN HABLAR: MOTOR DE DULZURA (SABINA PRIORITARIA)
+        // 🚨 FUNCIÓN HABLAR: REACONDICIONADA PARA DULZURA MÁXIMA
         function hablar(t) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
             u.lang = 'es-AR';
             
             const voices = window.speechSynthesis.getVoices();
-            // Buscamos Sabina (Apple), Helena (Microsoft) o Luciana (Google Latam)
+            // Priorizamos Sabina, Helena o Luciana por ser las más naturales
             const vozDulce = voices.find(v => 
-                (v.name.includes('Sabina') || 
-                 v.name.includes('Helena') || 
-                 v.name.includes('Luciana') ||
-                 v.name.includes('Google español')) && v.lang.includes('es')
+                (v.name.includes('Sabina') || v.name.includes('Helena') || 
+                 v.name.includes('Luciana') || v.name.includes('Google español')) && v.lang.includes('es')
             );
             
             if (vozDulce) u.voice = vozDulce;
             
-            u.pitch = 0.95; // Bajamos el tono ligeramente para ganar calidez (Cero chillidos)
-            u.rate = 0.9;   // Un pelín más pausada para que sea aterciopelada
+            // CONFIGURACIÓN DE SEDA:
+            u.pitch = 0.85;  // ⬇️ Bajamos el pitch para dar profundidad y quitar lo chillón
+            u.rate = 0.85;   // ⬇️ Un ritmo más pausado genera una sensación de dulzura y calma
             u.volume = 1.0;
             window.speechSynthesis.speak(u);
         }
