@@ -32,8 +32,11 @@ def guardar_memoria(memoria):
 
 # 🕒 HORA
 def get_datetime():
-    tz = pytz.timezone('America/Argentina/Mendoza')
-    now = datetime.now(tz)
+    try:
+        tz = pytz.timezone('America/Argentina/Mendoza')
+        now = datetime.now(tz)
+    except:
+        now = datetime.now()
     return now.strftime("%H:%M"), now.strftime("%d/%m/%Y")
 
 # 🌦 CLIMA
@@ -43,7 +46,7 @@ def get_clima():
     try:
         ciudad = "San Martin,AR"
         url = f"http://api.openweathermap.org/data/2.5/weather?q={ciudad}&appid={OPENWEATHER_KEY}&units=metric&lang=es"
-        res = requests.get(url).json()
+        res = requests.get(url, timeout=5).json()
         return f"{res['weather'][0]['description']}, {res['main']['temp']}°C"
     except:
         return "No pude obtener el clima 🌧"
@@ -61,18 +64,20 @@ def preguntar_ia(mensajes):
     data = {
         "model": "openai/gpt-4o-mini",
         "messages": mensajes,
-        "temperature": 0.8
+        "temperature": 0.8,
+        "max_tokens": 200
     }
 
     try:
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             json=data,
-            headers=headers
+            headers=headers,
+            timeout=15
         )
         return res.json()['choices'][0]['message']['content']
-    except:
-        return "Estoy fallando un poco 😅"
+    except Exception as e:
+        return f"Error IA: {str(e)}"
 
 # 🔍 INTENCIONES
 def detectar(msg):
@@ -89,7 +94,7 @@ def detectar(msg):
 
     return "ia"
 
-# 🌐 HOME (🔥 FIX IMPORTANTE)
+# 🌐 HOME
 @app.route('/')
 def index():
     return "Aurora está funcionando 😏🔥"
@@ -98,16 +103,20 @@ def index():
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
-        msg = request.json.get('msg', '')
-        intent = detectar(msg)
+        data = request.get_json()
+        msg = data.get('msg', '') if data else ''
 
+        if not msg:
+            return jsonify({"respuesta": "Decime algo 😏"})
+
+        intent = detectar(msg)
         hora, fecha = get_datetime()
 
         if intent == "hora":
-            return jsonify({"respuesta": f"Son las {hora}"})
+            return jsonify({"respuesta": f"Son las {hora} ⏰"})
 
         if intent == "fecha":
-            return jsonify({"respuesta": f"Hoy es {fecha}"})
+            return jsonify({"respuesta": f"Hoy es {fecha} 📅"})
 
         if intent == "clima":
             return jsonify({"respuesta": get_clima()})
@@ -118,7 +127,7 @@ def chat():
         memoria = cargar_memoria()
 
         mensajes = [
-            {"role": "system", "content": f"Eres Aurora, una IA humana y natural. Hoy es {fecha} y son las {hora}."}
+            {"role": "system", "content": f"Eres Aurora, una IA natural, cercana y con personalidad. Hoy es {fecha} y son las {hora}."}
         ]
 
         mensajes += memoria
@@ -133,9 +142,6 @@ def chat():
         return jsonify({"respuesta": respuesta})
 
     except Exception as e:
-        return jsonify({"respuesta": str(e)})
+        return jsonify({"respuesta": f"Error: {str(e)}"})
 
-# 🚀 RUN
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+# ⚠️ IMPORTANTE: NO usar app.run() en Render
