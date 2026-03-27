@@ -126,15 +126,29 @@
         // --- SISTEMA DE VOZ ---
         function cargarVoces() {
             const voces = window.speechSynthesis.getVoices();
-            vozFemenina = voces.find(v => v.lang.startsWith('es') && v.name.includes('Google'));
+            // Radar amplio: Busca voces femeninas conocidas en todos los sistemas (Android, iOS, Windows, Mac)
+            vozFemenina = voces.find(v => v.lang.startsWith('es') && 
+                (v.name.includes('Google') || v.name.includes('Paulina') || 
+                 v.name.includes('Monica') || v.name.includes('Helena') || 
+                 v.name.includes('Laura') || v.name.includes('Luciana')));
+                 
+            // Si es un celular muy raro y no encuentra esos nombres, atrapa la primera voz en español que exista
+            if (!vozFemenina) {
+                vozFemenina = voces.find(v => v.lang.startsWith('es'));
+            }
         }
-        if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = cargarVoces;
+        
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = cargarVoces;
+            cargarVoces(); // Forzamos la carga por si el navegador es rápido
+        }
 
         function hablar(texto, callback) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(texto);
             if(vozFemenina) u.voice = vozFemenina;
-            u.rate = 0.95; u.onend = callback;
+            u.rate = 0.95; u.pitch = 1.1; // Subimos un poco el tono (pitch) para asegurar que suene más femenina
+            u.onend = callback;
             window.speechSynthesis.speak(u);
         }
 
@@ -148,7 +162,7 @@
         }
 
         function borrarDatosDatos() {
-            window.location.reload(); // La forma más rápida de limpiar el historial de sesión
+            window.location.reload(); 
         }
 
         // --- RECONOCIMIENTO DE VOZ INMERSIVO ---
