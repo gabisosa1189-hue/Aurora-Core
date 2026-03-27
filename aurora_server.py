@@ -19,22 +19,24 @@ def chat():
         data = request.json
         u_msg = data.get('msg', '').strip()
         
+        # 1. LLAVE DE SEGURIDAD (Desde Render)
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
             return jsonify({"respuesta": "Falta la llave GEMINI_API_KEY en Render.", "audio": None})
             
-        # 🚀 MODELO ESTABLE 2026: Gemini 2.0 Flash
-        # Usamos v1 que es la autopista principal sin errores 404
-        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={api_key}"
+        # 🚀 MOTOR 2026: Gemini 3 Flash 
+        # Usamos v1beta que es la vía rápida para el modelo 3
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key={api_key}"
         
         payload = {
-            "contents": [{"parts": [{"text": u_msg}]}]
+            "contents": [{"parts": [{"text": u_msg}]}],
+            "generationConfig": {"temperature": 0.7}
         }
         
-        res = requests.post(url, json=payload, timeout=10)
+        res = requests.post(url, json=payload, timeout=12)
         
         if res.status_code != 200:
-            return jsonify({"respuesta": f"Error de Google: {res.text}", "audio": None})
+            return jsonify({"respuesta": f"Error de Google ({res.status_code}): Renovaste la API Key?", "audio": None})
             
         txt = res.json()['candidates'][0]['content']['parts'][0]['text']
 
@@ -42,7 +44,7 @@ def chat():
         audio_b64 = None
         el_key = os.environ.get("ELEVENLABS_API_KEY")
         if el_key:
-            voice_id = "EXAVITQu4vr4xnSDxMaL"
+            voice_id = "EXAVITQu4vr4xnSDxMaL" # Voz dulce "Bella"
             tts_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
             tts_res = requests.post(
                 tts_url, 
