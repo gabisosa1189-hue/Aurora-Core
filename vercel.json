@@ -1,14 +1,23 @@
 {
+  "version": 2,
   "builds": [
     {
       "src": "aurora_server.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "fondo.mp4",
+      "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "aurora_server.py"
+      "source": "/chat",
+      "destination": "/aurora_server.py"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/$1"
     }
   ]
 }
