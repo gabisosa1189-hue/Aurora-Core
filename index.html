@@ -3,190 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AURORA Core v7.0 - CLOUD</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Orbitron:wght@900&display=swap" rel="stylesheet">
+    <title>AURORA - Acceso Neuronal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #030306; --magenta: #ff00ff; --cyan: #00ffff; --glass: rgba(255, 255, 255, 0.05); }
+        :root { --bg: #050505; --accent: #00ffff; --magenta: #ff00ff; --panel: rgba(10, 10, 15, 0.85); --glass: rgba(255, 255, 255, 0.05); }
         
-        body { 
-            background-color: var(--bg); 
-            color: white; font-family: 'Montserrat', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; 
-        }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: white; overflow: hidden; -webkit-tap-highlight-color: transparent; }
 
-        #bg-video {
-            position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%;
-            z-index: -1; object-fit: cover; opacity: 0.75; /* Video un poco más claro para que se luzca */
-        }
-        
-        /* EL NUEVO HEADER SUPERIOR FLOTANTE */
-        .top-header {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 15px 0;
-            text-align: center; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; letter-spacing: 10px; color: white;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
-            z-index: 20; pointer-events: none; /* Para que no moleste al tocar la pantalla */
-        }
+        /* EL VIDEO DE FONDO MENDOCINO */
+        #bg-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; z-index: -1; object-fit: cover; opacity: 0.5; }
 
-        #central-display { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; transition: transform 0.8s ease, opacity 0.8s ease; z-index: 1; width: 90%; }
-        .hidden-ui { opacity: 0 !important; pointer-events: none; transform: translate(-50%, -60%) scale(0.9) !important; }
-        
-        h1 { font-size: 4rem; letter-spacing: 15px; font-family: 'Orbitron'; margin: 0; background: linear-gradient(to right, white, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* PANEL DE CHAT 100% TRANSPARENTE (GLASSMORPHISM) */
-        #chat-window { 
-            flex-grow: 1; width: 92%; max-width: 650px; 
-            margin: 12vh auto 150px auto; /* Bajó un poco para dar espacio al header */
-            overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px; scrollbar-width: none; transition: opacity 0.6s ease; -webkit-overflow-scrolling: touch; 
-            
-            background: rgba(255, 255, 255, 0.02); /* Transparencia total */
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); /* Efecto cristal */
-            border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); /* Borde casi invisible */
-        }
-        #chat-window::-webkit-scrollbar { display: none; }
-        .fade-out { opacity: 0 !important; }
+        /* CONTENEDORES PRINCIPALES */
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(5px); }
+        .active-screen { display: flex; animation: fadeIn 0.5s ease; }
 
-        .bubble { padding: 14px 20px; border-radius: 20px; max-width: 80%; animation: fadeIn 0.4s ease; line-height: 1.5; font-size: 1rem; position: relative; word-wrap: break-word; }
-        
-        /* BURBUJA DE AURORA MÁS LEGIBLE SOBRE EL VIDEO */
-        .aurora { align-self: flex-start; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 255, 255, 0.2); border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); backdrop-filter: blur(5px); }
-        .gabriel { align-self: flex-end; background: linear-gradient(135deg, #1d4ed8, #0f172a); border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(29, 78, 216, 0.3); }
-        
-        .dock-wrap { position: fixed; bottom: 30px; width: 100%; display: flex; justify-content: center; padding: 0 20px; z-index: 10; box-sizing: border-box; }
-        .dock { width: 100%; max-width: 600px; display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: rgba(10, 15, 25, 0.85); backdrop-filter: blur(20px); border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.6); cursor: text; }
-        
-        input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 1.1rem; padding: 12px 5px; font-family: 'Montserrat', sans-serif; min-width: 0; }
-        input::placeholder { color: rgba(255,255,255,0.4); }
+        /* PANTALLA DE LOGIN */
+        .login-box { background: var(--panel); border: 1px solid rgba(255,255,255,0.1); padding: 40px 30px; border-radius: 20px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); width: 85%; max-width: 360px; backdrop-filter: blur(15px); }
+        .login-box h1 { font-family: 'Orbitron'; font-size: 2.5rem; letter-spacing: 5px; margin: 0 0 30px 0; background: linear-gradient(90deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-google { background: white; color: black; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; font-size: 1rem; }
+        .divider { display: flex; align-items: center; color: rgba(255,255,255,0.3); margin: 20px 0; font-size: 0.8rem; }
+        .divider::before, .divider::after { content: ""; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.1); margin: 0 10px; }
+        .login-input { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 14px; width: 100%; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; outline: none; font-family: 'Montserrat'; }
+        .btn-conectar { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; letter-spacing: 2px; font-family: 'Orbitron'; transition: 0.3s; margin-top: 10px; }
+        .btn-conectar:hover { background: var(--accent); color: black; box-shadow: 0 0 20px rgba(0,255,255,0.4); }
 
-        .btn-circle { width: 50px; height: 50px; border: 2px solid white; border-radius: 50%; background: transparent; color: white; cursor: pointer; transition: 0.3s ease; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; overflow: hidden; font-family: 'Orbitron'; font-size: 1.3rem; font-weight: 900; }
-        .btn-circle svg { width: 24px; height: 24px; fill: currentColor; transition: transform 0.3s ease; }
-        .btn-circle:hover { background: white; color: black; box-shadow: 0 0 20px rgba(255,255,255,0.5); }
+        /* PANTALLA DE CARGA (Enlace Neuronal) */
+        .loader-orb { width: 80px; height: 80px; border: 3px solid transparent; border-top-color: var(--accent); border-bottom-color: var(--magenta); border-radius: 50%; animation: spin 1.5s linear infinite; margin-bottom: 30px; }
+        .loading-text h2 { font-family: 'Orbitron'; letter-spacing: 8px; margin: 0; }
+        .loading-text p { color: var(--accent); letter-spacing: 2px; font-size: 0.9rem; margin-top: 10px; animation: pulse 1.5s infinite; }
+
+        /* INTERFAZ DEL CHAT */
+        #chat-screen { justify-content: space-between; background: transparent; backdrop-filter: none; }
+        .chat-header { width: 100%; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); box-sizing: border-box; }
+        .chat-header h2 { font-family: 'Orbitron'; margin: 0; font-size: 1.4rem; letter-spacing: 5px; }
+        .btn-icon { background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 5px; }
+
+        #chat-box { flex-grow: 1; width: 100%; max-width: 800px; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; box-sizing: border-box; }
+        #chat-box::-webkit-scrollbar { display: none; }
         
-        #btn-a { border-color: var(--magenta); color: var(--magenta); }
-        #btn-a:hover { background: var(--magenta); color: white; box-shadow: 0 0 25px rgba(255, 0, 255, 0.6); }
+        .msg { padding: 15px 20px; border-radius: 18px; max-width: 85%; font-size: 0.95rem; line-height: 1.5; backdrop-filter: blur(10px); }
+        .user-msg { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.2); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .ai-msg { background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-left: 3px solid var(--accent); align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-        .btn-send { background: transparent; border: none; color: white; cursor: pointer; padding: 8px 12px; flex-shrink: 0; transition: 0.3s; display: flex; align-items: center; justify-content: center; color: var(--cyan); }
-        .btn-send svg { width: 28px; height: 28px; fill: currentColor; transform: rotate(-45deg); transition: 0.3s ease; }
-        .btn-send:hover { color: white; transform: scale(1.1); }
-
-        #voice-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(3, 3, 6, 0.98); backdrop-filter: blur(40px); z-index: 1000; }
-        .orb { width: 150px; height: 150px; border: 3px solid var(--cyan); border-radius: 50%; animation: pulse 2s infinite ease-in-out; box-shadow: 0 0 30px rgba(0, 255, 255, 0.3); }
+        .input-area { width: 100%; max-width: 800px; padding: 15px 20px 5px 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); }
+        .input-row { display: flex; gap: 10px; width: 100%; align-items: center; background: var(--panel); border: 1px solid rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 30px; backdrop-filter: blur(10px); }
+        .btn-voice { background: transparent; border: none; color: var(--accent); font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem; padding: 10px; cursor: pointer; transition: 0.3s; }
+        .input-row input { flex: 1; background: transparent; border: none; color: white; outline: none; font-size: 1rem; padding: 10px 5px; font-family: 'Montserrat'; }
+        .btn-send { background: transparent; border: none; color: white; cursor: pointer; padding: 10px; font-size: 1.2rem; transition: 0.3s; }
         
-        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 30px var(--cyan); border-color: var(--cyan); } 50% { transform: scale(1.08); box-shadow: 0 0 70px var(--magenta); border-color: var(--magenta); } 100% { transform: scale(1); box-shadow: 0 0 30px var(--cyan); border-color: var(--cyan); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .footer-warning { font-size: 0.65rem; color: rgba(255,255,255,0.4); margin-top: 10px; letter-spacing: 1px; margin-bottom: 10px; text-align: center;}
 
-        @media (max-width: 600px) { h1 { font-size: 2.8rem; letter-spacing: 8px; } #central-display p { font-size: 0.8rem; letter-spacing: 4px; } #chat-window { margin-top: 10vh; width: 94%; } }
+        /* MODALES (AJUSTES Y VOZ) */
+        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .modal-content { background: var(--panel); border: 1px solid rgba(255,255,255,0.1); padding: 30px; width: 85%; max-width: 350px; border-radius: 20px; text-align: center; position: relative; }
+        .btn-close-modal { position: absolute; top: 15px; right: 20px; background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        .modal-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 15px; width: 100%; border-radius: 10px; margin-bottom: 10px; font-family: 'Montserrat'; cursor: pointer; transition: 0.3s; }
+        .modal-btn:hover { background: rgba(255,255,255,0.1); }
+        .btn-danger { color: #ff4d4d; border-color: rgba(255, 77, 77, 0.3); }
+
+        .voice-icon-big { font-family: 'Orbitron'; font-size: 4rem; color: var(--accent); margin-bottom: 20px; animation: pulse 1.5s infinite; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 10px var(--accent); } 100% { opacity: 0.6; transform: scale(1); } }
     </style>
 </head>
 <body>
-    
+
     <video autoplay muted loop playsinline id="bg-video" poster="poster.jpg">
         <source src="fondo.mp4" type="video/mp4">
     </video>
 
-    <div class="top-header">AURORA</div>
-
-    <div id="voice-overlay">
-        <div class="orb" id="main-orb"></div>
-        <h2 style="font-family:'Orbitron'; margin-top:40px; letter-spacing:12px; font-size: 1.8rem;">AURORA</h2>
-        <p id="voice-subtext" style="letter-spacing:4px; opacity:0.7; font-weight:300; margin-top: 10px;">ESCUCHANDO...</p>
-        <button onclick="cerrarEnlaceVoz(event)" style="margin-top:50px; background:transparent; border:2px solid white; color:white; padding:12px 40px; border-radius:30px; cursor:pointer; font-family:'Montserrat'; font-weight:500; font-size:1rem; transition:0.3s;">DESCONECTAR</button>
+    <div id="login-screen" class="screen active-screen">
+        <div class="login-box">
+            <h1>AURORA</h1>
+            
+            <button class="btn-google">
+                <svg width="18" height="18" viewBox="0 0 24 24" style="margin-right:8px"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Ingresar con Google
+            </button>
+            
+            <div class="divider">Email</div>
+            
+            <input type="email" id="email-input" class="login-input" placeholder="Tu correo electrónico...">
+            <button class="btn-conectar" onclick="iniciarConexion()">CONECTAR</button>
+        </div>
     </div>
 
-    <div id="central-display">
-        <h1>AURORA</h1>
-        <p style="letter-spacing:6px; opacity:0.5; font-weight:300; margin-top:10px;">SAN MARTÍN, MENDOZA</p>
+    <div id="loading-screen" class="screen">
+        <div class="loader-orb"></div>
+        <div class="loading-text">
+            <h2>AURORA</h2>
+            <p>Estableciendo enlace neuronal...</p>
+        </div>
     </div>
 
-    <div id="chat-window"></div>
+    <div id="chat-screen" class="screen">
+        <div class="chat-header">
+            <h2>AURORA</h2>
+            <button class="btn-icon" onclick="abrirModal('settings-modal')">⚙️</button>
+        </div>
 
-    <div class="dock-wrap">
-        <div class="dock" onclick="enfocarInput()">
-            <button id="btn-reset" class="btn-circle" title="Nueva Sesión" onclick="nuevaSesion(event)">
-                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-            </button>
-            <button id="btn-a" class="btn-circle" title="Hablar" onclick="abrirEnlaceVoz(event)">A</button>
-            <input type="text" id="chat-input" placeholder="Escribí o hablá..." autocomplete="off">
-            <button onclick="enviarComando()" class="btn-send" title="Enviar Mensaje">
-                <svg viewBox="0 0 24 24"><path d="M3 21l18-9-18-9v7l15 2-15 2v7z"/></svg>
-            </button>
+        <div id="chat-box"></div>
+
+        <div class="input-area">
+            <div class="input-row">
+                <button class="btn-voice" onclick="abrirModal('voice-modal')">A</button>
+                <input type="text" id="chat-input" placeholder="Escribir mensaje..." autocomplete="off">
+                <button class="btn-send" onclick="enviarMensaje()">➤</button>
+            </div>
+            <div class="footer-warning">AURORA ES UNA IA Y PUEDE COMETER ERRORES.</div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <button class="btn-close-modal" onclick="cerrarModal('settings-modal')">✖</button>
+            <h2 style="font-family:'Orbitron'; margin-bottom: 25px;">## ⚙️ AJUSTES</h2>
+            <button class="modal-btn" onclick="reiniciarMemoria()">🧠 Sistema Aurora</button>
+            <button class="modal-btn" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
+            <button class="modal-btn btn-danger">⚠️ ELIMINAR CUENTA</button>
+        </div>
+    </div>
+
+    <div id="voice-modal" class="modal">
+        <div class="modal-content" style="background:transparent; border:none; box-shadow:none;">
+            <div class="voice-icon-big">A</div>
+            <h3 style="letter-spacing:3px; color:var(--accent); margin-bottom: 30px;">ENLACE DE VOZ ACTIVO</h3>
+            <button class="btn-conectar" style="width: auto; padding: 10px 40px;" onclick="cerrarModal('voice-modal')">CERRAR</button>
         </div>
     </div>
 
     <script>
-        const input = document.getElementById('chat-input');
-        input.addEventListener('keypress', (e) => { if(e.key === 'Enter') enviarComando(); });
-
-        let reconocimiento;
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            reconocimiento = new SpeechRecognition();
-            reconocimiento.continuous = false;reconocimiento.interimResults = false;reconocimiento.lang = 'es-AR';
-            reconocimiento.onresult = function(event) {
-                input.value = event.results[0][0].transcript; cerrarEnlaceVoz(); enviarComando();
-            };
-            reconocimiento.onerror = function(event) { cerrarEnlaceVoz(); };
-            reconocimiento.onend = function() { cerrarEnlaceVoz(); };
+        // LOGICA DE TRANSICIÓN DE PANTALLAS
+        function iniciarConexion() {
+            document.getElementById('login-screen').classList.remove('active-screen');
+            document.getElementById('loading-screen').classList.add('active-screen');
+            
+            // Simular carga y abrir chat
+            setTimeout(() => {
+                document.getElementById('loading-screen').classList.remove('active-screen');
+                document.getElementById('chat-screen').classList.add('active-screen');
+                agregarMensaje("Conexión establecida. Hola, ¿qué tal por San Martín?", "ai");
+            }, 2500);
         }
 
-        function enfocarInput() { input.focus(); }
+        function cerrarSesion() {
+            cerrarModal('settings-modal');
+            document.getElementById('chat-screen').classList.remove('active-screen');
+            document.getElementById('chat-box').innerHTML = ''; // Limpiar chat
+            document.getElementById('login-screen').classList.add('active-screen');
+        }
 
-        function hablarTexto(texto) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(texto);
-                utterance.lang = 'es-MX'; utterance.rate = 1.0;
-                window.speechSynthesis.speak(utterance);
+        // LOGICA DE MODALES
+        function abrirModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // LOGICA DE CHAT CON PYTHON Y VOZ
+        const input = document.getElementById('chat-input');
+        input.addEventListener('keypress', (e) => { if(e.key === 'Enter') enviarMensaje(); });
+
+        function agregarMensaje(texto, tipo) {
+            const chatBox = document.getElementById('chat-box');
+            const div = document.createElement('div');
+            div.className = `msg ${tipo}-msg`; div.innerText = texto;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function enviarMensaje() {
+            const val = input.value.trim(); if(!val) return;
+            agregarMensaje(val, 'user');
+            input.value = "";
+            
+            try {
+                const res = await fetch('/chat', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ msg: val }) 
+                });
+                const data = await res.json();
+                if(data.respuesta) { agregarMensaje(data.respuesta, 'ai'); hablar(data.respuesta); }
+            } catch(e) { 
+                agregarMensaje("Error de conexión neuronal.", 'ai'); 
             }
         }
 
-        async function nuevaSesion(event) {
-            if(event) event.stopPropagation();
-            const chatWindow = document.getElementById('chat-window');
-            if(chatWindow.innerHTML === '') return;
-            chatWindow.classList.add('fade-out');
-            setTimeout(async () => {
-                chatWindow.innerHTML = ''; chatWindow.classList.remove('fade-out');
-                document.getElementById('central-display').classList.remove('hidden-ui');
-                document.querySelector('.top-header').style.opacity = '1'; // Muestra el header arriba
-                try { await fetch('/reiniciar_memoria', { method: 'POST' }); } catch (e) {}
-                input.focus();
-            }, 600);
+        async function reiniciarMemoria() {
+            cerrarModal('settings-modal');
+            document.getElementById('chat-box').innerHTML = '';
+            try { await fetch('/reiniciar_memoria', { method: 'POST' }); } catch(e){}
+            agregarMensaje("Memoria reiniciada. ¿En qué te ayudo?", "ai");
         }
 
-        function abrirEnlaceVoz(event) {
-            if(event) event.stopPropagation();
-            if(reconocimiento) {
-                input.value = '';
-                document.getElementById('voice-overlay').style.display = 'flex';
-                document.getElementById('central-display').classList.add('hidden-ui');
-                reconocimiento.start();
-            } else { alert("Función de voz no soportada."); }
-        }
-
-        function cerrarEnlaceVoz(event) { 
-            if(event) event.stopPropagation(); 
-            if(reconocimiento) reconocimiento.stop();
-            document.getElementById('voice-overlay').style.display = 'none'; input.focus(); 
-        }
-
-        function agregarBurbuja(text, tipo) {
-            const chat = document.getElementById('chat-window');
-            const div = document.createElement('div');
-            div.className = `bubble ${tipo}`; div.innerText = text;
-            chat.appendChild(div); 
-            document.getElementById('central-display').classList.add('hidden-ui');
-            document.querySelector('.top-header').style.opacity = '0'; // Oculta el header grande cuando empieza el chat
-            setTimeout(() => { chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' }); }, 50);
-        }
-
-        async function enviarComando() {
-            const val = input.value.trim(); if(!val) return;
-            agregarBurbuja(val, 'gabriel'); input.value = "";
-            try {
-                const res = await fetch('/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ msg: val }) });
-                const data = await res.json(); 
-                if(data.respuesta) { agregarBurbuja(data.respuesta, 'aurora'); hablarTexto(data.respuesta); }
-            } catch(e) { agregarBurbuja("Error de conexión.", 'aurora'); }
-            input.focus(); 
+        function hablar(texto) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(texto);
+                u.lang = 'es-MX'; window.speechSynthesis.speak(u);
+            }
         }
     </script>
 </body>
