@@ -24,39 +24,36 @@ def chat():
         if not msg: return jsonify({"respuesta": "Dime..."})
         
         msg_lower = msg.lower()
-        # Radar ultra-sensible para activar el WiFi
-        keywords = ["clima", "tiempo", "hora", "hoy", "noticia", "dolar", "dólar", "partido", "futbol", "fútbol", "jugó", "jugo", "ganó", "gano", "resultado", "quien", "quién"]
+        # Radar ultra-sensible (incluye tu error de tipeo 'agrentina' y 'salio')
+        keywords = ["clima", "tiempo", "hora", "hoy", "noticia", "dolar", "partido", "futbol", "fútbol", "jugó", "jugo", "ganó", "gano", "resultado", "argentina", "agrentina", "salió", "salio"]
         
         if any(k in msg_lower for k in keywords):
-            # EL INVESTIGADOR (Perplexity Sonar - El mejor buscador)
-            modelo_a_usar = "perplexity/sonar"
-            prompt_sistema = (
-                "Eres Aurora, una IA con ACCESO TOTAL Y OBLIGATORIO a internet en tiempo real. "
-                "Hoy es sábado 28 de marzo de 2026. Tu misión es buscar en Google/Bing AHORA MISMO "
-                "y dar el resultado exacto de lo que pide el usuario (partidos, clima, etc). "
-                "PROHIBIDO decir que no tienes acceso. Busca y responde como una mendocina de San Martín."
+            # EL INVESTIGADOR (Perplexity Sonar)
+            model = "perplexity/sonar"
+            system_prompt = (
+                "Eres Aurora. Hoy es 28 de marzo de 2026. "
+                "Tu misión es buscar en internet el resultado real de lo que pide el usuario. "
+                "Si te preguntan por un partido, busca el marcador final. NO digas que no tienes acceso. "
+                "Responde con la info real y tono mendocino."
             )
         else:
-            # EL JEFE (GPT-4o mini - El más rápido para charlar)
-            modelo_a_usar = "openai/gpt-4o-mini"
-            prompt_sistema = "Eres Aurora, una IA amable y mendocina creada por Gabriel Sosa Scriboni."
+            # EL JEFE (GPT-4o mini)
+            model = "openai/gpt-4o-mini"
+            system_prompt = "Eres Aurora, una IA amable y mendocina creada por Gabriel Sosa Scriboni."
 
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             json={
-                "model": modelo_a_usar,
+                "model": model,
                 "messages": [
-                    {"role": "system", "content": prompt_sistema}, 
+                    {"role": "system", "content": system_prompt}, 
                     {"role": "user", "content": msg}
                 ],
-                "temperature": 0.1 # Baja temperatura para que sea más preciso y menos 'chamuyero'
+                "temperature": 0.1
             },
             headers={"Authorization": f"Bearer {OPENROUTER_KEY}"},
             timeout=30
         )
-        respuesta_final = res.json()['choices'][0]['message']['content']
-        return jsonify({"respuesta": respuesta_final})
-
+        return jsonify({"respuesta": res.json()['choices'][0]['message']['content']})
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({"respuesta": "Error de conexión neuronal... Intentá de nuevo en un segundo."})
+        return jsonify({"respuesta": "Error de conexión neuronal... ¡Intenta de nuevo!"})
