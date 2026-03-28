@@ -178,7 +178,7 @@
     </div>
 
     <script>
-        // 1. TU CONFIGURACIÓN EXACTA DE FIREBASE
+        // 1. CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo",
             authDomain: "aurora-ai-oficia.firebaseapp.com",
@@ -189,14 +189,11 @@
             measurementId: "G-XTN5WJPRPP"
         };
 
-        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // 2. VARIABLES Y FUNCIONES DE LOGIN
         let modoRegistro = false;
 
-        // Esta función cambia la vista entre "Ingresar" y "Crear Cuenta"
         function toggleRegistro() {
             modoRegistro = !modoRegistro;
             const titulo = document.getElementById('titulo-login');
@@ -214,7 +211,6 @@
             }
         }
 
-        // Función principal del botón (Ingresa o Registra según el modo)
         function authCorreo() {
             const email = document.getElementById('emailInput').value;
             const password = document.getElementById('passwordInput').value;
@@ -225,47 +221,30 @@
             }
 
             if(modoRegistro) {
-                // Crear cuenta nueva
                 auth.createUserWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        alert("¡Cuenta creada con éxito! Bienvenido.");
-                        entrar();
-                    })
-                    .catch((error) => { alert("Error al registrarse: " + error.message); });
+                    .then(() => { alert("¡Cuenta creada con éxito!"); entrar(); })
+                    .catch((error) => { alert("Error: " + error.message); });
             } else {
-                // Ingresar con cuenta existente
                 auth.signInWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        entrar(); // Si todo sale bien, entra a la app
-                    })
-                    .catch((error) => { alert("Error al ingresar. Revisa tus datos."); });
+                    .then(() => { entrar(); })
+                    .catch((error) => { alert("Error al ingresar."); });
             }
         }
 
-        // Ingreso con Google
         function authGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider)
-                .then((result) => {
-                    entrar(); // Si todo sale bien, entra a la app
-                }).catch((error) => {
-                    alert('Error con Google: ' + error.message);
-                });
+                .then(() => { entrar(); }).catch((error) => { alert('Error con Google: ' + error.message); });
         }
 
-        // Recuperar Contraseña
         function recuperarContrasena() {
             const email = document.getElementById('emailInput').value;
-            if(!email) {
-                alert("Por favor, ingresa tu correo electrónico en el casillero de arriba y luego toca 'Olvidé mi contraseña'.");
-                return;
-            }
+            if(!email) { alert("Ingresá tu correo arriba."); return; }
             auth.sendPasswordResetEmail(email)
-                .then(() => { alert("Te enviamos un correo para restablecer tu contraseña. ¡Revisa tu bandeja de entrada!"); })
+                .then(() => { alert("Correo enviado."); })
                 .catch((error) => { alert("Error: " + error.message); });
         }
 
-        // 3. FUNCIONES DE TU APP (Intactas)
         document.getElementById('chat-terminal').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') { enviar(); }
         });
@@ -283,8 +262,12 @@
             win.innerHTML += `<div class="msg user">${val}</div>`;
             input.value = ""; win.scrollTop = win.scrollHeight;
             try {
-                // AQUÍ ESTÁ EL ÚNICO CAMBIO: LA CONEXIÓN AL SERVIDOR DE RENDER
-                const res = await fetch('https://aurora-ai-mendoza.onrender.com/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:val}) });
+                // 🚀 CONEXIÓN NUEVA A HUGGING FACE
+                const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { 
+                    method:'POST', 
+                    headers:{'Content-Type':'application/json'}, 
+                    body:JSON.stringify({msg:val}) 
+                });
                 const data = await res.json();
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
                 win.scrollTop = win.scrollHeight;
