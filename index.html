@@ -9,117 +9,88 @@
     <style>
         :root { --accent: #00f2ff; }
         
-        /* 🎥 EL FONDO: TRANSPARENTE PARA QUE EL VIDEO SEA EL REY */
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100vh; 
             overflow: hidden; background: none !important; 
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
         }
 
+        /* 🎥 VIDEO DE FONDO */
         #bg-video { 
             position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; 
             z-index: -1; object-fit: cover !important; 
         }
 
-        /* 🚪 LOGIN TRASLÚCIDO (Deja ver la Aurora de fondo) */
+        /* 🚪 LOGIN */
         #login-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(25px); z-index: 9999; 
+            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(25px); z-index: 9999; 
             display: flex; align-items: center; justify-content: center; 
         }
         .login-card { 
-            background: rgba(255, 255, 255, 0.02); padding: 45px 30px; border-radius: 40px; 
+            background: rgba(255, 255, 255, 0.02); padding: 40px; border-radius: 40px; 
             border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; 
         }
-        .titulo-login { font-family: 'Orbitron'; font-size: 1.4rem; letter-spacing: 4px; margin-bottom: 30px; text-shadow: 0 0 10px var(--accent); }
-        .btn-google { background: #fff; color: #000; border: none; padding: 15px; border-radius: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; margin-bottom: 20px; }
-        .btn-ingresar { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 15px; width: 100%; border-radius: 18px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; letter-spacing: 2px; }
 
         /* 📱 APP CONTAINER */
-        #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; max-width: 1000px; margin: 0 auto; position: relative; z-index: 10; }
+        #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; position: relative; z-index: 10; }
 
         header { padding: 40px 0 10px 0; text-align: center; }
-        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent); }
+        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); }
 
-        /* 💬 CHAT NIVEL GEMINIS / GROK (Cero deformación) */
-        #chat-window { 
-            flex: 1; overflow-y: auto; padding: 20px; 
-            display: flex; flex-direction: column; gap: 20px; 
-            scrollbar-width: none; 
-        }
-        .msg { 
-            max-width: 75%; padding: 15px 22px; border-radius: 22px; 
-            backdrop-filter: blur(15px); font-size: 0.98rem; line-height: 1.5;
-            animation: slideIn 0.3s ease-out;
-        }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Aurora: IZQUIERDA */
-        .aurora { 
-            align-self: flex-start; 
-            background: rgba(0, 242, 255, 0.08); 
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            border-bottom-left-radius: 4px;
-        }
-        /* Usuario: DERECHA */
-        .user { 
-            align-self: flex-end; 
-            background: rgba(255, 255, 255, 0.08); 
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-bottom-right-radius: 4px;
+        .status-container { display: flex; justify-content: center; margin-bottom: 10px; }
+        .status-bubble { 
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2);
+            padding: 10px 25px; border-radius: 50px; backdrop-filter: blur(10px);
+            font-size: 0.85rem; color: #fff;
         }
 
-        /* 🛠️ FOOTER CONTROLS: TODO ALINEADO AL CENTRO */
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
+        .msg { max-width: 75%; padding: 15px 22px; border-radius: 22px; backdrop-filter: blur(15px); }
+        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 4px; }
+        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 4px; }
+
+        /* 🛠️ FOOTER CONTROLS */
         .bottom-section { 
-            padding: 10px 20px 20px 20px; 
-            display: flex; flex-direction: column; align-items: center; gap: 15px;
+            position: relative; padding: 10px 20px 20px 20px; 
+            display: flex; flex-direction: column; align-items: center;
         }
 
+        /* 🏁 LÍNEA DE CONTROLES UNIFICADA */
         .controls-row {
             display: flex; align-items: center; justify-content: center;
-            width: 100%; position: relative;
+            width: 100%; position: relative; min-height: 60px;
         }
 
-        /* ⚙️ CONFIGURACIÓN: GRANDE Y AL RINCÓN IZQUIERDO */
+        /* ⚙️ CONFIGURACIÓN: CLAVADA AL RINCÓN IZQUIERDO */
         .btn-config { 
+            position: absolute; left: 10px; bottom: 12px; /* Alineada a la altura de la barra */
             background: none; border: none; cursor: pointer; color: #fff; 
-            font-family: 'Orbitron'; font-size: 0.9rem; /* MÁS GRANDE */
+            font-family: 'Orbitron'; font-size: 0.85rem; 
             letter-spacing: 2px; text-shadow: 0 0 15px var(--accent);
             display: flex; align-items: center; gap: 10px;
-            position: absolute; left: 10px;
         }
-        .config-icon { font-size: 1.6rem; } /* TUERCA GRANDE */
+        .gear-icon { font-size: 1.6rem; }
 
-        /* 🏁 CHAT GROUP CENTRADO (A + BARRA) */
+        /* 🏁 CHAT GROUP: SIEMPRE CENTRADO */
         .chat-group { display: flex; align-items: center; gap: 15px; width: 100%; max-width: 550px; }
-        .btn-a { font-family: 'Orbitron'; font-size: 2rem; color: #fff; background: none; border: none; cursor: pointer; text-shadow: 0 0 15px var(--accent); flex-shrink: 0; }
-        
+        .btn-a { font-family: 'Orbitron'; font-size: 1.9rem; color: #fff; background: none; border: none; cursor: pointer; text-shadow: 0 0 15px var(--accent); flex-shrink: 0; }
         .input-bar { 
-            flex: 1; background: rgba(0, 0, 0, 0.3); 
-            border: 1px solid rgba(0, 242, 255, 0.4); border-radius: 40px; 
-            display: flex; align-items: center; padding: 5px 22px; backdrop-filter: blur(20px); 
+            flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 242, 255, 0.4); 
+            border-radius: 40px; display: flex; align-items: center; padding: 5px 20px; backdrop-filter: blur(20px); 
         }
         #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 0; outline: none; font-size: 1rem; }
 
-        /* 💎 WARNING CENTRADO ABAJO DEL CHAT */
+        /* 💎 WARNING: CENTRADO ABAJO DE TODO */
         .disclaimer { 
-            font-size: 0.6rem; color: #fff; text-shadow: 0 0 10px var(--accent); 
-            text-align: center; letter-spacing: 1px; width: 100%;
-            text-transform: uppercase; font-weight: bold;
+            text-align: center; font-size: 0.6rem; color: #fff; 
+            text-shadow: 0 0 10px var(--accent); letter-spacing: 1px; 
+            padding-top: 15px; width: 100%;
         }
 
-        /* 🖼️ PANEL DE CONFIGURACIÓN MODAL CENTRAL */
-        #config-panel { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(35px); 
-            z-index: 100000; display: none; align-items: center; justify-content: center; 
-        }
-        .config-card { 
-            background: rgba(255, 255, 255, 0.04); padding: 40px; border-radius: 35px; 
-            border: 1px solid var(--accent); text-align: center; width: 85%; max-width: 400px; 
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
-        }
-        .btn-delete { background: transparent; color: #ff4d4d; border: 1px solid #ff4d4d; padding: 12px; width: 100%; border-radius: 15px; cursor: pointer; margin-top: 20px; font-weight: bold; font-family: 'Orbitron'; font-size: 0.7rem; }
+        /* PANEL CONFIG MODAL */
+        #config-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(35px); z-index: 100000; display: none; align-items: center; justify-content: center; }
+        .config-card { background: rgba(255, 255, 255, 0.04); padding: 40px; border-radius: 35px; border: 1px solid var(--accent); text-align: center; width: 85%; max-width: 400px; }
     </style>
 </head>
 <body>
@@ -130,32 +101,27 @@
 
     <div id="config-panel">
         <div class="config-card">
-            <h2 style="font-family:'Orbitron'; letter-spacing:4px; margin-bottom: 5px;">CONFIGURACIÓN</h2>
-            <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 30px;">CONFIGURACIÓN DE AURORA</p>
-            
-            <button onclick="location.reload()" style="background:rgba(255,255,255,0.1); color:white; border:none; padding:15px; width:100%; border-radius:15px; cursor:pointer; font-weight:bold; font-family:'Orbitron';">CERRAR SESIÓN</button>
-            
-            <button class="btn-delete" onclick="if(confirm('¿Eliminar cuenta? Esta acción es irreversible.')) alert('Solicitud enviada a los servidores neuronales.')">ELIMINAR CUENTA</button>
-            
+            <h2 style="font-family:'Orbitron'; letter-spacing:4px;">CONFIGURACIÓN</h2>
+            <p style="font-size: 0.8rem; opacity: 0.7;">CONFIGURACIÓN DE AURORA</p>
+            <button onclick="location.reload()" style="background:rgba(255,255,255,0.1); color:white; border:none; padding:15px; width:100%; border-radius:15px; cursor:pointer; margin-top:20px; font-weight:bold; font-family:'Orbitron';">CERRAR SESIÓN</button>
+            <button style="background:transparent; color:#ff4d4d; border:1px solid #ff4d4d; padding:12px; width:100%; border-radius:15px; cursor:pointer; margin-top:15px; font-weight:bold; font-family:'Orbitron'; font-size:0.7rem;" onclick="confirm('¿Eliminar cuenta?')">ELIMINAR CUENTA</button>
             <br>
-            <button style="margin-top:40px; background:none; border:none; color:var(--accent); cursor:pointer; font-family:'Orbitron'; font-size: 0.8rem; letter-spacing: 2px;" onclick="document.getElementById('config-panel').style.display='none'">VOLVER</button>
+            <button style="margin-top:40px; background:none; border:none; color:var(--accent); cursor:pointer; font-family:'Orbitron'; font-size:0.8rem;" onclick="document.getElementById('config-panel').style.display='none'">VOLVER</button>
         </div>
     </div>
 
     <div id="login-overlay">
         <div class="login-card">
-            <h1 class="titulo-login">AURORA ACCESO</h1>
-            <button class="btn-google" onclick="entrar('Gabriel')">G | Ingresar con Google</button>
-            <button class="btn-ingresar" onclick="entrar('Usuario')">INGRESAR</button>
+            <h1 class="titulo-login">BIENVENIDO A AURORA</h1>
+            <button class="btn-google" onclick="entrar()">G | Ingresar con Google</button>
+            <button class="btn-ingresar" onclick="entrar()">INGRESAR</button>
         </div>
     </div>
 
     <div id="app-container">
         <header><div class="titulo-app">AURORA</div></header>
-        
-        <div id="chat-window">
-            <div class="msg aurora">¡Hola Gabriel! Soy Aurora. Ya estamos conectados y listos para hacer historia. ¿Qué vamos a crear hoy?</div>
-        </div>
+        <div class="status-container"><div class="status-bubble">¡Hola Gabriel! Soy Aurora. ¿Qué vamos a crear hoy?</div></div>
+        <div id="chat-window"></div>
 
         <div class="bottom-section">
             <div class="controls-row">
@@ -164,25 +130,21 @@
                 </button>
 
                 <div class="chat-group">
-                    <button class="btn-a" onclick="alert('Modo voz activado...')">A</button>
+                    <button class="btn-a" onclick="alert('Voz activa')">A</button>
                     <div class="input-bar">
                         <input type="text" id="chat-terminal" placeholder="Escribir mensaje neuronal..." autocomplete="off">
-                        <button onclick="enviar()" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size: 1.5rem;">➤</button>
+                        <button onclick="enviar()" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:1.5rem;">➤</button>
                     </div>
                 </div>
             </div>
-
             <div class="disclaimer">AURORA ES UNA IA Y PUEDE COMETER ERRORES.</div>
         </div>
     </div>
 
     <script>
-        // MAndar con ENTER (Nivel Pro)
-        document.getElementById('chat-terminal').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') { enviar(); }
-        });
+        document.getElementById('chat-terminal').addEventListener('keypress', function (e) { if (e.key === 'Enter') { enviar(); } });
 
-        function entrar(name) {
+        function entrar() {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('app-container').style.display = 'flex';
             document.getElementById('bg-video').play(); 
@@ -192,20 +154,14 @@
             const input = document.getElementById('chat-terminal');
             const val = input.value.trim(); if(!val) return;
             const win = document.getElementById('chat-window');
-            
-            // USUARIO (DERECHA)
             win.innerHTML += `<div class="msg user">${val}</div>`;
             input.value = ""; win.scrollTop = win.scrollHeight;
-
             try {
                 const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:val}) });
                 const data = await res.json();
-                // AURORA (IZQUIERDA)
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
                 win.scrollTop = win.scrollHeight;
-            } catch(e) { 
-                win.innerHTML += `<div class="msg aurora">Error de conexión neuronal...</div>`;
-            }
+            } catch(e) { win.innerHTML += `<div class="msg aurora">Error de conexión...</div>`; }
         }
     </script>
 </body>
