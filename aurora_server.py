@@ -5,11 +5,13 @@ from flask_cors import CORS
 from datetime import datetime
 import pytz
 
-# 🌐 Configuración para que lea todo desde la carpeta raíz
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY")
+
+# Log para saber si la clave está cargada
+print("🚀 Servidor iniciado - OPENROUTER_KEY:", "✅ OK" if OPENROUTER_KEY else "❌ FALTA")
 
 def get_datetime():
     try:
@@ -21,7 +23,6 @@ def get_datetime():
 
 @app.route('/')
 def index():
-    # 🛡️ Esto obliga a Render y al celular a DESCARGAR el HTML nuevo cada vez
     response = make_response(send_from_directory('.', 'inicio.html'))
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response.headers['Pragma'] = 'no-cache'
@@ -39,12 +40,13 @@ def chat():
         hora, fecha = get_datetime()
         msg_lower = msg.lower()
 
+        # IDENTIDAD FIJA
         if any(x in msg_lower for x in ["quien te creo", "quien te creó", "creador", "quien es tu creador"]):
             return jsonify({"respuesta": "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."})
 
-        system_prompt = f"""Eres Aurora, una IA femenina elegante y amable creada por Gabriel Sosa Scriboni.
-Estás en San Martín, Mendoza. Hoy es {fecha} y son las {hora}.
-Responde de forma breve y amable. No menciones que eres un modelo de lenguaje."""
+        system_prompt = f"""Eres Aurora, una IA femenina elegante y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza.
+Hoy es {fecha} y son las {hora}.
+Responde de forma breve, clara y cálida."""
 
         mensajes = [
             {"role": "system", "content": system_prompt},
@@ -57,7 +59,7 @@ Responde de forma breve y amable. No menciones que eres un modelo de lenguaje.""
                 "model": "openai/gpt-4o-mini",
                 "messages": mensajes,
                 "max_tokens": 180,
-                "temperature": 0.6
+                "temperature": 0.65
             },
             headers={
                 "Authorization": f"Bearer {OPENROUTER_KEY}",
@@ -66,13 +68,18 @@ Responde de forma breve y amable. No menciones que eres un modelo de lenguaje.""
             timeout=12
         )
 
+        if res.status_code != 200:
+            print("❌ Error OpenRouter:", res.status_code, res.text)
+            return jsonify({"respuesta": "Estoy teniendo un problema de conexión. Intentá de nuevo."})
+
         respuesta = res.json()['choices'][0]['message']['content']
         return jsonify({"respuesta": respuesta})
 
     except Exception as e:
-        print("🚨 Error:", str(e))
-        return jsonify({"respuesta": "Conexión neuronal inestable. Reintentando..."})
+        print("🚨 Error en /chat:", str(e))
+        return jsonify({"respuesta": "Hubo un cortocircuito. Intentá de nuevo por favor."})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
+    print(f"🌐 Servidor corriendo en puerto {port}")
     app.run(host='0.0.0.0', port=port)
