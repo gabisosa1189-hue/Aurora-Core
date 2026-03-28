@@ -55,7 +55,7 @@
             border-radius: 35px; display: flex; align-items: center; padding: 5px 15px; backdrop-filter: blur(20px);
         }
 
-        #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; outline: none; font-size: 1rem; }
+        #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; outline: none; font-size: 1rem; width: 100%; }
         .btn-send-final { background: none; border: none; color: var(--accent); font-size: 1.6rem; cursor: pointer; }
 
         /* SIDEBAR */
@@ -71,20 +71,20 @@
 <body>
 
     <video autoplay muted loop playsinline id="bg-video">
-        <source src="fondo.mp4" type="video/mp4">
+        <source src="fondo.mp4?v=1" type="video/mp4">
     </video>
 
     <div id="sidebar">
         <h2 style="font-family:'Orbitron'; color:var(--accent);">⚙️ AJUSTES</h2>
-        <button onclick="location.reload()" style="background:rgba(255,255,255,0.05); color:white; border:1px solid #ff4d4d; padding:15px; border-radius:15px; cursor:pointer;">Cerrar Sesión</button>
-        <button onclick="document.getElementById('sidebar').classList.remove('open')" style="margin-top:20px; background:none; border:none; color:white; cursor:pointer;">CERRAR ✖</button>
+        <button class="menu-btn" onclick="location.reload()" style="background:rgba(255,255,255,0.05); color:white; border:1px solid #ff4d4d; padding:15px; border-radius:15px; cursor:pointer; width:100%; text-align:left;">Cerrar Sesión</button>
+        <button onclick="document.getElementById('sidebar').classList.remove('open')" style="margin-top:20px; background:none; border:none; color:white; cursor:pointer; font-family:'Orbitron';">CERRAR ✖</button>
     </div>
 
     <div id="login-overlay">
         <div class="login-card">
             <h1 class="titulo-login">AURORA</h1>
             <button onclick="entrar('Gabriel')" class="btn-auth btn-google">G | Ingresar con Google</button>
-            <button onclick="entrar('Usuario')" class="btn-auth" style="background:rgba(255,255,255,0.1); color:white;">Acceso Invitado</button>
+            <button onclick="entrar('Usuario')" class="btn-auth" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2);">Acceso Invitado</button>
         </div>
     </div>
 
@@ -115,7 +115,7 @@
         function entrar(name) {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('app-container').style.display = 'flex';
-            arrancarVideo(); // Re-intento manual al hacer click
+            arrancarVideo(); // Re-intento manual al entrar
         }
 
         async function enviar() {
