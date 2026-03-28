@@ -96,7 +96,7 @@
             display: flex; flex-direction: column; align-items: center; gap: 10px;
         }
         .chat-group { display: flex; align-items: center; gap: 15px; width: 100%; max-width: 500px; }
-        .btn-a { font-family: 'Orbitron'; font-size: 1.8rem; color: #fff; background: none; border: none; cursor: pointer; text-shadow: 0 0 15px var(--accent); }
+        .btn-a { font-family: 'Orbitron'; font-size: 1.8rem; color: #fff; background: none; border: none; cursor: pointer; text-shadow: 0 0 15px var(--accent); transition: 0.3s; }
         .input-bar { 
             flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 242, 255, 0.4); 
             border-radius: 40px; display: flex; align-items: center; padding: 5px 22px; backdrop-filter: blur(20px); 
@@ -167,7 +167,7 @@
 
         <div class="bottom-section">
             <div class="chat-group">
-                <button class="btn-a" onclick="alert('Voz activa')">A</button>
+                <button class="btn-a" id="btn-voz" onclick="activarVoz()">A</button>
                 <div class="input-bar">
                     <input type="text" id="chat-terminal" placeholder="Escribir mensaje neuronal..." autocomplete="off">
                     <button onclick="enviar()" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:1.5rem;">➤</button>
@@ -193,6 +193,38 @@
         const auth = firebase.auth();
 
         let modoRegistro = false;
+
+        // --- 🗣️ NUEVA FUNCIÓN: VOZ DE MUJER (SALIDA) ---
+        function hablar(texto) {
+            const synth = window.speechSynthesis;
+            const utter = new SpeechSynthesisUtterance(texto);
+            const voices = synth.getVoices();
+            // Buscamos una voz de mujer sofisticada
+            const femaleVoice = voices.find(v => v.lang.includes('es') && (v.name.includes('female') || v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Zira')));
+            if (femaleVoice) utter.voice = femaleVoice;
+            utter.pitch = 1.1; // Tono más femenino
+            utter.rate = 1.0;
+            synth.speak(utter);
+        }
+
+        // --- 👂 NUEVA FUNCIÓN: OÍDO DE AURORA (ENTRADA) ---
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'es-AR';
+
+        function activarVoz() {
+            const btn = document.getElementById('btn-voz');
+            btn.style.color = '#ff4d4d'; // Brilla en rojo al escuchar
+            btn.style.textShadow = "0 0 30px #ff4d4d";
+            recognition.start();
+        }
+
+        recognition.onresult = (event) => {
+            const texto = event.results[0][0].transcript;
+            document.getElementById('chat-terminal').value = texto;
+            document.getElementById('btn-voz').style.color = '#fff';
+            document.getElementById('btn-voz').style.textShadow = "0 0 15px var(--accent)";
+            enviar(); // Envía automáticamente
+        };
 
         function toggleRegistro() {
             modoRegistro = !modoRegistro;
@@ -262,7 +294,7 @@
             win.innerHTML += `<div class="msg user">${val}</div>`;
             input.value = ""; win.scrollTop = win.scrollHeight;
             try {
-                // 🚀 CONEXIÓN NUEVA A HUGGING FACE
+                // 🚀 CONEXIÓN A HUGGING FACE
                 const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { 
                     method:'POST', 
                     headers:{'Content-Type':'application/json'}, 
@@ -270,11 +302,18 @@
                 });
                 const data = await res.json();
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
+                
+                // 🗣️ AGREGADO: AURORA RESPONDE CON VOZ
+                hablar(data.respuesta);
+
                 win.scrollTop = win.scrollHeight;
             } catch(e) { 
                 win.innerHTML += `<div class="msg aurora">Error de conexión neuronal...</div>`;
             }
         }
+
+        // Cargar voces para el celu
+        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
     </script>
 </body>
 </html>
