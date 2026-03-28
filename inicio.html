@@ -21,62 +21,76 @@
         .btn-google { background: #fff; color: #000; }
         .btn-email-toggle { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; }
         
-        /* ⚙️ MENÚ LATERAL CONFIGURACIÓN */
+        /* ⚙️ MENÚ LATERAL CONFIGURACIÓN (MÁS GRANDE E INVISIBLE) */
         #sidebar {
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
-            background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,242,255,0.2);
+            position: fixed; top: 0; left: -320px; width: 320px; height: 100%;
+            background: rgba(0, 0, 0, 0.25); /* Mucho más transparente */
+            backdrop-filter: blur(35px); /* Efecto cristal puro */
+            border-right: 1px solid rgba(0,242,255,0.15);
             z-index: 10000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            padding: 30px 20px; display: flex; flex-direction: column; gap: 20px;
+            padding: 40px 25px; display: flex; flex-direction: column; gap: 20px;
         }
         #sidebar.open { left: 0; }
-        #sidebar h2 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; }
-        .menu-btn { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.3s; }
+        #sidebar h2 { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 10px; }
+        .menu-btn { background: rgba(255,255,255,0.03); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 15px; text-align: left; font-size: 1.05rem; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); }
         .menu-btn:hover { background: rgba(255,255,255,0.1); }
-        .menu-btn.danger { background: rgba(255, 50, 50, 0.1); border-color: rgba(255,50,50,0.3); color: #ff4d4d; margin-top: auto; }
-        .close-sidebar { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        .menu-btn.danger { background: rgba(255, 50, 50, 0.05); border-color: rgba(255,50,50,0.3); color: #ff4d4d; margin-top: auto; }
+        .close-sidebar { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; }
 
         #app-container { display: none; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1.2s; }
         
-        /* 🏔️ HEADER APP (Centrado) */
+        /* 🏔️ HEADER APP */
         header { padding: 30px 15px 15px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         .titulo-app { font-family: 'Orbitron', sans-serif; letter-spacing: 15px; font-size: 1.5rem; text-shadow: 0 0 20px var(--accent); margin: 0; }
         
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; scroll-behavior: smooth; }
-        .msg { max-width: 85%; padding: 15px 20px; border-radius: 22px; backdrop-filter: blur(10px); animation: slide 0.3s ease; line-height: 1.4; }
+        .msg { max-width: 85%; padding: 15px 20px; border-radius: 22px; backdrop-filter: blur(15px); animation: slide 0.3s ease; line-height: 1.4; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
         
-        /* ⚙️ CAJA DE INPUT RELATIVA PARA EL BOTÓN FLOTANTE */
+        /* ⚙️ ZONA INFERIOR TRANSPARENTE */
         .input-area { 
-            position: relative; 
-            padding: 20px 20px max(15px, env(safe-area-inset-bottom)) 20px; 
-            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.4), transparent); 
+            padding: 10px 20px max(15px, env(safe-area-inset-bottom)) 20px; 
+            background: transparent; /* Transparencia total restaurada */
         }
         
-        /* ⚙️ BOTÓN DE CONFIGURACIÓN FLOTANTE (Arreglo Magico) */
-        .btn-config-floating {
-            position: absolute;
-            top: -35px; /* Flota justito arriba de la barra de texto */
-            left: 20px;
-            background: rgba(10, 10, 10, 0.6); 
+        /* CONTENEDOR FLEX: [Botón Config] + [Caja de Chat] */
+        .bottom-bar-layout {
+            display: flex;
+            align-items: center;
+            gap: 12px; /* Espacio entre la tuerca y la barra de chat */
+        }
+
+        /* ⚙️ BOTÓN TUERCA (A la izquierda, circular y elegante) */
+        .btn-config-inline {
+            background: rgba(255, 255, 255, 0.03); 
             border: 1px solid rgba(0, 242, 255, 0.3); 
             color: var(--accent);
-            padding: 6px 14px; 
-            border-radius: 20px; 
-            font-size: 0.8rem; 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 50%; 
+            font-size: 1.3rem; 
             cursor: pointer; 
             display: flex; 
+            justify-content: center; 
             align-items: center;
-            gap: 6px; 
-            backdrop-filter: blur(10px); 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
+            backdrop-filter: blur(20px); 
             transition: 0.3s;
-            z-index: 100;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            flex-shrink: 0; /* Evita que se aplaste */
+            box-shadow: 0 0 10px rgba(0,242,255,0.1);
         }
-        .btn-config-floating:hover { background: rgba(0, 242, 255, 0.15); }
+        .btn-config-inline:active { transform: scale(0.9); }
 
-        .input-container { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 35px; display: flex; align-items: center; padding: 5px 15px; backdrop-filter: blur(20px); }
+        .input-container { 
+            flex-grow: 1; /* Ocupa todo el espacio restante */
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(0, 242, 255, 0.3); 
+            border-radius: 35px; 
+            display: flex; 
+            align-items: center; 
+            padding: 5px 15px; 
+            backdrop-filter: blur(20px); 
+        }
         
         /* 🎙️ LA "A" ESTILO TÍTULO */
         .btn-voice { 
@@ -167,12 +181,15 @@
         <div id="chat-window"><div class="msg aurora" id="saludo-ia">Conectando red neuronal...</div></div>
         
         <div class="input-area">
-            <button class="btn-config-floating" onclick="toggleSidebar()">⚙️ Configuración</button>
-
-            <div class="input-container">
-                <button class="btn-voice" onclick="startVoiceMode()">A</button>
-                <input type="text" id="chat-terminal" readonly placeholder="Iniciando..." autocomplete="new-password">
-                <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.6rem; cursor:pointer;">➤</button>
+            
+            <div class="bottom-bar-layout">
+                <button class="btn-config-inline" onclick="toggleSidebar()">⚙️</button>
+                
+                <div class="input-container">
+                    <button class="btn-voice" onclick="startVoiceMode()">A</button>
+                    <input type="text" id="chat-terminal" readonly placeholder="Iniciando..." autocomplete="new-password">
+                    <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.6rem; cursor:pointer;">➤</button>
+                </div>
             </div>
             
             <p style="text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 10px; letter-spacing: 0.5px;">AURORA es una IA y puede cometer errores.</p>
