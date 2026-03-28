@@ -25,7 +25,7 @@
             width: 100vw; height: 100vh; 
             object-fit: cover !important; 
             z-index: -1; 
-            opacity: 0.9;
+            opacity: 0.85;
         }
 
         .btn-config-final {
@@ -84,10 +84,12 @@
     </style>
 </head>
 <body>
+    <!-- VIDEO CON FALLBACK A IMAGEN -->
     <video autoplay muted loop playsinline preload="auto" poster="poster.jpg" id="bg-video">
         <source src="fondo.mp4" type="video/mp4">
     </video>
 
+    <!-- SIDEBAR -->
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
     <div id="sidebar">
         <button onclick="toggleSidebar()" style="background:none;border:none;color:white;font-size:1.9rem;align-self:flex-end;cursor:pointer;">✖</button>
