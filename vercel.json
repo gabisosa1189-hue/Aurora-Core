@@ -1,15 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "aurora_server.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "fondo.mp4",
-      "use": "@vercel/static"
-    }
-  ],
   "rewrites": [
     {
       "source": "/chat",
