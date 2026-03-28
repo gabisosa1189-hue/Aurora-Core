@@ -8,47 +8,50 @@
     <style>
         :root { --bg: #030306; --magenta: #ff00ff; --cyan: #00ffff; --glass: rgba(255, 255, 255, 0.05); }
         
-        /* 1. AJUSTE DE BODY PARA EL VIDEO */
         body { 
-            background-color: var(--bg); /* Color de fondo por si falla el video */
+            background-color: var(--bg); 
             color: white; font-family: 'Montserrat', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; 
         }
 
-        /* 2. EL MOTOR DEL VIDEO DE FONDO (IMPLANTADO) */
         #bg-video {
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100%;
-            min-height: 100%;
-            z-index: -1; /* Va detrás de todo */
-            object-fit: cover; /* No se deforma */
-            opacity: 0.4; /* Oscurecemos un poco el video para que se lea el chat */
+            position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%;
+            z-index: -1; object-fit: cover; opacity: 0.75; /* Video un poco más claro para que se luzca */
         }
         
+        /* EL NUEVO HEADER SUPERIOR FLOTANTE */
+        .top-header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 15px 0;
+            text-align: center; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; letter-spacing: 10px; color: white;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            z-index: 20; pointer-events: none; /* Para que no moleste al tocar la pantalla */
+        }
+
         #central-display { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; transition: transform 0.8s ease, opacity 0.8s ease; z-index: 1; width: 90%; }
         .hidden-ui { opacity: 0 !important; pointer-events: none; transform: translate(-50%, -60%) scale(0.9) !important; }
         
-        /* Ajuste de tamaño de fuente para móviles */
         h1 { font-size: 4rem; letter-spacing: 15px; font-family: 'Orbitron'; margin: 0; background: linear-gradient(to right, white, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* 3. AJUSTE DE CHAT WINDOW (Glassmorphism centrado) */
+        /* PANEL DE CHAT 100% TRANSPARENTE (GLASSMORPHISM) */
         #chat-window { 
-            flex-grow: 1; width: 90%; max-width: 600px; /* Ancho tipo celu, centrado */
-            margin: 10vh auto 150px auto; /* Centrado horizontal, margen abajo para el dock */
+            flex-grow: 1; width: 92%; max-width: 650px; 
+            margin: 12vh auto 150px auto; /* Bajó un poco para dar espacio al header */
             overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px; scrollbar-width: none; transition: opacity 0.6s ease; -webkit-overflow-scrolling: touch; 
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+            
+            background: rgba(255, 255, 255, 0.02); /* Transparencia total */
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); /* Efecto cristal */
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); /* Borde casi invisible */
         }
         #chat-window::-webkit-scrollbar { display: none; }
         .fade-out { opacity: 0 !important; }
 
         .bubble { padding: 14px 20px; border-radius: 20px; max-width: 80%; animation: fadeIn 0.4s ease; line-height: 1.5; font-size: 1rem; position: relative; word-wrap: break-word; }
-        .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(0, 255, 255, 0.15); border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        
+        /* BURBUJA DE AURORA MÁS LEGIBLE SOBRE EL VIDEO */
+        .aurora { align-self: flex-start; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 255, 255, 0.2); border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); backdrop-filter: blur(5px); }
         .gabriel { align-self: flex-end; background: linear-gradient(135deg, #1d4ed8, #0f172a); border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(29, 78, 216, 0.3); }
         
         .dock-wrap { position: fixed; bottom: 30px; width: 100%; display: flex; justify-content: center; padding: 0 20px; z-index: 10; box-sizing: border-box; }
-        
-        .dock { width: 100%; max-width: 600px; display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: rgba(10, 15, 25, 0.95); backdrop-filter: blur(20px); border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.6); cursor: text; }
+        .dock { width: 100%; max-width: 600px; display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: rgba(10, 15, 25, 0.85); backdrop-filter: blur(20px); border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.6); cursor: text; }
         
         input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 1.1rem; padding: 12px 5px; font-family: 'Montserrat', sans-serif; min-width: 0; }
         input::placeholder { color: rgba(255,255,255,0.4); }
@@ -70,14 +73,16 @@
         @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 30px var(--cyan); border-color: var(--cyan); } 50% { transform: scale(1.08); box-shadow: 0 0 70px var(--magenta); border-color: var(--magenta); } 100% { transform: scale(1); box-shadow: 0 0 30px var(--cyan); border-color: var(--cyan); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Media queries para ajustar el título gigante en celus muy chicos */
-        @media (max-width: 600px) { h1 { font-size: 2.8rem; letter-spacing: 8px; } #central-display p { font-size: 0.8rem; letter-spacing: 4px; } #chat-window { margin-top: 8vh; width: 92%; } }
+        @media (max-width: 600px) { h1 { font-size: 2.8rem; letter-spacing: 8px; } #central-display p { font-size: 0.8rem; letter-spacing: 4px; } #chat-window { margin-top: 10vh; width: 94%; } }
     </style>
 </head>
 <body>
+    
     <video autoplay muted loop playsinline id="bg-video" poster="poster.jpg">
         <source src="fondo.mp4" type="video/mp4">
     </video>
+
+    <div class="top-header">AURORA</div>
 
     <div id="voice-overlay">
         <div class="orb" id="main-orb"></div>
@@ -141,6 +146,7 @@
             setTimeout(async () => {
                 chatWindow.innerHTML = ''; chatWindow.classList.remove('fade-out');
                 document.getElementById('central-display').classList.remove('hidden-ui');
+                document.querySelector('.top-header').style.opacity = '1'; // Muestra el header arriba
                 try { await fetch('/reiniciar_memoria', { method: 'POST' }); } catch (e) {}
                 input.focus();
             }, 600);
@@ -168,6 +174,7 @@
             div.className = `bubble ${tipo}`; div.innerText = text;
             chat.appendChild(div); 
             document.getElementById('central-display').classList.add('hidden-ui');
+            document.querySelector('.top-header').style.opacity = '0'; // Oculta el header grande cuando empieza el chat
             setTimeout(() => { chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' }); }, 50);
         }
 
