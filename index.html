@@ -10,21 +10,20 @@
         :root { --accent: #00f2ff; }
         html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background-color: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; }
 
-        /* 🎥 VIDEO DE FONDO - POSICIÓN FIJA */
+        /* 🎥 VIDEO DE FONDO - FORZADO */
         #bg-video { 
             position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; 
-            z-index: -1; object-fit: cover !important; opacity: 1; background-color: #000;
+            z-index: -1; object-fit: cover !important; opacity: 1;
         }
 
         /* LOGIN */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(30px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.3); text-align: center; width: 85%; max-width: 400px; }
         .titulo-login { font-family: 'Orbitron', sans-serif; letter-spacing: 5px; font-size: 1.2rem; margin-bottom: 30px; }
-        
         .btn-auth { width: 100%; padding: 16px; border-radius: 20px; border: none; font-weight: 600; cursor: pointer; font-size: 1rem; margin-bottom: 15px; transition: 0.3s; }
         .btn-google { background: #fff; color: #000; }
 
-        /* APP CONTAINER */
+        /* APP */
         #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; }
         header { padding: 40px 15px 20px 15px; text-align: center; }
         .titulo-app { font-family: 'Orbitron', sans-serif; letter-spacing: 12px; font-size: 1.5rem; text-shadow: 0 0 20px var(--accent); }
@@ -34,18 +33,19 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
 
-        /* ⚙️ BARRA INFERIOR - TUERCA FIJA */
+        /* ⚙️ DOCK INFERIOR - REPARADO */
         .input-area { 
             position: relative; padding: 10px 15px 30px 15px; 
             background: transparent; display: flex; align-items: center; justify-content: center; gap: 12px;
         }
 
+        /* LA TUERCA CLAVADA A LA IZQUIERDA */
         .btn-config-final {
-            width: 50px; height: 50px; border-radius: 50%;
+            width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.4);
             color: var(--accent); font-size: 1.5rem; cursor: pointer;
             display: flex; justify-content: center; align-items: center;
-            backdrop-filter: blur(20px); flex-shrink: 0;
+            backdrop-filter: blur(20px);
         }
 
         .input-container { 
@@ -60,7 +60,6 @@
         #sidebar {
             position: fixed; top: 0; left: -270px; width: 260px; height: 100%;
             background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(40px);
-            border-right: 1px solid rgba(0,242,255,0.2);
             z-index: 100000; transition: 0.4s; padding: 40px 20px; display: flex; flex-direction: column; gap: 15px;
         }
         #sidebar.open { left: 0; }
@@ -74,21 +73,21 @@
 
     <div id="sidebar">
         <h2 style="font-family:'Orbitron'; color:var(--accent);">⚙️ AJUSTES</h2>
-        <button onclick="location.reload()" style="background:rgba(255,255,255,0.05); color:white; border:1px solid #ff4d4d; padding:15px; border-radius:15px; cursor:pointer; width:100%;">Cerrar Sesión</button>
-        <button onclick="document.getElementById('sidebar').classList.remove('open')" style="margin-top:20px; background:none; border:none; color:white; cursor:pointer; font-family:'Orbitron';">CERRAR ✖</button>
+        <button onclick="location.reload()" style="background:rgba(255,255,255,0.05); color:white; border:1px solid #ff4d4d; padding:15px; border-radius:15px; width:100%; cursor:pointer;">Cerrar Sesión</button>
+        <button onclick="document.getElementById('sidebar').classList.remove('open')" style="margin-top:20px; background:none; border:none; color:white; cursor:pointer;">CERRAR ✖</button>
     </div>
 
     <div id="login-overlay">
         <div class="login-card">
             <h1 class="titulo-login">AURORA</h1>
             <button onclick="entrar('Gabriel')" class="btn-auth btn-google">G | Ingresar con Google</button>
-            <button onclick="entrar('Usuario')" class="btn-auth" style="background:rgba(255,255,255,0.1); color:white;">Acceso Invitado</button>
+            <button onclick="entrar('Usuario')" class="btn-auth" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2);">Acceso Invitado</button>
         </div>
     </div>
 
     <div id="app-container">
         <header><div class="titulo-app">AURORA</div></header>
-        <div id="chat-window"><div class="msg aurora">Conexión establecida. ¿En qué te ayudo?</div></div>
+        <div id="chat-window"><div class="msg aurora">Enlace neuronal activo. ¿Qué necesitás?</div></div>
 
         <div class="input-area">
             <button class="btn-config-final" onclick="document.getElementById('sidebar').classList.add('open')">⚙️</button>
@@ -101,43 +100,31 @@
 
     <script>
         // --- MOTOR DE ARRANQUE PARA EL VIDEO ---
-        function arrancarVideo() {
-            var v = document.getElementById('bg-video');
-            v.play().catch(function(e) {
-                console.log("Esperando interacción para el video...");
-            });
-        }
-
-        window.onload = arrancarVideo;
+        window.onload = function() {
+            const v = document.getElementById('bg-video');
+            v.play().catch(() => console.log("Esperando interacción..."));
+        };
 
         function entrar(name) {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('app-container').style.display = 'flex';
-            arrancarVideo(); // Re-intento manual al entrar
+            document.getElementById('bg-video').play(); 
         }
 
         async function enviar() {
             const input = document.getElementById('chat-terminal');
             const val = input.value.trim();
             if(!val) return;
-
             const win = document.getElementById('chat-window');
             win.innerHTML += `<div class="msg user">${val}</div>`;
             input.value = "";
             win.scrollTop = win.scrollHeight;
-
             try {
-                const res = await fetch('/chat', { 
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ msg: val }) 
-                });
+                const res = await fetch('/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ msg: val }) });
                 const data = await res.json();
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
                 win.scrollTop = win.scrollHeight;
-            } catch(e) {
-                console.log("Error de conexión");
-            }
+            } catch(e) { console.log("Error"); }
         }
     </script>
 </body>
