@@ -13,6 +13,7 @@
         html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background-image: url('poster.jpg'); background-size: cover; background-position: center; background-color: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; }
         
         #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover !important; z-index: 1; opacity: 0; transition: opacity 2s ease; }
+        
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(25px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: all 0.6s ease; }
         .login-card { background: rgba(255, 255, 255, 0.03); padding: 50px 30px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.3); text-align: center; max-width: 400px; width: 88%; box-shadow: 0 0 60px rgba(0, 242, 255, 0.2); }
         .titulo-login { font-family: 'Orbitron', sans-serif; letter-spacing: 5px; font-size: 1.3rem; margin-bottom: 12px; }
@@ -21,21 +22,29 @@
         .btn-google { background: #fff; color: #000; }
         .btn-email-toggle { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; }
         
-        /* ⚙️ MENÚ LATERAL CONFIGURACIÓN (MÁS GRANDE E INVISIBLE) */
+        /* ⚙️ MENÚ LATERAL CONFIGURACIÓN (Ajustado a 260px) */
         #sidebar {
-            position: fixed; top: 0; left: -320px; width: 320px; height: 100%;
-            background: rgba(0, 0, 0, 0.25); /* Mucho más transparente */
-            backdrop-filter: blur(35px); /* Efecto cristal puro */
+            position: fixed; top: 0; left: -260px; width: 260px; height: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(35px);
             border-right: 1px solid rgba(0,242,255,0.15);
             z-index: 10000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            padding: 40px 25px; display: flex; flex-direction: column; gap: 20px;
+            padding: 40px 20px; display: flex; flex-direction: column; gap: 15px;
         }
         #sidebar.open { left: 0; }
-        #sidebar h2 { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 10px; }
-        .menu-btn { background: rgba(255,255,255,0.03); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 15px; text-align: left; font-size: 1.05rem; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); }
+        #sidebar h2 { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 5px; }
+        .menu-btn { background: rgba(255,255,255,0.03); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 15px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); }
         .menu-btn:hover { background: rgba(255,255,255,0.1); }
         .menu-btn.danger { background: rgba(255, 50, 50, 0.05); border-color: rgba(255,50,50,0.3); color: #ff4d4d; margin-top: auto; }
-        .close-sidebar { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; }
+        .close-sidebar { position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; }
+
+        /* 🌑 SOMBRA PARA CERRAR EL MENÚ TOCANDO AFUERA */
+        #sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); z-index: 9999;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        #sidebar-overlay.active { opacity: 1; pointer-events: auto; }
 
         #app-container { display: none; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1.2s; }
         
@@ -48,41 +57,32 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
         
-        /* ⚙️ ZONA INFERIOR TRANSPARENTE */
-        .input-area { 
-            padding: 10px 20px max(15px, env(safe-area-inset-bottom)) 20px; 
-            background: transparent; /* Transparencia total restaurada */
-        }
+        .input-area { padding: 10px 20px max(15px, env(safe-area-inset-bottom)) 20px; background: transparent; }
         
-        /* CONTENEDOR FLEX: [Botón Config] + [Caja de Chat] */
-        .bottom-bar-layout {
-            display: flex;
-            align-items: center;
-            gap: 12px; /* Espacio entre la tuerca y la barra de chat */
-        }
+        .bottom-bar-layout { display: flex; align-items: center; gap: 15px; width: 100%; }
 
-        /* ⚙️ BOTÓN TUERCA (A la izquierda, circular y elegante) */
+        /* ⚙️ BOTÓN TUERCA (Más grande y llamativo) */
         .btn-config-inline {
-            background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid rgba(0, 242, 255, 0.3); 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid rgba(0, 242, 255, 0.4); 
             color: var(--accent);
-            width: 45px; 
-            height: 45px; 
+            width: 55px; /* Súper grande */
+            height: 55px; 
             border-radius: 50%; 
-            font-size: 1.3rem; 
+            font-size: 1.8rem; /* Ícono grande */
             cursor: pointer; 
             display: flex; 
             justify-content: center; 
             align-items: center;
             backdrop-filter: blur(20px); 
             transition: 0.3s;
-            flex-shrink: 0; /* Evita que se aplaste */
-            box-shadow: 0 0 10px rgba(0,242,255,0.1);
+            flex-shrink: 0; 
+            box-shadow: 0 0 15px rgba(0,242,255,0.2);
         }
         .btn-config-inline:active { transform: scale(0.9); }
 
         .input-container { 
-            flex-grow: 1; /* Ocupa todo el espacio restante */
+            flex-grow: 1; 
             background: rgba(255, 255, 255, 0.03); 
             border: 1px solid rgba(0, 242, 255, 0.3); 
             border-radius: 35px; 
@@ -92,22 +92,10 @@
             backdrop-filter: blur(20px); 
         }
         
-        /* 🎙️ LA "A" ESTILO TÍTULO */
         .btn-voice { 
-            background: transparent; 
-            color: #fff; 
-            border: none; 
-            font-family: 'Orbitron', sans-serif; 
-            font-size: 1.5rem; 
-            font-weight: bold; 
-            cursor: pointer;
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            text-shadow: 0 0 15px var(--accent); 
-            margin-right: 12px;
-            padding: 0;
-            transition: 0.2s;
+            background: transparent; color: #fff; border: none; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; 
+            font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; 
+            text-shadow: 0 0 15px var(--accent); margin-right: 12px; padding: 0; transition: 0.2s;
         }
         .btn-voice:active { transform: scale(0.9); }
         
@@ -138,6 +126,8 @@
     <video autoplay muted loop playsinline preload="auto" poster="poster.jpg" id="bg-video">
         <source src="fondo.mp4" type="video/mp4">
     </video>
+
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
     <div id="sidebar">
         <button class="close-sidebar" onclick="toggleSidebar()">✖</button>
@@ -181,7 +171,6 @@
         <div id="chat-window"><div class="msg aurora" id="saludo-ia">Conectando red neuronal...</div></div>
         
         <div class="input-area">
-            
             <div class="bottom-bar-layout">
                 <button class="btn-config-inline" onclick="toggleSidebar()">⚙️</button>
                 
@@ -191,7 +180,6 @@
                     <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.6rem; cursor:pointer;">➤</button>
                 </div>
             </div>
-            
             <p style="text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 10px; letter-spacing: 0.5px;">AURORA es una IA y puede cometer errores.</p>
         </div>
     </div>
@@ -206,7 +194,11 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+        // ⚙️ AHORA ABRE Y CIERRA CON SOMBRA
+        function toggleSidebar() { 
+            document.getElementById('sidebar').classList.toggle('open'); 
+            document.getElementById('sidebar-overlay').classList.toggle('active');
+        }
 
         function cerrarSesionApp() {
             firebase.auth().signOut().then(() => { window.location.reload(); }).catch((error) => { alert("Error al cerrar sesión."); });
