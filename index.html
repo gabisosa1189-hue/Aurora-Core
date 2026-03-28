@@ -30,7 +30,7 @@
         .btn-ingresar { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 15px; width: 100%; border-radius: 15px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; letter-spacing: 2px; }
 
         /* 📱 APP CONTAINER */
-        #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; max-width: 1000px; margin: 0 auto; position: relative; z-index: 10; }
+        #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; max-width: 1100px; margin: 0 auto; position: relative; z-index: 10; }
         header { padding: 40px 15px 10px 15px; text-align: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.6rem; color: #fff; text-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent); }
 
@@ -39,31 +39,40 @@
         .aurora { background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); align-self: flex-start; }
         .user { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); align-self: flex-end; }
 
-        /* 🛠️ BARRA INFERIOR UNIFICADA Y ALINEADA */
+        /* 🛠️ CONTROLES INFERIORES: EL ÚLTIMO PISO DE LA PANTALLA */
         .bottom-section { 
-            padding: 10px 20px 30px 20px;
+            padding: 10px 20px 25px 20px;
             display: flex;
-            align-items: center; /* ALINEA TODO A LA MISMA ALTURA */
-            justify-content: flex-start; /* EMPIEZA DESDE LA IZQUIERDA */
+            flex-direction: column; /* Warning arriba, controles abajo */
+            align-items: center;
         }
 
-        /* ⚙️ CONFIGURACIÓN: BIEN ALEJADA (Los "10cm") */
+        /* 🏁 LÍNEA DE FORMACIÓN FINAL (Justify-Content: space-between) */
+        .unified-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* CLAVA CADA COSA EN UN EXTREMO */
+            width: 100%;
+            padding: 0 15px; /* Pequeño aire con los bordes */
+            box-sizing: border-box;
+        }
+
+        /* ⚙️ CONFIGURACIÓN: BIEN AL RINCÓN IZQUIERDO, SOLITA */
         .btn-config-text { 
             background: none; border: none; 
             font-family: 'Orbitron'; font-size: 0.65rem; 
-            letter-spacing: 2px; cursor: pointer; 
+            letter-spacing: 2.5px; cursor: pointer; 
             color: #fff; text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
-            margin-right: 120px; /* EL ESPACIO DE SEPARACIÓN QUE PEDISTE */
             flex-shrink: 0;
-            padding: 0;
+            padding: 0 10px; /* Un poco de rampa para que no esté tan pegada al borde */
         }
 
-        /* 🏁 GRUPO CHAT: LA "A" Y EL INPUT JUNTOS */
+        /* 🏁 GRUPO CHAT: LA "A" Y EL CHAT JUNTOS */
         .chat-group {
             display: flex;
             align-items: center;
             gap: 12px;
-            flex: 1; /* TOMA EL RESTO DEL ESPACIO */
+            margin-right: 15px; /* Aire en el borde derecho */
         }
 
         .btn-a { font-family: 'Orbitron'; font-size: 1.8rem; color: #fff; background: none; border: none; cursor: pointer; text-shadow: 0 0 15px var(--accent); flex-shrink: 0; }
@@ -72,14 +81,14 @@
             flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); 
             border-radius: 35px; display: flex; align-items: center; padding: 4px 15px; backdrop-filter: blur(20px); 
         }
-        #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; outline: none; font-size: 1rem; }
+        #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; outline: none; font-size: 1rem; width: 100%; }
         .btn-send { background: none; border: none; color: var(--accent); font-size: 1.5rem; cursor: pointer; }
 
-        /* 💎 PIE DE PÁGINA: BLANCO Y BRILLANTE */
+        /* 💎 PIE DE PÁGINA: BLANCO Y BRILLANTE (Arriba de los controles) */
         .footer-warning { 
             font-size: 0.55rem; color: #fff; 
             text-shadow: 0 0 8px var(--accent); 
-            text-align: center; padding-top: 10px; letter-spacing: 1px; width: 100%;
+            text-align: center; padding-bottom: 20px; letter-spacing: 1px; width: 100%;
         }
 
         /* SIDEBAR */
@@ -120,7 +129,9 @@
         <div id="chat-window"><div class="msg aurora">Enlace neuronal activo. ¿Qué necesitás?</div></div>
 
         <div class="bottom-section">
-            <div style="display: flex; align-items: center; width: 100%;">
+            <div class="footer-warning">AURORA ES UNA IA Y PUEDE COMETER ERRORES.</div>
+
+            <div class="unified-controls">
                 
                 <button class="btn-config-text" onclick="document.getElementById('sidebar').classList.add('open')">
                     CONFIGURACIÓN
@@ -134,8 +145,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="footer-warning">AURORA ES UNA IA Y PUEDE COMETER ERRORES.</div>
         </div>
     </div>
 
@@ -157,7 +166,7 @@
                 const data = await res.json();
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
                 win.scrollTop = win.scrollHeight;
-            } catch(e) { console.log("Error"); }
+            } catch(e) { console.log("Error de conexión neuronal"); }
         }
     </script>
 </body>
