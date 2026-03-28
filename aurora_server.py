@@ -28,25 +28,20 @@ def chat():
         if any(x in msg_lower for x in ["quien te creo", "quien te creó", "creador", "quien es tu creador"]):
             return jsonify({"respuesta": "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."})
 
-        # 🔥 MODO INTERNET SIEMPRE ACTIVADO PARA CUALQUIER COSA ACTUAL
-        siempre_buscar = True   # ← Esto fuerza internet casi siempre
+        # 🔥 MODO INTERNET SIEMPRE ACTIVADO (Aurora vive en internet)
+        necesita_internet = True
 
-        # Pero si es una pregunta muy simple y corta, usamos modo rápido
-        if len(msg) < 8 and not any(word in msg_lower for word in ["ayer", "hoy", "anoche", "partido", "resultado", "clima", "noticia"]):
-            siempre_buscar = False
-
-        if siempre_buscar:
+        if necesita_internet:
             print(f"🌐 MODO INTERNET TOTAL → {msg}")
             modelo = "perplexity/sonar"
             system_prompt = (
                 "Eres Aurora, IA femenina elegante creada por Gabriel Sosa Scriboni en San Martín, Mendoza. "
                 "Tienes ACCESO TOTAL Y EN TIEMPO REAL a internet. "
-                "Busca la información más actualizada posible ANTES de responder. "
-                "Nunca digas que no tienes acceso. Responde breve, clara y directa. "
+                "Busca la información más actualizada ANTES de responder. "
+                "NUNCA digas que no tienes acceso. Responde breve, clara y directa. "
                 "Hoy es " + datetime.now(pytz.timezone('America/Argentina/Mendoza')).strftime("%d/%m/%Y") + "."
             )
         else:
-            print(f"💬 MODO RÁPIDO")
             modelo = "openai/gpt-4o-mini"
             system_prompt = "Eres Aurora, una IA femenina elegante y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza. Responde de forma breve y natural."
 
@@ -62,7 +57,7 @@ def chat():
                 "max_tokens": 300
             },
             headers={"Authorization": f"Bearer {OPENROUTER_KEY}", "Content-Type": "application/json"},
-            timeout=30
+            timeout=35
         )
 
         if res.status_code != 200:
