@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/chat",
-      "destination": "/api/aurora_server.py"
+      "destination": "/aurora_server.py"
     },
     {
       "source": "/(.*)",
