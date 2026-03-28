@@ -2,152 +2,185 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AURORA - Acceso Neuronal</title>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#00f2ff">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
-   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AURORA Core v7.0 - CLOUD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Orbitron:wght@900&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #00f2ff; }
-        html, body { 
-            margin: 0; padding: 0; 
-            width: 100%; height: 100vh; 
-            overflow: hidden; 
-            background-color: #000; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            color: #fff; 
+        :root { --bg: #030306; --magenta: #ff00ff; --cyan: #00ffff; --glass: rgba(255, 255, 255, 0.05); }
+        
+        /* 1. AJUSTE DE BODY PARA EL VIDEO */
+        body { 
+            background-color: var(--bg); /* Color de fondo por si falla el video */
+            color: white; font-family: 'Montserrat', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; 
+        }
+
+        /* 2. EL MOTOR DEL VIDEO DE FONDO (IMPLANTADO) */
+        #bg-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1; /* Va detrás de todo */
+            object-fit: cover; /* No se deforma */
+            opacity: 0.4; /* Oscurecemos un poco el video para que se lea el chat */
         }
         
-        /* FONDO CON VIDEO EN MOVIMIENTO */
-        #bg-video { 
-            position: fixed !important; 
-            top: 0; left: 0; 
-            width: 100vw; height: 100vh; 
-            object-fit: cover !important; 
-            z-index: -1; 
-            opacity: 1; 
+        #central-display { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; transition: transform 0.8s ease, opacity 0.8s ease; z-index: 1; width: 90%; }
+        .hidden-ui { opacity: 0 !important; pointer-events: none; transform: translate(-50%, -60%) scale(0.9) !important; }
+        
+        /* Ajuste de tamaño de fuente para móviles */
+        h1 { font-size: 4rem; letter-spacing: 15px; font-family: 'Orbitron'; margin: 0; background: linear-gradient(to right, white, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* 3. AJUSTE DE CHAT WINDOW (Glassmorphism centrado) */
+        #chat-window { 
+            flex-grow: 1; width: 90%; max-width: 600px; /* Ancho tipo celu, centrado */
+            margin: 10vh auto 150px auto; /* Centrado horizontal, margen abajo para el dock */
+            overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px; scrollbar-width: none; transition: opacity 0.6s ease; -webkit-overflow-scrolling: touch; 
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
         }
+        #chat-window::-webkit-scrollbar { display: none; }
+        .fade-out { opacity: 0 !important; }
 
-        /* SIDEBAR */
-        #sidebar {
-            position: fixed; top: 0; left: -280px; width: 260px; height: 100%;
-            background: rgba(0,0,0,0.92); backdrop-filter: blur(40px);
-            border-right: 1px solid rgba(0,242,255,0.3);
-            z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
-            padding: 40px 20px; display: flex; flex-direction: column; gap: 15px;
-        }
-        #sidebar.open { left: 0; }
-        #sidebar-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.65); z-index: 99999;
-            display: none; opacity: 0; transition: 0.3s;
-        }
-        #sidebar-overlay.active { display: block; opacity: 1; }
+        .bubble { padding: 14px 20px; border-radius: 20px; max-width: 80%; animation: fadeIn 0.4s ease; line-height: 1.5; font-size: 1rem; position: relative; word-wrap: break-word; }
+        .aurora { align-self: flex-start; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(0, 255, 255, 0.15); border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .gabriel { align-self: flex-end; background: linear-gradient(135deg, #1d4ed8, #0f172a); border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(29, 78, 216, 0.3); }
+        
+        .dock-wrap { position: fixed; bottom: 30px; width: 100%; display: flex; justify-content: center; padding: 0 20px; z-index: 10; box-sizing: border-box; }
+        
+        .dock { width: 100%; max-width: 600px; display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: rgba(10, 15, 25, 0.95); backdrop-filter: blur(20px); border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.6); cursor: text; }
+        
+        input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 1.1rem; padding: 12px 5px; font-family: 'Montserrat', sans-serif; min-width: 0; }
+        input::placeholder { color: rgba(255,255,255,0.4); }
 
-        .menu-btn { 
-            background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); 
-            padding: 16px; border-radius: 15px; text-align: left; cursor: pointer; font-size: 1rem;
-        }
-        .menu-btn.danger { background: rgba(255,50,50,0.2); color: #ff6666; font-weight: bold; }
+        .btn-circle { width: 50px; height: 50px; border: 2px solid white; border-radius: 50%; background: transparent; color: white; cursor: pointer; transition: 0.3s ease; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; overflow: hidden; font-family: 'Orbitron'; font-size: 1.3rem; font-weight: 900; }
+        .btn-circle svg { width: 24px; height: 24px; fill: currentColor; transition: transform 0.3s ease; }
+        .btn-circle:hover { background: white; color: black; box-shadow: 0 0 20px rgba(255,255,255,0.5); }
+        
+        #btn-a { border-color: var(--magenta); color: var(--magenta); }
+        #btn-a:hover { background: var(--magenta); color: white; box-shadow: 0 0 25px rgba(255, 0, 255, 0.6); }
 
-        #app-container { display: none; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; }
-        header { padding: 45px 15px 15px 15px; text-align: center; }
-        .titulo-app { font-family: 'Orbitron', sans-serif; letter-spacing: 12px; font-size: 1.5rem; text-shadow: 0 0 20px var(--accent); }
+        .btn-send { background: transparent; border: none; color: white; cursor: pointer; padding: 8px 12px; flex-shrink: 0; transition: 0.3s; display: flex; align-items: center; justify-content: center; color: var(--cyan); }
+        .btn-send svg { width: 28px; height: 28px; fill: currentColor; transform: rotate(-45deg); transition: 0.3s ease; }
+        .btn-send:hover { color: white; transform: scale(1.1); }
 
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
-        .msg { max-width: 85%; padding: 15px 20px; border-radius: 22px; backdrop-filter: blur(15px); }
-        .aurora { align-self: flex-start; background: rgba(0,242,255,0.08); border: 1px solid rgba(0,242,255,0.2); }
-        .user { align-self: flex-end; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+        #voice-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(3, 3, 6, 0.98); backdrop-filter: blur(40px); z-index: 1000; }
+        .orb { width: 150px; height: 150px; border: 3px solid var(--cyan); border-radius: 50%; animation: pulse 2s infinite ease-in-out; box-shadow: 0 0 30px rgba(0, 255, 255, 0.3); }
+        
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 30px var(--cyan); border-color: var(--cyan); } 50% { transform: scale(1.08); box-shadow: 0 0 70px var(--magenta); border-color: var(--magenta); } 100% { transform: scale(1); box-shadow: 0 0 30px var(--cyan); border-color: var(--cyan); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .input-area { padding: 10px 15px calc(30px + env(safe-area-inset-bottom)) 15px; }
-        .btn-config-final {
-            position: fixed; bottom: calc(42px + env(safe-area-inset-bottom)); left: 18px;
-            background: rgba(255,255,255,0.06); border: 1px solid rgba(0,242,255,0.5);
-            color: var(--accent); width: 58px; height: 58px; border-radius: 50%;
-            font-size: 1.85rem; display: flex; justify-content: center; align-items: center;
-            backdrop-filter: blur(20px); z-index: 1000; cursor: pointer;
-        }
-        .input-container {
-            margin-left: 75px; background: rgba(255,255,255,0.03); border: 1px solid rgba(0,242,255,0.3);
-            border-radius: 35px; display: flex; align-items: center; padding: 5px 15px; backdrop-filter: blur(20px);
-        }
-        #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; outline: none; font-size: 1rem; }
+        /* Media queries para ajustar el título gigante en celus muy chicos */
+        @media (max-width: 600px) { h1 { font-size: 2.8rem; letter-spacing: 8px; } #central-display p { font-size: 0.8rem; letter-spacing: 4px; } #chat-window { margin-top: 8vh; width: 92%; } }
     </style>
 </head>
 <body>
-    <!-- VIDEO DE FONDO EN MOVIMIENTO -->
-    <video autoplay muted loop playsinline preload="auto" poster="poster.jpg" id="bg-video">
+    <video autoplay muted loop playsinline id="bg-video" poster="poster.jpg">
         <source src="fondo.mp4" type="video/mp4">
     </video>
 
-    <!-- SIDEBAR -->
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-    <div id="sidebar">
-        <button onclick="toggleSidebar()" style="background:none;border:none;color:white;font-size:1.9rem;align-self:flex-end;cursor:pointer;">✖</button>
-        <h2 style="font-family:'Orbitron';color:var(--accent);">⚙️ AJUSTES</h2>
-        <button class="menu-btn" onclick="alert('Aurora v7.6\nCreada por Gabriel Sosa Scriboni\nSan Martín, Mendoza')">🧠 Sistema Aurora</button>
-        <button class="menu-btn" onclick="cerrarSesionApp()">🚪 Cerrar Sesión</button>
-        <button class="menu-btn danger" onclick="eliminarCuentaApp()">⚠️ ELIMINAR CUENTA</button>
+    <div id="voice-overlay">
+        <div class="orb" id="main-orb"></div>
+        <h2 style="font-family:'Orbitron'; margin-top:40px; letter-spacing:12px; font-size: 1.8rem;">AURORA</h2>
+        <p id="voice-subtext" style="letter-spacing:4px; opacity:0.7; font-weight:300; margin-top: 10px;">ESCUCHANDO...</p>
+        <button onclick="cerrarEnlaceVoz(event)" style="margin-top:50px; background:transparent; border:2px solid white; color:white; padding:12px 40px; border-radius:30px; cursor:pointer; font-family:'Montserrat'; font-weight:500; font-size:1rem; transition:0.3s;">DESCONECTAR</button>
     </div>
 
-    <div id="app-container">
-        <header><div class="titulo-app">AURORA</div></header>
-        <div id="chat-window"><div class="msg aurora" id="saludo-ia">Estableciendo enlace neuronal...</div></div>
-        
-        <div class="input-area">
-            <button class="btn-config-final" onclick="toggleSidebar()">⚙️</button>
-            <div class="input-container">
-                <input type="text" id="chat-terminal" placeholder="Escribe a Aurora..." readonly>
-                <button onclick="enviar()" style="background:none;border:none;color:var(--accent);font-size:1.7rem;cursor:pointer;">➤</button>
-            </div>
-            <p style="font-size:0.65rem;color:rgba(255,255,255,0.35);text-align:center;margin-top:12px;letter-spacing:1px;">
-                AURORA ES UNA IA Y PUEDE COMETER ERRORES.
-            </p>
+    <div id="central-display">
+        <h1>AURORA</h1>
+        <p style="letter-spacing:6px; opacity:0.5; font-weight:300; margin-top:10px;">SAN MARTÍN, MENDOZA</p>
+    </div>
+
+    <div id="chat-window"></div>
+
+    <div class="dock-wrap">
+        <div class="dock" onclick="enfocarInput()">
+            <button id="btn-reset" class="btn-circle" title="Nueva Sesión" onclick="nuevaSesion(event)">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <button id="btn-a" class="btn-circle" title="Hablar" onclick="abrirEnlaceVoz(event)">A</button>
+            <input type="text" id="chat-input" placeholder="Escribí o hablá..." autocomplete="off">
+            <button onclick="enviarComando()" class="btn-send" title="Enviar Mensaje">
+                <svg viewBox="0 0 24 24"><path d="M3 21l18-9-18-9v7l15 2-15 2v7z"/></svg>
+            </button>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481" };
-        firebase.initializeApp(firebaseConfig);
+        const input = document.getElementById('chat-input');
+        input.addEventListener('keypress', (e) => { if(e.key === 'Enter') enviarComando(); });
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebar-overlay').classList.toggle('active');
+        let reconocimiento;
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            reconocimiento = new SpeechRecognition();
+            reconocimiento.continuous = false;reconocimiento.interimResults = false;reconocimiento.lang = 'es-AR';
+            reconocimiento.onresult = function(event) {
+                input.value = event.results[0][0].transcript; cerrarEnlaceVoz(); enviarComando();
+            };
+            reconocimiento.onerror = function(event) { cerrarEnlaceVoz(); };
+            reconocimiento.onend = function() { cerrarEnlaceVoz(); };
         }
 
-        function cerrarSesionApp() {
-            if(confirm("¿Cerrar sesión?")) firebase.auth().signOut().then(() => location.reload());
-        }
+        function enfocarInput() { input.focus(); }
 
-        function eliminarCuentaApp() {
-            if(confirm("¿Eliminar cuenta permanentemente?")) {
-                const user = firebase.auth().currentUser;
-                if(user) user.delete().then(() => location.reload());
+        function hablarTexto(texto) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(texto);
+                utterance.lang = 'es-MX'; utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
             }
         }
 
-        firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('app-container').style.display = 'flex';
-                const nombre = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
-                document.getElementById('saludo-ia').innerText = `Hola ${nombre}, ¿en qué te ayudo hoy?`;
-                document.getElementById('chat-terminal').removeAttribute('readonly');
-            }
-        });
-
-        async function enviar() {
-            const inp = document.getElementById('chat-terminal');
-            const msg = inp.value.trim();
-            if (!msg) return;
-            inp.value = '';
+        async function nuevaSesion(event) {
+            if(event) event.stopPropagation();
+            const chatWindow = document.getElementById('chat-window');
+            if(chatWindow.innerHTML === '') return;
+            chatWindow.classList.add('fade-out');
+            setTimeout(async () => {
+                chatWindow.innerHTML = ''; chatWindow.classList.remove('fade-out');
+                document.getElementById('central-display').classList.remove('hidden-ui');
+                try { await fetch('/reiniciar_memoria', { method: 'POST' }); } catch (e) {}
+                input.focus();
+            }, 600);
         }
 
-        document.getElementById('chat-terminal').addEventListener('keypress', e => {
-            if (e.key === 'Enter') enviar();
-        });
+        function abrirEnlaceVoz(event) {
+            if(event) event.stopPropagation();
+            if(reconocimiento) {
+                input.value = '';
+                document.getElementById('voice-overlay').style.display = 'flex';
+                document.getElementById('central-display').classList.add('hidden-ui');
+                reconocimiento.start();
+            } else { alert("Función de voz no soportada."); }
+        }
+
+        function cerrarEnlaceVoz(event) { 
+            if(event) event.stopPropagation(); 
+            if(reconocimiento) reconocimiento.stop();
+            document.getElementById('voice-overlay').style.display = 'none'; input.focus(); 
+        }
+
+        function agregarBurbuja(text, tipo) {
+            const chat = document.getElementById('chat-window');
+            const div = document.createElement('div');
+            div.className = `bubble ${tipo}`; div.innerText = text;
+            chat.appendChild(div); 
+            document.getElementById('central-display').classList.add('hidden-ui');
+            setTimeout(() => { chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' }); }, 50);
+        }
+
+        async function enviarComando() {
+            const val = input.value.trim(); if(!val) return;
+            agregarBurbuja(val, 'gabriel'); input.value = "";
+            try {
+                const res = await fetch('/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ msg: val }) });
+                const data = await res.json(); 
+                if(data.respuesta) { agregarBurbuja(data.respuesta, 'aurora'); hablarTexto(data.respuesta); }
+            } catch(e) { agregarBurbuja("Error de conexión.", 'aurora'); }
+            input.focus(); 
+        }
     </script>
 </body>
 </html>
