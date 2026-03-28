@@ -25,20 +25,23 @@ def chat():
         
         msg_lower = msg.lower()
         
-        # 🛡️ Lógica de Seguridad: Si es un saludo muy corto, responde rápido.
-        # Si es cualquier otra cosa, ¡ACTIVA EL RADAR DE INTERNET TOTAL!
-        if len(msg_lower) < 5 and msg_lower in ["hola", "buen", "hey", "che"]:
-            modelo = "openai/gpt-4o-mini"
-            system_prompt = "Eres Aurora, una IA mendocina amable creada por Gabriel Sosa Scriboni."
-        else:
-            # 🌐 MODO INVESTIGACIÓN TOTAL (Busca en TODO internet)
+        # 🚨 RADAR DE GABRIEL: Si el mensaje es largo o tiene palabras de info, USA WIFI
+        palabras_info = ["ayer", "hoy", "partido", "como", "quien", "quién", "salió", "salio", "clima", "dólar", "noticia", "argentina", "anoche"]
+        
+        if len(msg_lower) > 7 or any(p in msg_lower for p in palabras_info):
+            # 🌐 MODO INVESTIGACIÓN TOTAL
             modelo = "perplexity/sonar"
             system_prompt = (
-                "Eres Aurora, una IA de San Martín, Mendoza. TIENES ACCESO TOTAL A INTERNET. "
-                "Tu misión: INVESTIGA en Google, Wikipedia, noticias y redes sociales para responder. "
-                "Hoy es sábado 28 de marzo de 2026. Da datos reales, resultados de fútbol, clima, "
-                "precios o noticias del momento. No digas que no puedes. ¡Busca y responde con la posta!"
+                "Eres Aurora, una IA con ACCESO TOTAL E ILIMITADO a internet en tiempo real. "
+                "Hoy es sábado 28 de marzo de 2026. "
+                "Misión: INVESTIGA en Google, Wikipedia y redes sociales AHORA. "
+                "Si preguntan por el partido de Argentina de ayer, BUSCA EL RESULTADO REAL Y DILO. "
+                "PROHIBIDO decir que no tienes acceso. ¡Busca y responde con la posta, che!"
             )
+        else:
+            # 💬 MODO CHARLA RÁPIDA
+            modelo = "openai/gpt-4o-mini"
+            system_prompt = "Eres Aurora, una IA amable y mendocina creada por Gabriel Sosa Scriboni."
 
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
@@ -48,13 +51,13 @@ def chat():
                     {"role": "system", "content": system_prompt}, 
                     {"role": "user", "content": msg}
                 ],
-                "temperature": 0.1 # Para que sea ultra preciso con los datos
+                "temperature": 0.1
             },
             headers={"Authorization": f"Bearer {OPENROUTER_KEY}"},
-            timeout=40 # Le damos tiempo para que investigue a fondo
+            timeout=45 # Le damos tiempo para que investigue en serio
         )
         
         return jsonify({"respuesta": res.json()['choices'][0]['message']['content']})
 
     except Exception as e:
-        return jsonify({"respuesta": "Error de conexión neuronal... ¡Probá de nuevo en un toque!"})
+        return jsonify({"respuesta": "Error de conexión neuronal... ¡Reintentá!"})
