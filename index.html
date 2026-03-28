@@ -15,7 +15,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
         }
 
-        /* 🎥 EL VIDEO: SIEMPRE PRIMERO Y AL FONDO */
+        /* 🎥 EL FONDO: SIEMPRE PRIMERO */
         #bg-video { 
             position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; 
             z-index: -2; object-fit: cover !important; 
@@ -23,7 +23,7 @@
 
         /* 🚪 LOGIN */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(30px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; }
+        .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px 25px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; }
         .titulo-login { font-family: 'Orbitron'; font-size: 1.4rem; letter-spacing: 5px; margin-bottom: 30px; color: #fff; text-shadow: 0 0 10px var(--accent); }
         .btn-google { background: #fff; color: #000; border: none; padding: 15px; border-radius: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; width: 100%; }
         .login-input { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 15px; width: 100%; border-radius: 15px; margin-bottom: 10px; outline: none; }
@@ -39,35 +39,31 @@
         .aurora { background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); align-self: flex-start; }
         .user { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); align-self: flex-end; }
 
-        /* 🛠️ SECCIÓN INFERIOR */
+        /* 🛠️ BARRA INFERIOR UNIFICADA Y ALINEADA */
         .bottom-section { 
-            position: relative;
-            padding: 10px 15px 20px 15px;
+            padding: 10px 20px 30px 20px;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            align-items: center; /* ALINEA TODO A LA MISMA ALTURA */
+            justify-content: flex-start; /* EMPIEZA DESDE LA IZQUIERDA */
         }
 
-        /* ⚙️ CONFIGURACIÓN: EXTREMO INFERIOR IZQUIERDO (Barra roja de tu foto) */
-        .btn-config-corner { 
-            position: absolute;
-            bottom: 30px; /* Al ras de la barra de chat */
-            left: 20px;   /* Bien al rincón */
+        /* ⚙️ CONFIGURACIÓN: BIEN ALEJADA (Los "10cm") */
+        .btn-config-text { 
             background: none; border: none; 
             font-family: 'Orbitron'; font-size: 0.65rem; 
             letter-spacing: 2px; cursor: pointer; 
             color: #fff; text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
-            z-index: 100;
+            margin-right: 120px; /* EL ESPACIO DE SEPARACIÓN QUE PEDISTE */
+            flex-shrink: 0;
+            padding: 0;
         }
 
-        /* 🎤 BARRA DE CHAT: A | INPUT (Un poco más a la derecha para dar espacio) */
+        /* 🏁 GRUPO CHAT: LA "A" Y EL INPUT JUNTOS */
         .chat-group {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 12px;
-            width: 80%; /* Achicamos un poco para que CONFIGURACIÓN respire sola */
-            margin-left: auto; /* La empujamos a la derecha */
+            flex: 1; /* TOMA EL RESTO DEL ESPACIO */
         }
 
         .btn-a { font-family: 'Orbitron'; font-size: 1.8rem; color: #fff; background: none; border: none; cursor: pointer; text-shadow: 0 0 15px var(--accent); flex-shrink: 0; }
@@ -124,15 +120,18 @@
         <div id="chat-window"><div class="msg aurora">Enlace neuronal activo. ¿Qué necesitás?</div></div>
 
         <div class="bottom-section">
-            <button class="btn-config-corner" onclick="document.getElementById('sidebar').classList.add('open')">
-                CONFIGURACIÓN
-            </button>
+            <div style="display: flex; align-items: center; width: 100%;">
+                
+                <button class="btn-config-text" onclick="document.getElementById('sidebar').classList.add('open')">
+                    CONFIGURACIÓN
+                </button>
 
-            <div class="chat-group">
-                <button class="btn-a" onclick="alert('Modo voz activado...')">A</button>
-                <div class="input-container">
-                    <input type="text" id="chat-terminal" placeholder="Escribe a Aurora..." autocomplete="off">
-                    <button onclick="enviar()" class="btn-send">➤</button>
+                <div class="chat-group">
+                    <button class="btn-a" onclick="alert('Modo voz activado...')">A</button>
+                    <div class="input-container">
+                        <input type="text" id="chat-terminal" placeholder="Escribe a Aurora..." autocomplete="off">
+                        <button onclick="enviar()" class="btn-send">➤</button>
+                    </div>
                 </div>
             </div>
 
