@@ -2,136 +2,152 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurora AI - Mendoza</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AURORA - Acceso Neuronal</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f2ff">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+   
     <style>
-        /* BASE & FONDO */
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; overflow: hidden; background-color: #111; color: white; }
-        #bg-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; z-index: -1; object-fit: cover; opacity: 0.6; }
+        :root { --accent: #00f2ff; }
+        html, body { 
+            margin: 0; padding: 0; 
+            width: 100%; height: 100vh; 
+            overflow: hidden; 
+            background-color: #000; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: #fff; 
+        }
         
-        /* PANTALLA DE LOGIN */
-        #login-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 10; transition: opacity 0.5s ease; }
-        .login-box { background: rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 85%; max-width: 350px; }
-        .login-box h1 { margin: 0 0 10px 0; font-size: 2rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .login-box p { color: #ccc; margin-bottom: 25px; }
-        .login-box input { width: 80%; padding: 12px 15px; border-radius: 30px; border: none; outline: none; background: rgba(255, 255, 255, 0.9); font-size: 1rem; margin-bottom: 20px; text-align: center; }
-        .login-box button { background: linear-gradient(135deg, #8e2de2, #4a00e0); color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; font-weight: bold; transition: 0.3s; width: 100%; }
-        .login-box button:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(142,45,226,0.4); }
+        /* FONDO CON VIDEO EN MOVIMIENTO */
+        #bg-video { 
+            position: fixed !important; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            object-fit: cover !important; 
+            z-index: -1; 
+            opacity: 1; 
+        }
 
-        /* PANTALLA DE CHAT (OCULTA AL INICIO) */
-        #chat-screen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 450px; height: 88vh; background: rgba(0, 0, 0, 0.55); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.15); display: none; flex-direction: column; overflow: hidden; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-        
-        /* CABECERA CHAT */
-        .header { background: rgba(0, 0, 0, 0.3); padding: 18px; text-align: center; font-size: 1.3rem; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .tuerca { animation: girar 4s linear infinite; display: inline-block; font-size: 1.4rem;}
-        @keyframes girar { 100% { transform: rotate(360deg); } }
-        
-        /* MENSAJES */
-        #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        .msg { padding: 14px 18px; border-radius: 18px; max-width: 80%; word-wrap: break-word; line-height: 1.4; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .user-msg { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); align-self: flex-end; border-bottom-right-radius: 4px; }
-        .ai-msg { background: rgba(255, 255, 255, 0.1); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); }
-        
-        /* INPUT CHAT */
-        .input-area { padding: 15px; background: rgba(0, 0, 0, 0.4); display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .input-area input { flex: 1; padding: 14px 20px; border-radius: 30px; border: none; outline: none; background: rgba(255, 255, 255, 0.9); font-size: 1rem; color: #333; }
-        .input-area button { background: linear-gradient(135deg, #8e2de2, #4a00e0); color: white; border: none; padding: 0 22px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .input-area button:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(142,45,226,0.4); }
-        
-        /* SCROLLBAR INVISIBLE */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        /* SIDEBAR */
+        #sidebar {
+            position: fixed; top: 0; left: -280px; width: 260px; height: 100%;
+            background: rgba(0,0,0,0.92); backdrop-filter: blur(40px);
+            border-right: 1px solid rgba(0,242,255,0.3);
+            z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
+            padding: 40px 20px; display: flex; flex-direction: column; gap: 15px;
+        }
+        #sidebar.open { left: 0; }
+        #sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.65); z-index: 99999;
+            display: none; opacity: 0; transition: 0.3s;
+        }
+        #sidebar-overlay.active { display: block; opacity: 1; }
+
+        .menu-btn { 
+            background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); 
+            padding: 16px; border-radius: 15px; text-align: left; cursor: pointer; font-size: 1rem;
+        }
+        .menu-btn.danger { background: rgba(255,50,50,0.2); color: #ff6666; font-weight: bold; }
+
+        #app-container { display: none; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; }
+        header { padding: 45px 15px 15px 15px; text-align: center; }
+        .titulo-app { font-family: 'Orbitron', sans-serif; letter-spacing: 12px; font-size: 1.5rem; text-shadow: 0 0 20px var(--accent); }
+
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
+        .msg { max-width: 85%; padding: 15px 20px; border-radius: 22px; backdrop-filter: blur(15px); }
+        .aurora { align-self: flex-start; background: rgba(0,242,255,0.08); border: 1px solid rgba(0,242,255,0.2); }
+        .user { align-self: flex-end; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+
+        .input-area { padding: 10px 15px calc(30px + env(safe-area-inset-bottom)) 15px; }
+        .btn-config-final {
+            position: fixed; bottom: calc(42px + env(safe-area-inset-bottom)); left: 18px;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(0,242,255,0.5);
+            color: var(--accent); width: 58px; height: 58px; border-radius: 50%;
+            font-size: 1.85rem; display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(20px); z-index: 1000; cursor: pointer;
+        }
+        .input-container {
+            margin-left: 75px; background: rgba(255,255,255,0.03); border: 1px solid rgba(0,242,255,0.3);
+            border-radius: 35px; display: flex; align-items: center; padding: 5px 15px; backdrop-filter: blur(20px);
+        }
+        #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; outline: none; font-size: 1rem; }
     </style>
 </head>
 <body>
-
-    <video autoplay muted loop playsinline id="bg-video" poster="poster.jpg">
+    <!-- VIDEO DE FONDO EN MOVIMIENTO -->
+    <video autoplay muted loop playsinline preload="auto" poster="poster.jpg" id="bg-video">
         <source src="fondo.mp4" type="video/mp4">
     </video>
 
-    <div id="login-screen">
-        <div class="login-box">
-            <h1><span class="tuerca">⚙️</span> Aurora AI</h1>
-            <p>Bienvenido a la inteligencia mendocina.</p>
-            <input type="text" id="username" placeholder="Tu nombre..." onkeypress="handleLoginPress(event)">
-            <button onclick="entrarChat()">Ingresar</button>
-        </div>
+    <!-- SIDEBAR -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div id="sidebar">
+        <button onclick="toggleSidebar()" style="background:none;border:none;color:white;font-size:1.9rem;align-self:flex-end;cursor:pointer;">✖</button>
+        <h2 style="font-family:'Orbitron';color:var(--accent);">⚙️ AJUSTES</h2>
+        <button class="menu-btn" onclick="alert('Aurora v7.6\nCreada por Gabriel Sosa Scriboni\nSan Martín, Mendoza')">🧠 Sistema Aurora</button>
+        <button class="menu-btn" onclick="cerrarSesionApp()">🚪 Cerrar Sesión</button>
+        <button class="menu-btn danger" onclick="eliminarCuentaApp()">⚠️ ELIMINAR CUENTA</button>
     </div>
 
-    <div id="chat-screen">
-        <div class="header">
-            <span class="tuerca">⚙️</span> Aurora AI
-        </div>
-        <div id="chat-box">
-            </div>
+    <div id="app-container">
+        <header><div class="titulo-app">AURORA</div></header>
+        <div id="chat-window"><div class="msg aurora" id="saludo-ia">Estableciendo enlace neuronal...</div></div>
+        
         <div class="input-area">
-            <input type="text" id="user-input" placeholder="Escribile a Aurora..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendMessage()">Enviar</button>
+            <button class="btn-config-final" onclick="toggleSidebar()">⚙️</button>
+            <div class="input-container">
+                <input type="text" id="chat-terminal" placeholder="Escribe a Aurora..." readonly>
+                <button onclick="enviar()" style="background:none;border:none;color:var(--accent);font-size:1.7rem;cursor:pointer;">➤</button>
+            </div>
+            <p style="font-size:0.65rem;color:rgba(255,255,255,0.35);text-align:center;margin-top:12px;letter-spacing:1px;">
+                AURORA ES UNA IA Y PUEDE COMETER ERRORES.
+            </p>
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script>
-        let userName = "";
+        const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481" };
+        firebase.initializeApp(firebaseConfig);
 
-        // Pasar del Login al Chat
-        function entrarChat() {
-            const inputName = document.getElementById('username').value.trim();
-            if (!inputName) return; 
-            
-            userName = inputName;
-            
-            // Efecto de desvanecimiento
-            document.getElementById('login-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('chat-screen').style.display = 'flex';
-                
-                // Saludo personalizado con tu nombre
-                const chatBox = document.getElementById('chat-box');
-                chatBox.innerHTML = `<div class="msg ai-msg">¡Hola ${userName}! Soy Aurora. ¿Todo bien por San Martín? Escribime lo que necesites. 🍷</div>`;
-            }, 500);
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('active');
         }
 
-        function handleLoginPress(e) {
-            if (e.key === 'Enter') entrarChat();
+        function cerrarSesionApp() {
+            if(confirm("¿Cerrar sesión?")) firebase.auth().signOut().then(() => location.reload());
         }
 
-        // Enviar mensajes a la IA
-        async function sendMessage() {
-            const input = document.getElementById('user-input');
-            const chatBox = document.getElementById('chat-box');
-            const msg = input.value.trim();
-            if (!msg) return;
-
-            chatBox.innerHTML += `<div class="msg user-msg">${msg}</div>`;
-            input.value = '';
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            const typingId = "typing-" + Date.now();
-            chatBox.innerHTML += `<div class="msg ai-msg" id="${typingId}">Pensando... ⚙️</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            try {
-                const response = await fetch('/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ msg: msg })
-                });
-                const data = await response.json();
-                
-                document.getElementById(typingId).remove();
-                chatBox.innerHTML += `<div class="msg ai-msg">${data.respuesta}</div>`;
-            } catch (error) {
-                document.getElementById(typingId).remove();
-                chatBox.innerHTML += `<div class="msg ai-msg" style="color:#ff6b6b;">Mmm, algo falló en la conexión.</div>`;
+        function eliminarCuentaApp() {
+            if(confirm("¿Eliminar cuenta permanentemente?")) {
+                const user = firebase.auth().currentUser;
+                if(user) user.delete().then(() => location.reload());
             }
-            chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') sendMessage();
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('app-container').style.display = 'flex';
+                const nombre = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
+                document.getElementById('saludo-ia').innerText = `Hola ${nombre}, ¿en qué te ayudo hoy?`;
+                document.getElementById('chat-terminal').removeAttribute('readonly');
+            }
+        });
+
+        async function enviar() {
+            const inp = document.getElementById('chat-terminal');
+            const msg = inp.value.trim();
+            if (!msg) return;
+            inp.value = '';
         }
+
+        document.getElementById('chat-terminal').addEventListener('keypress', e => {
+            if (e.key === 'Enter') enviar();
+        });
     </script>
 </body>
 </html>
