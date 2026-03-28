@@ -1,10 +1,14 @@
 {
-  "name": "Aurora Core",
+  "name": "Aurora Core IA",
   "short_name": "Aurora",
+  "description": "Asistente de Inteligencia Artificial neuronal para Mendoza.",
+  "lang": "es-AR",
   "start_url": "index.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#00e5ff",
+  "categories": ["productivity", "utilities"],
   "icons": [
     {
       "src": "icon-512.png",
