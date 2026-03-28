@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AURORA - Acceso Neuronal</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00f2ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -35,7 +41,6 @@
             border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; 
         }
 
-        /* ✨ ESTILOS NUEVOS PARA EL LOGIN ELEGANTE */
         .login-card h2 { font-family: 'Orbitron'; font-size: 1.5rem; margin-bottom: 25px; text-shadow: 0 0 10px var(--accent); }
         .login-input {
             width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.4);
@@ -54,7 +59,6 @@
         header { padding: 40px 0 10px 0; text-align: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); }
 
-        /* 🏁 CHAT: COLUMNA CENTRAL (Nivel Gemini/ChatGPT) */
         #chat-window { 
             flex: 1; overflow-y: auto; padding: 20px; 
             display: flex; flex-direction: column; gap: 20px; 
@@ -70,18 +74,15 @@
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Aurora: Izquierda */
         .aurora { 
             align-self: flex-start; background: rgba(0, 242, 255, 0.08); 
             border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 4px;
         }
-        /* Usuario: Derecha */
         .user { 
             align-self: flex-end; background: rgba(255, 255, 255, 0.08); 
             border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 4px;
         }
 
-        /* ⚙️ CONFIGURACIÓN: CLAVADA AL RINCÓN IZQUIERDO */
         .btn-config-fixed { 
             position: fixed; left: 25px; bottom: 58px; 
             background: none; border: none; cursor: pointer; color: #fff; 
@@ -90,7 +91,6 @@
             display: flex; align-items: center; gap: 10px; z-index: 50;
         }
 
-        /* 🏁 BARRA DE CHAT: CENTRADA */
         .bottom-section { 
             padding: 10px 20px 20px 20px; 
             display: flex; flex-direction: column; align-items: center; gap: 10px;
@@ -103,13 +103,11 @@
         }
         #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 0; outline: none; font-size: 1rem; }
 
-        /* 💎 WARNING: CENTRADO TOTAL */
         .disclaimer { 
             text-align: center; font-size: 0.6rem; color: #fff; 
             text-shadow: 0 0 10px var(--accent); letter-spacing: 1px; width: 100%;
         }
 
-        /* PANEL CONFIG MODAL */
         #config-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(35px); z-index: 100000; display: none; align-items: center; justify-content: center; }
         .config-card { background: rgba(255, 255, 255, 0.04); padding: 40px; border-radius: 35px; border: 1px solid var(--accent); text-align: center; width: 85%; max-width: 400px; }
     </style>
@@ -138,19 +136,14 @@
     <div id="login-overlay">
         <div class="login-card">
             <h2 id="titulo-login">Bienvenido a Aurora</h2>
-            
             <input type="email" placeholder="Correo electrónico" class="login-input" id="emailInput">
             <input type="password" placeholder="Contraseña" class="login-input" id="passwordInput">
-            
             <button id="btn-principal" style="background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 15px; width: 100%; border-radius: 18px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; letter-spacing: 2px; margin-bottom: 15px;" onclick="authCorreo()">INGRESAR</button>
-            
             <div class="form-links">
                 <a onclick="recuperarContrasena()">Olvidé mi contraseña</a>
                 <a onclick="toggleRegistro()" id="link-registro">Crear Cuenta</a>
             </div>
-            
             <div class="separator">──────── ó ────────</div>
-            
             <button style="background: #fff; color: #000; border: none; padding: 15px; border-radius: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%;" onclick="authGoogle()">
                 <svg width="18" height="18" viewBox="0 0 488 512" fill="#000"><path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/></svg>
                 Ingresar con Google
@@ -160,11 +153,9 @@
 
     <div id="app-container">
         <header><div class="titulo-app">AURORA</div></header>
-        
         <div id="chat-window">
             <div class="msg aurora">Hola, bienvenido. Soy <b>Aurora</b>. ¿En qué puedo ayudarte hoy?</div>
         </div>
-
         <div class="bottom-section">
             <div class="chat-group">
                 <button class="btn-a" id="btn-voz" onclick="activarVoz()">A</button>
@@ -194,26 +185,26 @@
 
         let modoRegistro = false;
 
-        // --- 🗣️ NUEVA FUNCIÓN: VOZ DE MUJER (SALIDA) ---
         function hablar(texto) {
             const synth = window.speechSynthesis;
             const utter = new SpeechSynthesisUtterance(texto);
             const voices = synth.getVoices();
-            // Buscamos una voz de mujer sofisticada
             const femaleVoice = voices.find(v => v.lang.includes('es') && (v.name.includes('female') || v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Zira')));
             if (femaleVoice) utter.voice = femaleVoice;
-            utter.pitch = 1.1; // Tono más femenino
+            utter.pitch = 1.1;
             utter.rate = 1.0;
             synth.speak(utter);
         }
 
-        // --- 👂 NUEVA FUNCIÓN: OÍDO DE AURORA (ENTRADA) ---
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = 'es-AR';
 
         function activarVoz() {
+            // 📳 INTEGRACIÓN: VIBRACIÓN AL TOCAR EL BOTÓN
+            if (navigator.vibrate) navigator.vibrate(50);
+            
             const btn = document.getElementById('btn-voz');
-            btn.style.color = '#ff4d4d'; // Brilla en rojo al escuchar
+            btn.style.color = '#ff4d4d';
             btn.style.textShadow = "0 0 30px #ff4d4d";
             recognition.start();
         }
@@ -223,7 +214,7 @@
             document.getElementById('chat-terminal').value = texto;
             document.getElementById('btn-voz').style.color = '#fff';
             document.getElementById('btn-voz').style.textShadow = "0 0 15px var(--accent)";
-            enviar(); // Envía automáticamente
+            enviar();
         };
 
         function toggleRegistro() {
@@ -246,12 +237,7 @@
         function authCorreo() {
             const email = document.getElementById('emailInput').value;
             const password = document.getElementById('passwordInput').value;
-            
-            if(!email || !password) {
-                alert("Por favor, ingresa correo y contraseña.");
-                return;
-            }
-
+            if(!email || !password) { alert("Por favor, ingresa correo y contraseña."); return; }
             if(modoRegistro) {
                 auth.createUserWithEmailAndPassword(email, password)
                     .then(() => { alert("¡Cuenta creada con éxito!"); entrar(); })
@@ -294,7 +280,6 @@
             win.innerHTML += `<div class="msg user">${val}</div>`;
             input.value = ""; win.scrollTop = win.scrollHeight;
             try {
-                // 🚀 CONEXIÓN A HUGGING FACE
                 const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { 
                     method:'POST', 
                     headers:{'Content-Type':'application/json'}, 
@@ -302,18 +287,23 @@
                 });
                 const data = await res.json();
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
-                
-                // 🗣️ AGREGADO: AURORA RESPONDE CON VOZ
                 hablar(data.respuesta);
-
                 win.scrollTop = win.scrollHeight;
             } catch(e) { 
                 win.innerHTML += `<div class="msg aurora">Error de conexión neuronal...</div>`;
             }
         }
 
-        // Cargar voces para el celu
         window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+
+        // 📱 INTEGRACIÓN: REGISTRO DE SERVICE WORKER PARA PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Aurora Service Worker activo'))
+                .catch(err => console.log('Error al registrar SW', err));
+            });
+        }
     </script>
 </body>
 </html>
