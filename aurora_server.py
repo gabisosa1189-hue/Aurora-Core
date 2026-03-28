@@ -7,7 +7,7 @@ import pytz
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# 🔑 LLAVES (Configuradas en Render > Environment)
+# 🔑 LLAVES
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY")
 OPENWEATHER_KEY = os.environ.get("OPENWEATHER_API_KEY")
 
@@ -20,15 +20,12 @@ def get_datetime():
     except:
         return "--:--", "--/--/--"
 
-# 🌦 CLIMA INTELIGENTE Y RÁPIDO
+# 🌦 CLIMA INTELIGENTE
 def buscar_clima_inteligente(mensaje):
-    if not OPENWEATHER_KEY:
-        return ""
-    
+    if not OPENWEATHER_KEY: return ""
     mensaje = mensaje.lower()
     ciudades_a_buscar = []
     
-    # Ciudades clave. Si el usuario las menciona, las buscamos en milisegundos.
     lugares = {
         "mendoza": "Mendoza,AR", 
         "buenos aires": "Buenos Aires,AR", 
@@ -42,7 +39,6 @@ def buscar_clima_inteligente(mensaje):
         if clave in mensaje:
             ciudades_a_buscar.append(valor)
             
-    # Si pregunta por el clima pero no nombra ciudad, por defecto San Martín
     if ("clima" in mensaje or "tiempo" in mensaje) and not ciudades_a_buscar:
         ciudades_a_buscar.append("San Martin,Mendoza,AR")
 
@@ -51,36 +47,47 @@ def buscar_clima_inteligente(mensaje):
         try:
             url = f"http://api.openweathermap.org/data/2.5/weather?q={ciudad}&appid={OPENWEATHER_KEY}&units=metric&lang=es"
             res = requests.get(url, timeout=3).json()
-            temp = round(res['main']['temp']) # Redondeamos para que suene más natural
+            temp = round(res['main']['temp'])
             desc = res['weather'][0]['description']
             nombre = ciudad.split(',')[0]
             reporte.append(f"En {nombre} hace {temp}°C con {desc}.")
         except:
             continue
-            
     return " ".join(reporte)
 
-# 📚 BUSCADOR DE DATOS EXACTOS
+# 📚 BUSCADOR WIKIPEDIA (Arreglado para que no falle con espacios)
 def buscar_datos_exactos(mensaje):
     mensaje = mensaje.lower()
-    # Filtro rápido para no perder tiempo si es una charla normal
     if any(palabra in mensaje for palabra in ["quien es", "que es", "presidente", "capital"]):
-        # Limpiamos la pregunta para buscar solo la palabra clave
-        busqueda = mensaje.replace("quien es", "").replace("que es", "").replace("el presidente de", "presidente").strip()
-        busqueda = " ".join(busqueda.split()[:4]) # Máximo 4 palabras
+        # Limpiamos signos raros y palabras de sobra
+        busqueda = mensaje.replace("¿", "").replace("?", "").replace("quien es el", "").replace("quien es", "").replace("que es", "").strip()
         
+        if not busqueda:
+            return ""
+
         try:
-            url = f"https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch={busqueda}&utf8=&format=json"
-            res = requests.get(url, timeout=3).json()
-            if res['query']['search']:
-                snippet = res['query']['search'][0]['snippet']
+            # Usamos params para que requests arme la URL perfecta y sin errores
+            url = "https://es.wikipedia.org/w/api.php"
+            params = {
+                "action": "query",
+                "list": "search",
+                "srsearch": busqueda,
+                "utf8": "1",
+                "format": "json"
+            }
+            res = requests.get(url, params=params, timeout=3)
+            data = res.json()
+            
+            if data.get('query', {}).get('search'):
+                snippet = data['query']['search'][0]['snippet']
                 limpio = re.sub('<[^<]+>', '', snippet)
-                return f"Dato exacto de Wikipedia: {limpio}"
-        except:
+                return f"Dato extraído de Wikipedia: {limpio}"
+        except Exception as e:
+            print("Error en Wiki:", e)
             pass
     return ""
 
-# 🌐 RUTA PRINCIPAL
+# 🌐 RUTAS
 @app.route('/')
 def index():
     return send_from_directory('.', 'inicio.html')
@@ -89,7 +96,7 @@ def index():
 def ping():
     return "pong", 200
 
-# 💬 MOTOR DEL CHAT (Optimizado para velocidad)
+# 💬 MOTOR DEL CHAT
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
@@ -102,22 +109,20 @@ def chat():
         hora, fecha = get_datetime()
         msg_lower = msg.lower()
 
-        # IDENTIDAD RÁPIDA
+        # IDENTIDAD
         if "quien te creo" in msg_lower or "creador" in msg_lower:
             return jsonify({"respuesta": "Fui creada por Gabriel Sosa Scriboni, acá en San Martín, Mendoza. 😏"})
 
-        # 1. RECOPILAMOS INFO EN TIEMPO REAL (En menos de 1 segundo)
+        # DATOS EN TIEMPO REAL
         info_clima = buscar_clima_inteligente(msg)
         info_datos = buscar_datos_exactos(msg)
 
-        # 2. CONSTRUIMOS EL CEREBRO
         system_prompt = (
             f"Eres Aurora, una IA mendocina rápida, amable y elegante. Creador: Gabriel Sosa Scriboni.\n"
             f"Hoy es {fecha} y son las {hora}.\n"
-            f"REGLA DE ORO: Si te doy 'Datos en tiempo real' abajo, ÚSALOS para responder con exactitud absoluta, pero mantén un tono conversacional y breve.\n\n"
+            f"REGLA DE ORO: Si te doy 'Datos en tiempo real' abajo, ÚSALOS para responder con exactitud absoluta, manteniendo un tono conversacional corto.\n\n"
         )
         
-        # INYECTAMOS LA INFORMACIÓN AL CEREBRO DE AURORA
         if info_clima or info_datos:
             system_prompt += "--- DATOS EN TIEMPO REAL PARA TU RESPUESTA ---\n"
             if info_clima: system_prompt += f"CLIMA ACTUAL: {info_clima}\n"
@@ -129,7 +134,6 @@ def chat():
             {"role": "user", "content": msg}
         ]
 
-        # 3. LLAMADA ULTRA RÁPIDA A LA IA
         if not OPENROUTER_KEY:
             return jsonify({"respuesta": "Falta la llave de OpenRouter."})
 
@@ -138,21 +142,29 @@ def chat():
             json={
                 "model": "openai/gpt-4o-mini",
                 "messages": mensajes,
-                "max_tokens": 150,  # Reducimos tokens para que responda más rápido
-                "temperature": 0.4  # La hacemos más precisa y menos inventiva
+                "max_tokens": 150,
+                "temperature": 0.4
             },
             headers={
                 "Authorization": f"Bearer {OPENROUTER_KEY}",
                 "Content-Type": "application/json"
             },
-            timeout=10
+            timeout=15 # Le damos 5 segundos más por las dudas
         )
 
-        respuesta_ia = res.json()['choices'][0]['message']['content']
+        # SEGURO CONTRA CAÍDAS DE OPENROUTER
+        if res.status_code != 200:
+            return jsonify({"respuesta": "El motor de OpenRouter está un poco saturado. ¿Me lo repetís?"})
+
+        data_ia = res.json()
+        if 'choices' not in data_ia:
+            return jsonify({"respuesta": "Me llegó un dato raro de la red. Intentá de nuevo, Gabriel."})
+
+        respuesta_ia = data_ia['choices'][0]['message']['content']
         return jsonify({"respuesta": respuesta_ia})
 
     except Exception as e:
-        return jsonify({"respuesta": f"¡Upa! Un pequeño tropezón: {str(e)}"})
+        return jsonify({"respuesta": "Hubo un pequeño cortocircuito, pero ya estoy bien. ¿Qué me decías?"})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
