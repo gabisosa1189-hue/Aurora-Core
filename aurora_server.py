@@ -23,28 +23,32 @@ def chat():
         msg = data.get('msg', '').strip()
         if not msg: return jsonify({"respuesta": "Dime..."})
         
-        msg_minusculas = msg.lower()
-        # Ampliamos el radar para que no se le escape nada de hoy
-        palabras_clave = ["clima", "tiempo", "hora", "noticia", "hoy", "precio", "dólar", "dolar", "internet", "actual", "busca", "partido", "jugo", "gano", "resultado", "argentina", "futbol", "fútbol"]
+        msg_lower = msg.lower()
+        # Radar ultra-sensible para activar el WiFi
+        keywords = ["clima", "tiempo", "hora", "hoy", "noticia", "dolar", "dólar", "partido", "futbol", "fútbol", "jugó", "jugo", "ganó", "gano", "resultado", "quien", "quién"]
         
-        necesita_internet = any(palabra in msg_minusculas for palabra in palabras_clave)
-        
-        if necesita_internet:
-            modelo_a_usar = "perplexity/sonar"
-            # PROMPT REFORZADO: Le decimos que SEA un buscador total
-            prompt_sistema = "Eres Aurora, una IA con acceso total a internet en tiempo real. Tu misión es buscar en la web y dar respuestas precisas sobre noticias, deportes (fútbol), clima y actualidad de hoy. Habla con tono amable y mendocino."
+        if any(k in msg_lower for k in keywords):
+            # EL INVESTIGADOR (Modo Búsqueda Total)
+            model = "perplexity/sonar"
+            system_prompt = (
+                "Eres Aurora, una IA con ACCESO TOTAL Y REAL a internet. "
+                "Hoy es 28 de marzo de 2026. Tu deber es BUSCAR en la web y dar el resultado real "
+                "de partidos, clima o noticias. NO digas que no tienes acceso. ¡BUSCA Y RESPONDE!"
+            )
         else:
-            modelo_a_usar = "openai/gpt-4o-mini"
-            prompt_sistema = "IA amable y mendocina creada por Gabriel Sosa Scriboni de San Martín, Mendoza."
+            # EL JEFE (Modo Charla Rápida)
+            model = "openai/gpt-4o-mini"
+            system_prompt = "Eres Aurora, una IA amable y mendocina creada por Gabriel Sosa Scriboni."
 
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             json={
-                "model": modelo_a_usar,
+                "model": model,
                 "messages": [
-                    {"role": "system", "content": prompt_sistema}, 
+                    {"role": "system", "content": system_prompt}, 
                     {"role": "user", "content": msg}
-                ]
+                ],
+                "search_domain_filter": ["google.com"] # Forzamos que use motores de búsqueda
             },
             headers={"Authorization": f"Bearer {OPENROUTER_KEY}"},
             timeout=30
