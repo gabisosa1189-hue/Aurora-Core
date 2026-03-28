@@ -12,16 +12,17 @@
         :root { --accent: #00f2ff; }
         html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background-color: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; }
         
-        /* VIDEO DE FONDO CORREGIDO */
+        /* VIDEO DE FONDO CORREGIDO Y MEJORADO */
         #bg-video { 
             position: fixed !important; 
             top: 0; left: 0; 
             width: 100vw; height: 100vh; 
             object-fit: cover !important; 
             z-index: -1; 
+            opacity: 1;
         }
 
-        /* BOTÓN CONFIGURACIÓN (rueda a la izquierda) */
+        /* BOTÓN DE CONFIGURACIÓN */
         .btn-config-final {
             position: fixed;
             bottom: calc(42px + env(safe-area-inset-bottom));
@@ -80,14 +81,16 @@
     </style>
 </head>
 <body>
-    <video autoplay muted loop playsinline id="bg-video">
+    <!-- VIDEO DE FONDO -->
+    <video autoplay muted loop playsinline preload="auto" poster="poster.jpg" id="bg-video">
         <source src="fondo.mp4" type="video/mp4">
     </video>
 
+    <!-- SIDEBAR -->
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
     <div id="sidebar">
         <button onclick="toggleSidebar()" style="background:none;border:none;color:white;font-size:1.9rem;align-self:flex-end;cursor:pointer;">✖</button>
-        <h2 style="font-family:'Orbitron';color:var(--accent);letter-spacing:2px;">⚙️ AJUSTES</h2>
+        <h2 style="font-family:'Orbitron';color:var(--accent);">⚙️ AJUSTES</h2>
         <button class="menu-btn" onclick="alert('Aurora v7.6\nCreada por Gabriel Sosa Scriboni\nSan Martín, Mendoza')">🧠 Sistema Aurora</button>
         <button class="menu-btn" onclick="cerrarSesionApp()">🚪 Cerrar Sesión</button>
         <button class="menu-btn danger" onclick="eliminarCuentaApp()">⚠️ ELIMINAR CUENTA</button>
@@ -115,7 +118,6 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481" };
         firebase.initializeApp(firebaseConfig);
 
-        // VOZ SUAVE Y LINDA (la que más te gustó)
         function hablar(t) {
             if (!t || !('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -143,7 +145,7 @@
         }
 
         function eliminarCuentaApp() {
-            if(confirm("¿Eliminar cuenta permanentemente? Esta acción no se puede deshacer.")) {
+            if(confirm("¿Eliminar cuenta permanentemente?")) {
                 const user = firebase.auth().currentUser;
                 if(user) user.delete().then(() => location.reload());
             }
@@ -162,7 +164,7 @@
             const inp = document.getElementById('chat-terminal');
             const msg = inp.value.trim();
             if (!msg) return;
-            // Aquí va tu fetch('/chat')...
+            // Aquí va tu fetch('/chat')
             inp.value = '';
         }
 
