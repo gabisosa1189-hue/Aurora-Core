@@ -28,19 +28,21 @@ def chat():
         
         # --- EL RUTEADOR NEURONAL DE GABRIEL ---
         msg_minusculas = msg.lower()
-        # Si el mensaje tiene alguna de estas palabras, usamos internet
-        palabras_clave = ["clima", "tiempo", "hora", "noticia", "hoy", "precio", "dólar", "dolar", "internet", "actual", "busca"]
+        palabras_clave = ["clima", "tiempo", "hora", "noticia", "hoy", "precio", "dólar", "dolar", "internet", "actual", "busca", "partido", "jugo", "gano", "resultado"]
         
         necesita_internet = any(palabra in msg_minusculas for palabra in palabras_clave)
         
         if necesita_internet:
-            # EL INVESTIGADOR (Lento pero con Google)
-            modelo_a_usar = "perplexity/llama-3.1-sonar-small-128k-online"
-            prompt_sistema = "Eres Aurora, una IA mendocina. Responde con los datos actuales de internet de forma amable y directa."
+            # EL INVESTIGADOR (Forzado a buscar)
+            modelo_a_usar = "perplexity/sonar"
+            prompt_sistema = "Eres Aurora. Tienes conexión a internet en vivo. Busca los datos reales en la web y responde de forma amable."
+            # Le inyectamos una orden oculta para obligarlo a usar Google
+            msg_final = msg + " (Busca esto en internet ahora mismo y dame los datos actualizados de hoy)"
         else:
             # EL JEFE (Rápido y conversacional)
             modelo_a_usar = "openai/gpt-4o-mini"
             prompt_sistema = "IA amable y mendocina creada por Gabriel Sosa Scriboni."
+            msg_final = msg
         # ----------------------------------------
         
         res = requests.post(
@@ -49,11 +51,11 @@ def chat():
                 "model": modelo_a_usar,
                 "messages": [
                     {"role": "system", "content": prompt_sistema}, 
-                    {"role": "user", "content": msg}
+                    {"role": "user", "content": msg_final}
                 ]
             },
             headers={"Authorization": f"Bearer {OPENROUTER_KEY}"},
-            timeout=20 # Le damos un poquito más de tiempo por si busca en internet
+            timeout=25 # Tiempo extra para que Googlee tranquilo
         )
         return jsonify({"respuesta": res.json()['choices'][0]['message']['content']})
     except Exception as e:
