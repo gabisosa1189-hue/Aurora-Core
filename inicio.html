@@ -38,7 +38,7 @@
         #app-container { display: none; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1.2s; }
         
         /* 🏔️ HEADER APP (Centrado) */
-        header { padding: 20px 15px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        header { padding: 30px 15px 15px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         .titulo-app { font-family: 'Orbitron', sans-serif; letter-spacing: 15px; font-size: 1.5rem; text-shadow: 0 0 20px var(--accent); margin: 0; }
         
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; scroll-behavior: smooth; }
@@ -46,24 +46,57 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
         
-        .input-area { padding: 10px 20px max(15px, env(safe-area-inset-bottom)) 20px; background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.4), transparent); }
-        
-        /* ⚙️ BOTÓN DE CONFIGURACIÓN INFERIOR */
-        .btn-config-bottom {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); color: var(--accent);
-            padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center;
-            gap: 6px; backdrop-filter: blur(10px); font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; margin-bottom: 10px;
+        /* ⚙️ CAJA DE INPUT RELATIVA PARA EL BOTÓN FLOTANTE */
+        .input-area { 
+            position: relative; 
+            padding: 20px 20px max(15px, env(safe-area-inset-bottom)) 20px; 
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.4), transparent); 
         }
-        .btn-config-bottom:hover { background: rgba(0, 242, 255, 0.15); }
+        
+        /* ⚙️ BOTÓN DE CONFIGURACIÓN FLOTANTE (Arreglo Magico) */
+        .btn-config-floating {
+            position: absolute;
+            top: -35px; /* Flota justito arriba de la barra de texto */
+            left: 20px;
+            background: rgba(10, 10, 10, 0.6); 
+            border: 1px solid rgba(0, 242, 255, 0.3); 
+            color: var(--accent);
+            padding: 6px 14px; 
+            border-radius: 20px; 
+            font-size: 0.8rem; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center;
+            gap: 6px; 
+            backdrop-filter: blur(10px); 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            transition: 0.3s;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .btn-config-floating:hover { background: rgba(0, 242, 255, 0.15); }
 
         .input-container { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 35px; display: flex; align-items: center; padding: 5px 15px; backdrop-filter: blur(20px); }
         
-        /* 🎙️ EL SÚPER BOTÓN "A" */
+        /* 🎙️ LA "A" ESTILO TÍTULO */
         .btn-voice { 
-            background: linear-gradient(135deg, #00f2ff, #0051ff); color: #000; border: none; 
-            width: 35px; height: 35px; border-radius: 50%; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: bold; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(0, 242, 255, 0.5); margin-right: 10px;
+            background: transparent; 
+            color: #fff; 
+            border: none; 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            cursor: pointer;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-shadow: 0 0 15px var(--accent); 
+            margin-right: 12px;
+            padding: 0;
+            transition: 0.2s;
         }
+        .btn-voice:active { transform: scale(0.9); }
+        
         #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; outline: none; font-size: 1rem; }
 
         /* 🎙️ PANTALLA INMERSIVA DE VOZ */
@@ -72,15 +105,15 @@
             z-index: 20000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
         .a-gigante {
-            font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #000; background: linear-gradient(135deg, #00f2ff, #0051ff);
+            font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; background: transparent;
             width: 150px; height: 150px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 0 40px var(--accent); animation: pulse 1.5s infinite; margin-bottom: 40px;
+            box-shadow: 0 0 40px var(--accent); animation: pulse 1.5s infinite; margin-bottom: 40px; text-shadow: 0 0 30px var(--accent);
         }
         #voice-status { font-size: 1.2rem; color: rgba(255,255,255,0.8); margin-bottom: 50px; }
         .btn-close-voice { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 15px 40px; border-radius: 30px; font-size: 1rem; cursor: pointer; }
 
         @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 30px rgba(0, 242, 255, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 242, 255, 0); } }
+        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.5); } 70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(0, 242, 255, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 242, 255, 0); } }
     </style>
 </head>
 <body>
@@ -134,16 +167,15 @@
         <div id="chat-window"><div class="msg aurora" id="saludo-ia">Conectando red neuronal...</div></div>
         
         <div class="input-area">
-            <div style="display: flex; justify-content: flex-start;">
-                <button class="btn-config-bottom" onclick="toggleSidebar()">⚙️ Configuración</button>
-            </div>
+            <button class="btn-config-floating" onclick="toggleSidebar()">⚙️ Configuración</button>
 
             <div class="input-container">
                 <button class="btn-voice" onclick="startVoiceMode()">A</button>
                 <input type="text" id="chat-terminal" readonly placeholder="Iniciando..." autocomplete="new-password">
                 <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.6rem; cursor:pointer;">➤</button>
             </div>
-            <p style="text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 10px; letter-spacing: 0.5px;">AURORA procesa datos en tiempo real.</p>
+            
+            <p style="text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 10px; letter-spacing: 0.5px;">AURORA es una IA y puede cometer errores.</p>
         </div>
     </div>
 
@@ -157,7 +189,6 @@
         const bgVideo = document.getElementById('bg-video');
         bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
 
-        // ⚙️ LÓGICA DE MENÚ
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
         function cerrarSesionApp() {
@@ -178,7 +209,6 @@
             }
         }
 
-        // 🎙️ SÍNTESIS DE VOZ DE AURORA
         function hablar(t) {
             if (!t || !('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -192,7 +222,6 @@
         }
         window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
-        // LOGIN LÓGICA
         function exterminarMail() {
             const input = document.getElementById('chat-terminal');
             let t = setInterval(() => { input.value = ''; }, 50);
@@ -248,7 +277,6 @@
             }
         });
 
-        // 💬 LOGICA DE CHAT Y VOZ INMERSIVA
         const voiceOverlay = document.getElementById('voice-overlay');
         const voiceStatus = document.getElementById('voice-status');
         let recognition;
