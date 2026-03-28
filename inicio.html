@@ -3,45 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AURORA - Acceso Neuronal</title>
+    <title>AURORA - Enlace Neuronal</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #00f2ff; }
         
-        /* 🎥 EL VIDEO: Forzado al máximo */
+        /* 🎥 VIDEO DE FONDO: Forzado al máximo nivel */
         #bg-video { 
-            position: fixed !important;
-            right: 0; bottom: 0;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
-            z-index: -1000; /* Bien al fondo */
-            background-size: cover;
-            object-fit: cover;
+            position: fixed !important; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            object-fit: cover !important; 
+            z-index: -10; /* Bien al fondo */
+            background-color: #000; /* Fondo de emergencia si el video falla */
         }
 
-        /* 🛡️ EL CUERPO: Transparente para que se vea el video */
+        /* 🛡️ TRANSPARENCIA TOTAL: Si esto es negro, el video no se ve */
         html, body { 
             margin: 0; padding: 0; 
             width: 100%; height: 100vh; 
             overflow: hidden; 
-            background: transparent !important; /* CLAVE: Si esto es negro, tapa el video */
+            background: transparent !important; 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             color: #fff; 
         }
 
-        /* ⚙️ SIDEBAR E INTERFAZ */
+        /* ⚙️ SIDEBAR CRISTAL */
         #sidebar {
             position: fixed; top: 0; left: -270px; width: 250px; height: 100%;
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(40px);
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(40px);
             border-right: 1px solid rgba(0,242,255,0.2);
             z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
             padding: 50px 20px; display: flex; flex-direction: column; gap: 15px;
         }
         #sidebar.open { left: 0; }
         .menu-btn { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 15px; text-align: left; cursor: pointer; }
-        
+        #sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 99999; display: none; }
+        #sidebar-overlay.active { display: block; }
+
+        /* INTERFAZ */
         #app-container { display: flex; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; background: transparent; }
-        header { padding: 45px 15px 15px 15px; text-align: center; background: transparent; }
+        header { padding: 45px 15px 15px 15px; text-align: center; }
         .titulo-app { font-family: 'Orbitron', sans-serif; letter-spacing: 12px; font-size: 1.5rem; text-shadow: 0 0 20px var(--accent); }
         
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
@@ -49,35 +51,55 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
         
-        /* ⚙️ TUERCA FIJA A LA IZQUIERDA */
+        /* ⚙️ TUERCA INDEPENDIENTE */
         .btn-config-final {
-            position: fixed; bottom: 40px; left: 20px;
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.5);
-            color: var(--accent); width: 58px; height: 58px; border-radius: 50%;
-            font-size: 1.8rem; cursor: pointer; display: flex; justify-content: center; align-items: center;
-            backdrop-filter: blur(20px); z-index: 1000;
+            position: fixed;
+            bottom: calc(40px + env(safe-area-inset-bottom));
+            left: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.5);
+            color: var(--accent);
+            width: 58px; height: 58px;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(20px);
+            z-index: 1000;
         }
 
         .input-container { 
-            margin: 0 15px 30px 85px; background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 35px; 
-            display: flex; align-items: center; padding: 5px 15px; backdrop-filter: blur(20px);
+            margin: 0 15px 30px 85px; /* Margen para no pisar la tuerca */
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(0, 242, 255, 0.3); 
+            border-radius: 35px; 
+            display: flex; align-items: center; padding: 5px 15px; 
+            backdrop-filter: blur(20px);
         }
         
         .btn-voice { background: transparent; color: #fff; border: none; font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: bold; text-shadow: 0 0 10px var(--accent); margin-right: 12px; cursor: pointer; }
         #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; outline: none; font-size: 1rem; }
 
-        #voice-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(30px); z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .a-gigante { font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; text-shadow: 0 0 30px var(--accent); width: 150px; height: 150px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 40px var(--accent); animation: pulse 1.5s infinite; }
+        /* PANTALLA VOZ */
+        #voice-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(30px);
+            z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .a-gigante {
+            font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; text-shadow: 0 0 30px var(--accent);
+            width: 150px; height: 150px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 40px var(--accent); animation: pulse 1.5s infinite;
+        }
         @keyframes pulse { 0% { transform: scale(0.95); } 70% { transform: scale(1); } 100% { transform: scale(0.95); } }
     </style>
 </head>
 <body>
     <video autoplay muted loop playsinline id="bg-video">
-        <source src="/fondo.mp4" type="video/mp4">
+        <source src="fondo.mp4" type="video/mp4">
     </video>
 
-    <div id="sidebar" onclick="event.stopPropagation()">
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div id="sidebar">
         <button onclick="toggleSidebar()" style="background:none; border:none; color:white; font-size:1.8rem; align-self:flex-end; cursor:pointer;">✖</button>
         <h2 style="font-family:'Orbitron'; color:var(--accent);">⚙️ AJUSTES</h2>
         <button class="menu-btn" onclick="alert('Aurora v7.6\nGabriel Sosa Scriboni')">🧠 Sistema Aurora</button>
@@ -91,7 +113,8 @@
 
     <div id="app-container">
         <header><div class="titulo-app">AURORA</div></header>
-        <div id="chat-window"><div class="msg aurora">Enlace neuronal establecido. El fondo debería ser visible ahora.</div></div>
+        <div id="chat-window"><div class="msg aurora">Enlace neuronal establecido. El video debería ser visible.</div></div>
+        
         <div class="input-area">
             <button class="btn-config-final" onclick="toggleSidebar()">⚙️</button>
             <div class="input-container">
@@ -103,9 +126,17 @@
     </div>
 
     <script>
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-        function hablar(t) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'es-AR'; u.pitch = 1.4; window.speechSynthesis.speak(u); }
-        
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('active');
+        }
+
+        function hablar(t) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(t);
+            u.lang = 'es-AR'; u.pitch = 1.4; window.speechSynthesis.speak(u);
+        }
+
         let rec;
         function startVoiceMode() {
             document.getElementById('voice-overlay').style.display = 'flex';
@@ -118,13 +149,14 @@
             rec.start();
         }
         function stopVoiceMode() { if(rec) rec.stop(); window.speechSynthesis.cancel(); document.getElementById('voice-overlay').style.display = 'none'; }
-        
+
         async function enviar() {
-            const inp = document.getElementById('chat-terminal'); const msg = inp.value; if(!msg) return;
+            const inp = document.getElementById('chat-terminal'); const msg = inp.value; if (!msg) return;
             addMsg(msg, 'user'); inp.value = '';
             const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg}) });
             const data = await res.json(); addMsg(data.respuesta, 'aurora');
         }
+
         function addMsg(t, cl) {
             const d = document.createElement('div'); d.className = `msg ${cl}`; d.innerText = t;
             const win = document.getElementById('chat-window'); win.appendChild(d); win.scrollTop = win.scrollHeight;
