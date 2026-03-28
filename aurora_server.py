@@ -18,7 +18,7 @@ def index():
 def serve_files(filename):
     return send_from_directory('.', filename)
 
-# 3. El cerebro de Aurora
+# 3. El cerebro de Aurora (AHORA CON DOS MOTORES)
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
@@ -26,18 +26,35 @@ def chat():
         msg = data.get('msg', '').strip()
         if not msg: return jsonify({"respuesta": "Dime..."})
         
+        # --- EL RUTEADOR NEURONAL DE GABRIEL ---
+        msg_minusculas = msg.lower()
+        # Si el mensaje tiene alguna de estas palabras, usamos internet
+        palabras_clave = ["clima", "tiempo", "hora", "noticia", "hoy", "precio", "dólar", "dolar", "internet", "actual", "busca"]
+        
+        necesita_internet = any(palabra in msg_minusculas for palabra in palabras_clave)
+        
+        if necesita_internet:
+            # EL INVESTIGADOR (Lento pero con Google)
+            modelo_a_usar = "perplexity/llama-3.1-sonar-small-128k-online"
+            prompt_sistema = "Eres Aurora, una IA mendocina. Responde con los datos actuales de internet de forma amable y directa."
+        else:
+            # EL JEFE (Rápido y conversacional)
+            modelo_a_usar = "openai/gpt-4o-mini"
+            prompt_sistema = "IA amable y mendocina creada por Gabriel Sosa Scriboni."
+        # ----------------------------------------
+        
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             json={
-                "model": "openai/gpt-4o-mini",
+                "model": modelo_a_usar,
                 "messages": [
-                    {"role": "system", "content": "IA amable y mendocina creada por Gabriel Sosa Scriboni."}, 
+                    {"role": "system", "content": prompt_sistema}, 
                     {"role": "user", "content": msg}
                 ]
             },
             headers={"Authorization": f"Bearer {OPENROUTER_KEY}"},
-            timeout=15
+            timeout=20 # Le damos un poquito más de tiempo por si busca en internet
         )
         return jsonify({"respuesta": res.json()['choices'][0]['message']['content']})
     except Exception as e:
-        return jsonify({"respuesta": "Error de conexión."})
+        return jsonify({"respuesta": "Error de conexión neuronal..."})
