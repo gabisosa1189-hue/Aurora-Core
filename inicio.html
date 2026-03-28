@@ -10,9 +10,16 @@
    
     <style>
         :root { --accent: #00f2ff; }
-        html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background-color: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; }
+        html, body { 
+            margin: 0; padding: 0; 
+            width: 100%; height: 100vh; 
+            overflow: hidden; 
+            background-color: #000; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: #fff; 
+        }
         
-        /* VIDEO DE FONDO CORREGIDO Y MEJORADO */
+        /* VIDEO DE FONDO - CORREGIDO Y MEJORADO */
         #bg-video { 
             position: fixed !important; 
             top: 0; left: 0; 
@@ -22,7 +29,7 @@
             opacity: 1;
         }
 
-        /* BOTÓN DE CONFIGURACIÓN */
+        /* BOTÓN CONFIGURACIÓN */
         .btn-config-final {
             position: fixed;
             bottom: calc(42px + env(safe-area-inset-bottom));
@@ -164,8 +171,8 @@
             const inp = document.getElementById('chat-terminal');
             const msg = inp.value.trim();
             if (!msg) return;
-            // Aquí va tu fetch('/chat')
             inp.value = '';
+            // Aquí va tu fetch('/chat')
         }
 
         document.getElementById('chat-terminal').addEventListener('keypress', e => {
