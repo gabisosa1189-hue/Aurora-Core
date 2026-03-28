@@ -10,26 +10,16 @@
    
     <style>
         :root { --accent: #00f2ff; }
-        html, body { 
-            margin: 0; padding: 0; 
-            width: 100%; height: 100vh; 
-            overflow: hidden; 
-            background-color: #000; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            color: #fff; 
-        }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background-color: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; }
         
-        /* VIDEO DE FONDO - CORREGIDO Y MEJORADO */
         #bg-video { 
             position: fixed !important; 
             top: 0; left: 0; 
             width: 100vw; height: 100vh; 
             object-fit: cover !important; 
             z-index: -1; 
-            opacity: 1;
         }
 
-        /* BOTÓN CONFIGURACIÓN */
         .btn-config-final {
             position: fixed;
             bottom: calc(42px + env(safe-area-inset-bottom));
@@ -44,10 +34,8 @@
             backdrop-filter: blur(20px);
             z-index: 1000;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(0,242,255,0.3);
         }
 
-        /* SIDEBAR */
         #sidebar {
             position: fixed; top: 0; left: -280px; width: 260px; height: 100%;
             background: rgba(0,0,0,0.92); backdrop-filter: blur(40px);
@@ -88,7 +76,7 @@
     </style>
 </head>
 <body>
-    <!-- VIDEO DE FONDO -->
+    <!-- VIDEO DE FONDO CON POSTER DE RESPALDO -->
     <video autoplay muted loop playsinline preload="auto" poster="poster.jpg" id="bg-video">
         <source src="fondo.mp4" type="video/mp4">
     </video>
@@ -172,7 +160,6 @@
             const msg = inp.value.trim();
             if (!msg) return;
             inp.value = '';
-            // Aquí va tu fetch('/chat')
         }
 
         document.getElementById('chat-terminal').addEventListener('keypress', e => {
