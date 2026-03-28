@@ -24,27 +24,21 @@ def chat():
         if not msg: return jsonify({"respuesta": "Dime..."})
         
         msg_lower = msg.lower()
-        # Radar ultra-sensible: si hay alguna de estas, ACTIVAMOS EL WIFI
-        keywords = ["clima", "tiempo", "hoy", "ayer", "partido", "futbol", "fútbol", "resultado", "salió", "salio", "jugó", "jugo", "ganó", "gano", "dólar", "dolar", "noticia", "quien", "quién", "argentina", "messi", "pasó", "paso"]
         
-        # DECISIÓN DE MOTOR
-        if any(k in msg_lower for k in keywords):
-            # MODO INVESTIGADOR (Perplexity Sonar - El mejor buscador)
-            modelo = "perplexity/sonar"
-            # Le damos una orden de mando militar para que no dude
-            system_prompt = (
-                "Eres Aurora, una IA de San Martín, Mendoza, con ACCESO TOTAL a internet. "
-                "Hoy es sábado 28 de marzo de 2026. "
-                "Tu misión es BUSCAR EN GOOGLE Y WIKIPEDIA el resultado real de lo que pide el usuario. "
-                "Si te preguntan por el partido de Argentina de ayer (27 de marzo), BUSCA EL MARCADOR. "
-                "PROHIBIDO decir que no tienes acceso. ¡Busca y responde con la posta!"
-            )
-            query_final = f"BUSCA EN INTERNET Y RESPONDE: {msg}"
-        else:
-            # MODO CHARLA (GPT-4o mini - Rápido para saludos)
+        # 🛡️ Lógica de Seguridad: Si es un saludo muy corto, responde rápido.
+        # Si es cualquier otra cosa, ¡ACTIVA EL RADAR DE INTERNET TOTAL!
+        if len(msg_lower) < 5 and msg_lower in ["hola", "buen", "hey", "che"]:
             modelo = "openai/gpt-4o-mini"
-            system_prompt = "Eres Aurora, una IA amable y mendocina creada por Gabriel Sosa Scriboni."
-            query_final = msg
+            system_prompt = "Eres Aurora, una IA mendocina amable creada por Gabriel Sosa Scriboni."
+        else:
+            # 🌐 MODO INVESTIGACIÓN TOTAL (Busca en TODO internet)
+            modelo = "perplexity/sonar"
+            system_prompt = (
+                "Eres Aurora, una IA de San Martín, Mendoza. TIENES ACCESO TOTAL A INTERNET. "
+                "Tu misión: INVESTIGA en Google, Wikipedia, noticias y redes sociales para responder. "
+                "Hoy es sábado 28 de marzo de 2026. Da datos reales, resultados de fútbol, clima, "
+                "precios o noticias del momento. No digas que no puedes. ¡Busca y responde con la posta!"
+            )
 
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
@@ -52,14 +46,15 @@ def chat():
                 "model": modelo,
                 "messages": [
                     {"role": "system", "content": system_prompt}, 
-                    {"role": "user", "content": query_final}
+                    {"role": "user", "content": msg}
                 ],
-                "temperature": 0.1 # Para que sea preciso y no invente
+                "temperature": 0.1 # Para que sea ultra preciso con los datos
             },
             headers={"Authorization": f"Bearer {OPENROUTER_KEY}"},
-            timeout=35
+            timeout=40 # Le damos tiempo para que investigue a fondo
         )
+        
         return jsonify({"respuesta": res.json()['choices'][0]['message']['content']})
 
     except Exception as e:
-        return jsonify({"respuesta": "Error de conexión neuronal... ¡Refrescá y probá de nuevo!"})
+        return jsonify({"respuesta": "Error de conexión neuronal... ¡Probá de nuevo en un toque!"})
