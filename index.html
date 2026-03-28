@@ -122,8 +122,8 @@
     <div id="login-overlay">
         <div class="login-card">
             <h1 class="titulo-login">AURORA ACCESO</h1>
-            <button class="btn-google" onclick="entrar()">G | Ingresar con Google</button>
-            <button class="btn-ingresar" onclick="entrar()">INGRESAR</button>
+            <button style="background: #fff; color: #000; border: none; padding: 15px; border-radius: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; margin-bottom: 20px;" onclick="entrar()">G | Ingresar con Google</button>
+            <button style="background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 15px; width: 100%; border-radius: 18px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; letter-spacing: 2px;" onclick="entrar()">INGRESAR</button>
         </div>
     </div>
 
@@ -131,7 +131,7 @@
         <header><div class="titulo-app">AURORA</div></header>
         
         <div id="chat-window">
-            <div class="msg aurora">¡Bienvenido al futuro, Gabriel! Soy Aurora. Ya estamos sincronizados al 100%. ¿Qué misión tenemos hoy?</div>
+            <div class="msg aurora">Hola, bienvenido. Soy <b>Aurora</b>. ¿En qué puedo ayudarte hoy?</div>
         </div>
 
         <div class="bottom-section">
@@ -147,7 +147,6 @@
     </div>
 
     <script>
-        // MAndar con ENTER
         document.getElementById('chat-terminal').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') { enviar(); }
         });
