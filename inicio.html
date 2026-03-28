@@ -14,173 +14,155 @@
         
         #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover !important; z-index: 1; opacity: 0; transition: opacity 2s ease; }
         
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(25px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: all 0.6s ease; }
-        .login-card { background: rgba(255, 255, 255, 0.03); padding: 50px 30px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.3); text-align: center; max-width: 400px; width: 88%; box-shadow: 0 0 60px rgba(0, 242, 255, 0.2); }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(25px); z-index: 99999; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: rgba(255, 255, 255, 0.03); padding: 50px 30px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.3); text-align: center; max-width: 400px; width: 88%; }
         .titulo-login { font-family: 'Orbitron', sans-serif; letter-spacing: 5px; font-size: 1.3rem; margin-bottom: 12px; }
-        .subtitulo-login { font-weight: 300; font-size: 1rem; margin-bottom: 40px; color: rgba(255, 255, 255, 0.7); }
-        .btn-auth { width: 100%; padding: 16px; border-radius: 20px; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.3s ease; font-size: 1rem; margin-bottom: 15px; }
+        .btn-auth { width: 100%; padding: 16px; border-radius: 20px; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 1rem; margin-bottom: 15px; }
         .btn-google { background: #fff; color: #000; }
-        .btn-email-toggle { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; }
         
-        /* ⚙️ MENÚ LATERAL CONFIGURACIÓN (Ajustado a 260px) */
+        /* ⚙️ SIDEBAR REFORZADO */
         #sidebar {
             position: fixed; top: 0; left: -260px; width: 260px; height: 100%;
-            background: rgba(0, 0, 0, 0.35);
-            backdrop-filter: blur(35px);
-            border-right: 1px solid rgba(0,242,255,0.15);
-            z-index: 10000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(40px);
+            border-right: 1px solid rgba(0,242,255,0.2);
+            z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             padding: 40px 20px; display: flex; flex-direction: column; gap: 15px;
         }
         #sidebar.open { left: 0; }
-        #sidebar h2 { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 5px; }
-        .menu-btn { background: rgba(255,255,255,0.03); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 15px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); }
-        .menu-btn:hover { background: rgba(255,255,255,0.1); }
-        .menu-btn.danger { background: rgba(255, 50, 50, 0.05); border-color: rgba(255,50,50,0.3); color: #ff4d4d; margin-top: auto; }
-        .close-sidebar { position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; }
+        .menu-btn { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 15px; text-align: left; font-size: 1rem; cursor: pointer; }
+        .menu-btn.danger { background: rgba(255, 50, 50, 0.1); color: #ff4d4d; margin-top: auto; }
 
-        /* 🌑 SOMBRA PARA CERRAR EL MENÚ TOCANDO AFUERA */
         #sidebar-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); z-index: 9999;
-            opacity: 0; pointer-events: none; transition: 0.3s;
+            background: rgba(0, 0, 0, 0.6); z-index: 99999;
+            display: none; opacity: 0; transition: 0.3s;
         }
-        #sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+        #sidebar-overlay.active { display: block; opacity: 1; }
 
-        #app-container { display: none; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; opacity: 0; transition: 1.2s; }
+        #app-container { display: none; flex-direction: column; height: 100vh; max-width: 600px; margin: 0 auto; position: relative; z-index: 10; }
         
-        /* 🏔️ HEADER APP */
-        header { padding: 30px 15px 15px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        .titulo-app { font-family: 'Orbitron', sans-serif; letter-spacing: 15px; font-size: 1.5rem; text-shadow: 0 0 20px var(--accent); margin: 0; }
+        header { padding: 35px 15px 15px 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .titulo-app { font-family: 'Orbitron', sans-serif; letter-spacing: 15px; font-size: 1.5rem; text-shadow: 0 0 20px var(--accent); }
         
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; scroll-behavior: smooth; }
-        .msg { max-width: 85%; padding: 15px 20px; border-radius: 22px; backdrop-filter: blur(15px); animation: slide 0.3s ease; line-height: 1.4; }
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
+        .msg { max-width: 85%; padding: 15px 20px; border-radius: 22px; backdrop-filter: blur(15px); line-height: 1.4; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
         
-        .input-area { padding: 10px 20px max(15px, env(safe-area-inset-bottom)) 20px; background: transparent; }
-        
-        .bottom-bar-layout { display: flex; align-items: center; gap: 15px; width: 100%; }
-
-        /* ⚙️ BOTÓN TUERCA (Más grande y llamativo) */
-        .btn-config-inline {
-            background: rgba(255, 255, 255, 0.05); 
-            border: 1px solid rgba(0, 242, 255, 0.4); 
-            color: var(--accent);
-            width: 55px; /* Súper grande */
-            height: 55px; 
-            border-radius: 50%; 
-            font-size: 1.8rem; /* Ícono grande */
-            cursor: pointer; 
-            display: flex; 
-            justify-content: center; 
+        /* ⚙️ BARRA INFERIOR REDISEÑADA */
+        .input-area { 
+            position: relative;
+            padding: 10px 15px max(20px, env(safe-area-inset-bottom)) 15px; 
+            background: transparent;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            backdrop-filter: blur(20px); 
-            transition: 0.3s;
-            flex-shrink: 0; 
-            box-shadow: 0 0 15px rgba(0,242,255,0.2);
         }
-        .btn-config-inline:active { transform: scale(0.9); }
+
+        .bottom-controls {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        /* ⚙️ LA TUERCA CLAVADA A LA IZQUIERDA */
+        .btn-config-final {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.4);
+            color: var(--accent);
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            z-index: 100;
+            box-shadow: 0 0 15px rgba(0,242,255,0.2);
+            flex-shrink: 0;
+        }
 
         .input-container { 
-            flex-grow: 1; 
+            flex-grow: 1;
             background: rgba(255, 255, 255, 0.03); 
             border: 1px solid rgba(0, 242, 255, 0.3); 
             border-radius: 35px; 
             display: flex; 
             align-items: center; 
             padding: 5px 15px; 
-            backdrop-filter: blur(20px); 
+            backdrop-filter: blur(20px);
         }
         
         .btn-voice { 
             background: transparent; color: #fff; border: none; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; 
-            font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; 
-            text-shadow: 0 0 15px var(--accent); margin-right: 12px; padding: 0; transition: 0.2s;
+            text-shadow: 0 0 15px var(--accent); margin-right: 12px; cursor: pointer;
         }
-        .btn-voice:active { transform: scale(0.9); }
         
-        #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; outline: none; font-size: 1rem; }
+        #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; outline: none; font-size: 1rem; width: 100%; }
 
-        /* 🎙️ PANTALLA INMERSIVA DE VOZ */
+        /* VOZ OVERLAY */
         #voice-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
-            z-index: 20000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px);
+            z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center;
         }
         .a-gigante {
-            font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; background: transparent;
+            font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; text-shadow: 0 0 30px var(--accent);
             width: 150px; height: 150px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 0 40px var(--accent); animation: pulse 1.5s infinite; margin-bottom: 40px; text-shadow: 0 0 30px var(--accent);
+            box-shadow: 0 0 40px var(--accent); animation: pulse 1.5s infinite; margin-bottom: 40px;
         }
-        #voice-status { font-size: 1.2rem; color: rgba(255,255,255,0.8); margin-bottom: 50px; }
-        .btn-close-voice { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 15px 40px; border-radius: 30px; font-size: 1rem; cursor: pointer; }
 
-        @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.5); } 70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(0, 242, 255, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 242, 255, 0); } }
     </style>
 </head>
 <body>
-    <div style="position: absolute; top: -1000px; left: -1000px; opacity: 0; pointer-events: none;">
-        <input type="text" name="f1"><input type="password" name="f2">
-    </div>
-    
-    <video autoplay muted loop playsinline preload="auto" poster="poster.jpg" id="bg-video">
-        <source src="fondo.mp4" type="video/mp4">
-    </video>
+    <video autoplay muted loop playsinline id="bg-video"><source src="fondo.mp4" type="video/mp4"></video>
 
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
     <div id="sidebar">
-        <button class="close-sidebar" onclick="toggleSidebar()">✖</button>
-        <h2>⚙️ CONFIGURACIÓN</h2>
-        <button class="menu-btn" onclick="alert('Conexión Neural Establecida.\nMotor: GPT-4o-mini')">🧠 Diagnóstico IA</button>
+        <button onclick="toggleSidebar()" style="background:none; border:none; color:white; font-size:1.5rem; align-self:flex-end; cursor:pointer;">✖</button>
+        <h2 style="font-family:'Orbitron'">⚙️ CONFIGURACIÓN</h2>
+        <button class="menu-btn" onclick="alert('Enlace Neural: GPT-4o-mini Activo')">🧠 Estado IA</button>
         <button class="menu-btn" onclick="cerrarSesionApp()">🚪 Cerrar Sesión</button>
         <button class="menu-btn danger" onclick="eliminarCuentaApp()">⚠️ Eliminar Cuenta</button>
     </div>
 
     <div id="voice-overlay">
         <div class="a-gigante">A</div>
-        <p id="voice-status">Escuchando enlace neuronal...</p>
-        <button class="btn-close-voice" onclick="stopVoiceMode()">Finalizar Enlace</button>
+        <p id="voice-status" style="color:#ccc">Escuchando enlace...</p>
+        <button onclick="stopVoiceMode()" style="background:rgba(255,255,255,0.1); border:1px solid white; color:white; padding:15px 30px; border-radius:30px; margin-top:30px;">Finalizar</button>
     </div>
 
     <div id="login-overlay">
         <div class="login-card">
             <h1 class="titulo-login">BIENVENIDO A AURORA</h1>
-            <p class="subtitulo-login" id="subtitulo-auth">Seleccione su modalidad de acceso para continuar</p>
-            <div id="main-auth">
-                <button onclick="loginGoogle()" class="btn-auth btn-google">
-                    <svg width="20" height="20" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.85 2.22c1.67-1.53 2.63-3.8 2.63-6.55z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.85-2.22c-.79.53-1.8.85-3.11.85-2.39 0-4.41-1.61-5.14-3.78H.9v2.33C2.38 15.94 5.47 18 9 18z" fill="#34A853"/><path d="M3.86 10.67c-.19-.56-.3-1.16-.3-1.77s.11-1.21.3-1.77V4.8H.9A8.98 8.98 0 0 0 0 9c0 1.45.35 2.82.9 4.05l2.96-2.38z" fill="#FBBC05"/><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.89 11.43 0 9 0 5.47 0 2.38 2.06.9 5.07L3.86 7.4c.73-2.17 2.75-3.82 5.14-3.82z" fill="#EA4335"/></svg>
-                    Ingresar con Google
-                </button>
-                <button onclick="mostrarEmail()" class="btn-auth btn-email-toggle">📧 Correo electrónico</button>
-            </div>
-            <div id="email-form" style="display:none; flex-direction:column; gap:12px; margin-top:20px;">
-                <input type="email" id="email-input" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:15px; color:#fff;" placeholder="Email">
-                <input type="password" id="pass-input" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:15px; color:#fff;" placeholder="Contraseña">
-                <button id="auth-btn-main" onclick="ejecutarAuth()" style="background:var(--accent); color:#000; padding:16px; border-radius:15px; border:none; font-weight:600; cursor:pointer;">Ingresar</button>
-                <p id="toggle-auth-text" onclick="cambiarModoAuth()" style="color:rgba(255,255,255,0.4); font-size:0.8rem; cursor:pointer; margin-top:10px;">¿No tienes cuenta? Regístrate aquí</p>
-                <p onclick="volverInicio()" style="color:rgba(255,255,255,0.5); font-size:0.8rem; cursor:pointer; margin-top:10px; text-decoration: underline;">← Volver</p>
+            <button onclick="loginGoogle()" class="btn-auth btn-google">Ingresar con Google</button>
+            <button onclick="mostrarEmail()" class="btn-auth" style="background:rgba(255,255,255,0.1); color:white;">Correo Electrónico</button>
+            <div id="email-form" style="display:none; flex-direction:column; gap:10px; margin-top:15px;">
+                <input type="email" id="email-input" placeholder="Email" style="padding:12px; border-radius:10px; background:rgba(255,255,255,0.1); color:white; border:none;">
+                <input type="password" id="pass-input" placeholder="Password" style="padding:12px; border-radius:10px; background:rgba(255,255,255,0.1); color:white; border:none;">
+                <button onclick="ejecutarAuth()" style="background:var(--accent); color:black; padding:12px; border-radius:10px; border:none; font-weight:bold;">Entrar</button>
             </div>
         </div>
     </div>
 
     <div id="app-container">
-        <header>
-            <div class="titulo-app">AURORA</div>
-        </header>
-        <div id="chat-window"><div class="msg aurora" id="saludo-ia">Conectando red neuronal...</div></div>
-        
+        <header><div class="titulo-app">AURORA</div></header>
+        <div id="chat-window"><div class="msg aurora" id="saludo-ia">Iniciando...</div></div>
         <div class="input-area">
-            <div class="bottom-bar-layout">
-                <button class="btn-config-inline" onclick="toggleSidebar()">⚙️</button>
-                
+            <div class="bottom-controls">
+                <button class="btn-config-final" onclick="toggleSidebar()">⚙️</button>
                 <div class="input-container">
                     <button class="btn-voice" onclick="startVoiceMode()">A</button>
-                    <input type="text" id="chat-terminal" readonly placeholder="Iniciando..." autocomplete="new-password">
-                    <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.6rem; cursor:pointer;">➤</button>
+                    <input type="text" id="chat-terminal" placeholder="Comandos..." readonly>
+                    <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.6rem;">➤</button>
                 </div>
             </div>
-            <p style="text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 10px; letter-spacing: 0.5px;">AURORA es una IA y puede cometer errores.</p>
+            <p style="font-size:0.7rem; color:rgba(255,255,255,0.3); margin-top:8px;">AURORA es una IA y puede cometer errores.</p>
         </div>
     </div>
 
@@ -190,198 +172,85 @@
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481" };
         firebase.initializeApp(firebaseConfig);
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            const overlay = document.getElementById('sidebar-overlay');
+            overlay.classList.toggle('active');
+        }
+
+        function cerrarSesionApp() { firebase.auth().signOut().then(() => window.location.reload()); }
         
-        const bgVideo = document.getElementById('bg-video');
-        bgVideo.onplay = () => { bgVideo.style.opacity = "1"; };
-
-        // ⚙️ AHORA ABRE Y CIERRA CON SOMBRA
-        function toggleSidebar() { 
-            document.getElementById('sidebar').classList.toggle('open'); 
-            document.getElementById('sidebar-overlay').classList.toggle('active');
-        }
-
-        function cerrarSesionApp() {
-            firebase.auth().signOut().then(() => { window.location.reload(); }).catch((error) => { alert("Error al cerrar sesión."); });
-        }
-
         function eliminarCuentaApp() {
-            if(confirm("ATENCIÓN: ¿Estás seguro de que deseas eliminar tu cuenta permanentemente? Perderás todo tu acceso.")) {
+            if(confirm("¿Eliminar cuenta?")) {
                 const user = firebase.auth().currentUser;
-                if(user) {
-                    user.delete().then(() => {
-                        alert("Cuenta eliminada correctamente.");
-                        window.location.reload();
-                    }).catch((error) => {
-                        alert("Error de seguridad: Debes volver a iniciar sesión antes de eliminar tu cuenta.");
-                    });
-                }
+                if(user) user.delete().then(() => window.location.reload());
             }
         }
 
         function hablar(t) {
-            if (!t || !('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
-            const voices = window.speechSynthesis.getVoices();
-            let vozSuave = voices.find(v => (v.lang.includes('es') || v.lang.includes('AR') || v.lang.includes('MX')) && (v.name.toLowerCase().includes('lucia') || v.name.toLowerCase().includes('paulina') || v.name.toLowerCase().includes('female')));
-            if (!vozSuave) vozSuave = voices.find(v => v.lang.includes('es') && !v.name.toLowerCase().includes('male'));
-            if (vozSuave) u.voice = vozSuave;
-            u.lang = 'es-AR'; u.pitch = 1.48; u.rate = 0.96; u.volume = 0.94;
+            u.lang = 'es-AR'; u.pitch = 1.3; u.rate = 1.0;
             window.speechSynthesis.speak(u);
         }
-        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
-        function exterminarMail() {
-            const input = document.getElementById('chat-terminal');
-            let t = setInterval(() => { input.value = ''; }, 50);
-            setTimeout(() => { clearInterval(t); }, 3000);
-        }
-
-        let modoRegistro = false;
-        function cambiarModoAuth() {
-            modoRegistro = !modoRegistro;
-            const btn = document.getElementById('auth-btn-main');
-            const link = document.getElementById('toggle-auth-text');
-            if(modoRegistro) { btn.innerText = "Crear Cuenta"; link.innerText = "¿Ya tienes cuenta? Inicia sesión"; } 
-            else { btn.innerText = "Ingresar"; link.innerText = "¿No tienes cuenta? Regístrate aquí"; }
-        }
-
-        function mostrarEmail() { document.getElementById('main-auth').style.display='none'; document.getElementById('email-form').style.display='flex'; }
-        function volverInicio() { document.getElementById('main-auth').style.display='flex'; document.getElementById('email-form').style.display='none'; }
-
+        function mostrarEmail() { document.getElementById('email-form').style.display='flex'; }
+        function loginGoogle() { firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         async function ejecutarAuth() {
-            const email = document.getElementById('email-input').value;
-            const pass = document.getElementById('pass-input').value;
-            try { 
-                if(modoRegistro) await firebase.auth().createUserWithEmailAndPassword(email, pass); 
-                else await firebase.auth().signInWithEmailAndPassword(email, pass); 
-            } catch(e) { alert("Error: " + e.message); }
+            const e = document.getElementById('email-input').value;
+            const p = document.getElementById('pass-input').value;
+            try { await firebase.auth().signInWithEmailAndPassword(e, p); } catch(err) { alert(err.message); }
         }
 
-        function loginGoogle() { 
-            const provider = new firebase.auth.GoogleAuthProvider(); 
-            firebase.auth().signInWithPopup(provider); 
-        }
-
-        firebase.auth().onAuthStateChanged((user) => {
+        firebase.auth().onAuthStateChanged(user => {
             if (user) {
-                exterminarMail();
-                document.getElementById('login-overlay').style.opacity = "0";
-                setTimeout(() => {
-                    document.getElementById('login-overlay').style.display = "none";
-                    document.getElementById('app-container').style.display = "flex";
-                    setTimeout(() => {
-                        document.getElementById('app-container').style.opacity = "1";
-                        const nombreUsuario = user.displayName ? user.displayName.split(' ')[0] : "Gabriel";
-                        const m = `Hola, ${nombreUsuario}. Enlace neuronal exitoso. ¿En qué te asisto?`;
-                        document.getElementById('saludo-ia').innerText = m;
-                        hablar(m);
-                        
-                        const chatInp = document.getElementById('chat-terminal');
-                        chatInp.removeAttribute('readonly');
-                        chatInp.placeholder = "Comandos para Aurora...";
-                        exterminarMail();
-                    }, 500);
-                }, 600);
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+                const m = `Hola ${user.displayName || "Gabriel"}. ¿En qué te ayudo?`;
+                document.getElementById('saludo-ia').innerText = m;
+                document.getElementById('chat-terminal').removeAttribute('readonly');
+                hablar(m);
             }
         });
 
-        const voiceOverlay = document.getElementById('voice-overlay');
-        const voiceStatus = document.getElementById('voice-status');
+        // 🎙️ VOZ Y CHAT
         let recognition;
-
         function startVoiceMode() {
-            voiceOverlay.style.display = 'flex';
-            voiceStatus.innerText = "Escuchando... ¡Hablá ahora!";
-            
-            if (!('webkitSpeechRecognition' in window)) {
-                voiceStatus.innerText = "Tu dispositivo no soporta el enlace de voz.";
-                return;
-            }
-            
+            document.getElementById('voice-overlay').style.display = 'flex';
             recognition = new webkitSpeechRecognition();
             recognition.lang = 'es-AR';
-            recognition.interimResults = false;
-            
-            recognition.onresult = async function(event) {
-                const transcript = event.results[0][0].transcript;
-                voiceStatus.innerText = "Procesando...";
-                
-                try {
-                    const res = await fetch('/chat', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ msg: transcript })
-                    });
-                    const data = await res.json();
-                    
-                    voiceStatus.innerText = "Aurora está hablando...";
-                    hablar(data.respuesta);
-                    
-                    const checker = setInterval(() => {
-                        if (!window.speechSynthesis.speaking) {
-                            voiceStatus.innerText = "Finalizado. Tocá 'Finalizar Enlace'.";
-                            clearInterval(checker);
-                        }
-                    }, 500);
-
-                } catch (e) {
-                    voiceStatus.innerText = "Interferencia en la red.";
-                }
+            recognition.onresult = async e => {
+                const msg = e.results[0][0].transcript;
+                const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg}) });
+                const data = await res.json();
+                hablar(data.respuesta);
             };
-
-            recognition.onerror = function() { voiceStatus.innerText = "Señal débil. Volvé a intentarlo."; }
             recognition.start();
         }
-
         function stopVoiceMode() {
             if(recognition) recognition.stop();
             window.speechSynthesis.cancel();
-            voiceOverlay.style.display = 'none';
+            document.getElementById('voice-overlay').style.display = 'none';
         }
 
         async function enviar() {
             const inp = document.getElementById('chat-terminal');
-            const msg = inp.value.trim(); 
-            if(!msg || msg.includes('@')) { inp.value = ''; return; }
-            addMsg(msg, 'user'); 
-            inp.value = '';
-            
-            const idPensando = "msg-" + Date.now();
-            addMsg("Procesando...", 'aurora', idPensando);
-
-            try {
-                const res = await fetch('/chat', { 
-                    method:'POST', 
-                    headers:{'Content-Type':'application/json'}, 
-                    body:JSON.stringify({msg}) 
-                });
-                const data = await res.json();
-                
-                const msgPensando = document.getElementById(idPensando);
-                if (msgPensando) msgPensando.innerText = data.respuesta;
-                else addMsg(data.respuesta, 'aurora');
-                
-                hablar(data.respuesta);
-            } catch(e) { 
-                const msgPensando = document.getElementById(idPensando);
-                if (msgPensando) msgPensando.innerText = "Error en la conexión neuronal.";
-            }
+            const msg = inp.value; if(!msg) return;
+            addMsg(msg, 'user'); inp.value = '';
+            const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg}) });
+            const data = await res.json();
+            addMsg(data.respuesta, 'aurora');
+            hablar(data.respuesta);
         }
 
-        function addMsg(t, cl, id = null) {
-            const d = document.createElement('div'); 
-            d.className = `msg ${cl}`; 
-            d.innerText = t;
-            if (id) d.id = id;
-            const win = document.getElementById('chat-window'); 
-            win.appendChild(d);
-            win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
+        function addMsg(t, cl) {
+            const d = document.createElement('div'); d.className = `msg ${cl}`; d.innerText = t;
+            const win = document.getElementById('chat-window'); win.appendChild(d);
+            win.scrollTop = win.scrollHeight;
         }
 
-        document.getElementById('chat-terminal').addEventListener('keypress', (e) => { 
-            if(e.key === 'Enter') enviar(); 
-        });
+        document.getElementById('chat-terminal').addEventListener('keypress', e => { if(e.key === 'Enter') enviar(); });
     </script>
 </body>
 </html>
