@@ -71,7 +71,7 @@
 <body>
 
     <video autoplay muted loop playsinline id="bg-video">
-        <source src="./fondo.mp4" type="video/mp4">
+        <source src="fondo.mp4" type="video/mp4">
     </video>
 
     <div id="sidebar">
@@ -102,18 +102,20 @@
     </div>
 
     <script>
-        // FORZAR VIDEO
-        window.onload = function() {
+        // --- MOTOR DE ARRANQUE PARA EL VIDEO ---
+        function arrancarVideo() {
             var v = document.getElementById('bg-video');
-            v.play().catch(function() {
-                console.log("Autoplay bloqueado, esperando interacción.");
+            v.play().catch(function(e) {
+                console.log("Esperando interacción para el video...");
             });
-        };
+        }
+
+        window.onload = arrancarVideo;
 
         function entrar(name) {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('app-container').style.display = 'flex';
-            document.getElementById('bg-video').play(); // Re-intento al hacer click
+            arrancarVideo(); // Re-intento manual al hacer click
         }
 
         async function enviar() {
@@ -136,7 +138,7 @@
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
                 win.scrollTop = win.scrollHeight;
             } catch(e) {
-                console.log("Error de conexión");
+                console.log("Error de conexión neuronal");
             }
         }
     </script>
