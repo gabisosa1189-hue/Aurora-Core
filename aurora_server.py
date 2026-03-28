@@ -8,15 +8,11 @@ import pytz
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-# 🔑 KEYS (Configuradas en Render > Environment)
+# 🔑 LLAVES (Configuradas en Render > Environment)
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY")
 OPENWEATHER_KEY = os.environ.get("OPENWEATHER_API_KEY")
 
-# 🧠 MEMORIA EN RAM (En Render el archivo .json no persiste bien)
-# Usamos una lista simple para que no falle al escribir
-chat_memoria = []
-
-# 🕒 HORA MENDOZA
+# 🕒 FUNCIÓN DE HORA MENDOCINA
 def get_datetime():
     try:
         tz = pytz.timezone('America/Argentina/Mendoza')
@@ -25,18 +21,18 @@ def get_datetime():
     except:
         return "--:--", "--/--/--"
 
-# 🌐 LA RUTA QUE ABRE TU WEB (Aquí estaba el tema)
+# 🌐 LA RUTA MAESTRA (Aquí estaba el error)
 @app.route('/')
 def index():
-    # Esto le dice a Render: "Buscá el archivo inicio.html y mostralo"
+    # Esta línea es la que "sirve" tu archivo HTML al navegador
     return send_from_directory('.', 'inicio.html')
 
-# 🟢 ENDPOINT DE SALUD
+# 🟢 ENDPOINT DE SALUD (Opcional para Render)
 @app.route('/ping')
 def ping():
     return "pong", 200
 
-# 💬 CHAT
+# 💬 EL MOTOR DEL CHAT
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
@@ -44,24 +40,24 @@ def chat():
         msg = data.get('msg', '').strip() if data else ''
 
         if not msg:
-            return jsonify({"respuesta": "¡Hablame, che! No seas tímido. 😏"})
+            return jsonify({"respuesta": "¡Hablame, Gabriel! No seas tímido. 😏"})
 
         hora, fecha = get_datetime()
         msg_lower = msg.lower()
 
-        # 🔍 RESPUESTAS RÁPIDAS (Sin gastar IA)
+        # 🔍 RESPUESTAS RÁPIDAS (Identidad)
         if "quien te creo" in msg_lower or "creador" in msg_lower:
             return jsonify({"respuesta": "Fui creada por Gabriel Sosa Scriboni, acá en San Martín, Mendoza. 😏"})
         
         if "hora" in msg_lower:
-            return jsonify({"respuesta": f"Son las {hora} en el Este mendocino. ⏰"})
+            return jsonify({"respuesta": f"Son las {hora} en San Martín. ⏰"})
 
-        # 🧠 IA (OpenRouter)
+        # 🧠 CONSULTA A LA IA (OpenRouter)
         if not OPENROUTER_KEY:
-            return jsonify({"respuesta": "Me falta la llave de OpenRouter para pensar... 😔"})
+            return jsonify({"respuesta": "Me falta la llave de OpenRouter para pensar, che. 😔"})
 
         mensajes = [
-            {"role": "system", "content": f"Eres Aurora, una IA mendocina con onda. Creador: Gabriel Sosa. Hoy es {fecha} y son las {hora}."},
+            {"role": "system", "content": f"Eres Aurora, una IA mendocina elegante. Creador: Gabriel Sosa Scriboni. Hoy es {fecha} y son las {hora}."},
             {"role": "user", "content": msg}
         ]
 
@@ -70,7 +66,7 @@ def chat():
             json={
                 "model": "openai/gpt-4o-mini",
                 "messages": mensajes,
-                "max_tokens": 250
+                "max_tokens": 300
             },
             headers={
                 "Authorization": f"Bearer {OPENROUTER_KEY}",
@@ -79,13 +75,12 @@ def chat():
             timeout=15
         )
 
-        res_json = res.json()
-        respuesta_ia = res_json['choices'][0]['message']['content']
-        
+        resp_json = res.json()
+        respuesta_ia = resp_json['choices'][0]['message']['content']
         return jsonify({"respuesta": respuesta_ia})
 
     except Exception as e:
-        return jsonify({"respuesta": f"¡Upa! Se me trabó el cerebro: {str(e)}"})
+        return jsonify({"respuesta": f"¡Upa! Hubo un desliz técnico: {str(e)}"})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
