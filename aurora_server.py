@@ -24,29 +24,27 @@ def chat():
         if not msg: return jsonify({"respuesta": "Dime..."})
         
         msg_lower = msg.lower()
+        # Radar ultra-sensible: si hay alguna de estas, ACTIVAMOS EL WIFI
+        keywords = ["clima", "tiempo", "hoy", "ayer", "partido", "futbol", "fútbol", "resultado", "salió", "salio", "jugó", "jugo", "ganó", "gano", "dólar", "dolar", "noticia", "quien", "quién", "argentina", "messi", "pasó", "paso"]
         
-        # 📡 RADAR DE FUSIÓN (Detecta TODO lo que necesite internet)
-        necesita_web = any(k in msg_lower for k in [
-            "clima", "tiempo", "hoy", "ayer", "partido", "futbol", "fútbol", 
-            "resultado", "salió", "salio", "jugó", "jugo", "ganó", "gano", 
-            "dólar", "dolar", "noticia", "quién", "quien", "messi", "argentina", 
-            "actualidad", "pasó", "paso", "precio", "mendoza", "san martin"
-        ])
-        
-        if necesita_web:
-            # 🚀 EL INVESTIGADOR (Perplexity Sonar - Conectado a Google/Wikipedia)
+        # DECISIÓN DE MOTOR
+        if any(k in msg_lower for k in keywords):
+            # MODO INVESTIGADOR (Perplexity Sonar - El mejor buscador)
             modelo = "perplexity/sonar"
+            # Le damos una orden de mando militar para que no dude
             system_prompt = (
-                "Eres Aurora, una IA con ACCESO TOTAL a internet en tiempo real. "
+                "Eres Aurora, una IA de San Martín, Mendoza, con ACCESO TOTAL a internet. "
                 "Hoy es sábado 28 de marzo de 2026. "
-                "Misión: Busca en la web y da resultados EXACTOS sobre lo que pide el usuario. "
-                "Si pregunta por el partido de Argentina de ayer (27 de marzo), BUSCA EL MARCADOR REAL. "
-                "No digas que no tienes acceso. ¡Sé una mendocina eficiente y directa!"
+                "Tu misión es BUSCAR EN GOOGLE Y WIKIPEDIA el resultado real de lo que pide el usuario. "
+                "Si te preguntan por el partido de Argentina de ayer (27 de marzo), BUSCA EL MARCADOR. "
+                "PROHIBIDO decir que no tienes acceso. ¡Busca y responde con la posta!"
             )
+            query_final = f"BUSCA EN INTERNET Y RESPONDE: {msg}"
         else:
-            # 💬 EL JEFE (GPT-4o mini - Rápido para charla)
+            # MODO CHARLA (GPT-4o mini - Rápido para saludos)
             modelo = "openai/gpt-4o-mini"
-            system_prompt = "Eres Aurora, una IA amable y mendocina creada por Gabriel Sosa Scriboni en San Martín, Mendoza."
+            system_prompt = "Eres Aurora, una IA amable y mendocina creada por Gabriel Sosa Scriboni."
+            query_final = msg
 
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
@@ -54,17 +52,14 @@ def chat():
                 "model": modelo,
                 "messages": [
                     {"role": "system", "content": system_prompt}, 
-                    {"role": "user", "content": msg}
+                    {"role": "user", "content": query_final}
                 ],
-                "temperature": 0.1 # Para que no invente nada
+                "temperature": 0.1 # Para que sea preciso y no invente
             },
             headers={"Authorization": f"Bearer {OPENROUTER_KEY}"},
             timeout=35
         )
-        
-        res_data = res.json()
-        respuesta = res_data['choices'][0]['message']['content']
-        return jsonify({"respuesta": respuesta})
+        return jsonify({"respuesta": res.json()['choices'][0]['message']['content']})
 
     except Exception as e:
-        return jsonify({"respuesta": "Error de conexión neuronal... ¡Reintenta en un segundo!"})
+        return jsonify({"respuesta": "Error de conexión neuronal... ¡Refrescá y probá de nuevo!"})
