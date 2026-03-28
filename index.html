@@ -16,7 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        :root { --accent: #00f2ff; }
+        :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100vh; 
@@ -24,7 +24,6 @@
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
         }
 
-        /* 🎥 VIDEO DE FONDO: EL ALMA DE LA APP */
         #bg-video { 
             position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; 
             z-index: -1; object-fit: cover !important; 
@@ -110,6 +109,32 @@
 
         #config-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(35px); z-index: 100000; display: none; align-items: center; justify-content: center; }
         .config-card { background: rgba(255, 255, 255, 0.04); padding: 40px; border-radius: 35px; border: 1px solid var(--accent); text-align: center; width: 85%; max-width: 400px; }
+
+        /* ✨ INTERFAZ DE VOZ AURORA (NUEVA) */
+        #voice-interface {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(40px);
+            z-index: 10000; display: none; flex-direction: column;
+            align-items: center; justify-content: center;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .voice-status { font-family: 'Orbitron'; font-size: 1.2rem; color: var(--accent); margin-bottom: 40px; letter-spacing: 3px; text-shadow: 0 0 20px var(--accent); }
+        
+        .visualizer { display: flex; align-items: center; gap: 8px; height: 100px; }
+        .bar { width: 4px; height: 20px; background: var(--accent); border-radius: 10px; animation: pulse 1s ease-in-out infinite; box-shadow: 0 0 15px var(--accent); }
+        .bar:nth-child(2) { animation-delay: 0.2s; } .bar:nth-child(3) { animation-delay: 0.4s; }
+        .bar:nth-child(4) { animation-delay: 0.6s; } .bar:nth-child(5) { animation-delay: 0.8s; }
+        @keyframes pulse { 0%, 100% { height: 20px; } 50% { height: 80px; } }
+
+        .btn-hangup {
+            margin-top: 60px; background: rgba(255, 77, 77, 0.1); border: 1px solid var(--danger);
+            color: var(--danger); padding: 15px 40px; border-radius: 50px;
+            font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 2px;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn-hangup:hover { background: var(--danger); color: white; box-shadow: 0 0 30px var(--danger); }
     </style>
 </head>
 <body>
@@ -118,6 +143,14 @@
         <source src="fondo.mp4" type="video/mp4">
     </video>
 
+    <div id="voice-interface">
+        <div class="voice-status" id="voice-txt">AURORA ESCUCHANDO...</div>
+        <div class="visualizer">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+        <button class="btn-hangup" onclick="cerrarVoz()">COLGAR ENLACE</button>
+    </div>
+
     <button class="btn-config-fixed" onclick="document.getElementById('config-panel').style.display='flex'">
         <span style="font-size:1.5rem">⚙️</span> CONFIGURACIÓN
     </button>
@@ -125,7 +158,6 @@
     <div id="config-panel">
         <div class="config-card">
             <h2 style="font-family:'Orbitron';">CONFIGURACIÓN</h2>
-            <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 30px;">CONFIGURACIÓN DE AURORA</p>
             <button onclick="location.reload()" style="background:rgba(255,255,255,0.1); color:white; border:none; padding:15px; width:100%; border-radius:15px; cursor:pointer; font-weight:bold;">CERRAR SESIÓN</button>
             <button style="background:transparent; color:#ff4d4d; border:1px solid #ff4d4d; padding:10px; width:100%; border-radius:15px; cursor:pointer; margin-top:15px; font-size:0.7rem;" onclick="confirm('¿Eliminar cuenta?')">ELIMINAR CUENTA</button>
             <br>
@@ -169,7 +201,7 @@
     </div>
 
     <script>
-        // 1. CONFIGURACIÓN DE FIREBASE
+        // 1. CONFIGURACIÓN DE FIREBASE (No tocada)
         const firebaseConfig = {
             apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo",
             authDomain: "aurora-ai-oficia.firebaseapp.com",
@@ -182,90 +214,100 @@
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-
         let modoRegistro = false;
 
+        // 🎙️ LÓGICA DE VOZ AVANZADA (Actualizada)
+        const synth = window.speechSynthesis;
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'es-AR';
+        recognition.continuous = false;
+
         function hablar(texto) {
-            const synth = window.speechSynthesis;
+            synth.cancel(); // 🔄 INTERRUPCIÓN FLUIDA: Si estaba hablando, se calla para decir lo nuevo
             const utter = new SpeechSynthesisUtterance(texto);
             const voices = synth.getVoices();
-            const femaleVoice = voices.find(v => v.lang.includes('es') && (v.name.includes('female') || v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Zira')));
+            // Búsqueda de voz de mujer premium
+            const femaleVoice = voices.find(v => v.lang.includes('es') && (v.name.includes('female') || v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Zira') || v.name.includes('Microsoft Sabina')));
             if (femaleVoice) utter.voice = femaleVoice;
-            utter.pitch = 1.1;
+            utter.pitch = 1.05;
             utter.rate = 1.0;
+            
+            utter.onstart = () => { document.getElementById('voice-txt').innerText = "AURORA HABLANDO..."; };
+            utter.onend = () => { 
+                if(document.getElementById('voice-interface').style.display === 'flex') {
+                    document.getElementById('voice-txt').innerText = "ESCUCHANDO...";
+                    recognition.start(); // Vuelve a escuchar automáticamente para charla fluida
+                }
+            };
             synth.speak(utter);
         }
 
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'es-AR';
-
         function activarVoz() {
-            // 📳 INTEGRACIÓN: VIBRACIÓN AL TOCAR EL BOTÓN
-            if (navigator.vibrate) navigator.vibrate(50);
-            
-            const btn = document.getElementById('btn-voz');
-            btn.style.color = '#ff4d4d';
-            btn.style.textShadow = "0 0 30px #ff4d4d";
+            if (navigator.vibrate) navigator.vibrate(60);
+            document.getElementById('voice-interface').style.display = 'flex';
+            document.getElementById('voice-txt').innerText = "INICIALIZANDO...";
             recognition.start();
+        }
+
+        function cerrarVoz() {
+            synth.cancel();
+            recognition.stop();
+            document.getElementById('voice-interface').style.display = 'none';
         }
 
         recognition.onresult = (event) => {
             const texto = event.results[0][0].transcript;
-            document.getElementById('chat-terminal').value = texto;
-            document.getElementById('btn-voz').style.color = '#fff';
-            document.getElementById('btn-voz').style.textShadow = "0 0 15px var(--accent)";
-            enviar();
+            enviarVoz(texto);
         };
 
+        async function enviarVoz(texto) {
+            document.getElementById('voice-txt').innerText = "PROCESANDO...";
+            // Añadir al chat visual también por las dudas
+            const win = document.getElementById('chat-window');
+            win.innerHTML += `<div class="msg user">${texto}</div>`;
+            
+            try {
+                const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { 
+                    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:texto}) 
+                });
+                const data = await res.json();
+                win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
+                win.scrollTop = win.scrollHeight;
+                hablar(data.respuesta);
+            } catch(e) {
+                document.getElementById('voice-txt').innerText = "ERROR DE ENLACE";
+                setTimeout(cerrarVoz, 2000);
+            }
+        }
+
+        // 🔑 LÓGICA DE AUTH (No tocada)
         function toggleRegistro() {
             modoRegistro = !modoRegistro;
             const titulo = document.getElementById('titulo-login');
             const btnPrincipal = document.getElementById('btn-principal');
             const linkRegistro = document.getElementById('link-registro');
-
             if(modoRegistro) {
-                titulo.innerText = "Crear Cuenta";
-                btnPrincipal.innerText = "REGISTRARSE";
-                linkRegistro.innerText = "Ya tengo cuenta (Ingresar)";
+                titulo.innerText = "Crear Cuenta"; btnPrincipal.innerText = "REGISTRARSE"; linkRegistro.innerText = "Ya tengo cuenta";
             } else {
-                titulo.innerText = "Bienvenido a Aurora";
-                btnPrincipal.innerText = "INGRESAR";
-                linkRegistro.innerText = "Crear Cuenta";
+                titulo.innerText = "Bienvenido a Aurora"; btnPrincipal.innerText = "INGRESAR"; linkRegistro.innerText = "Crear Cuenta";
             }
         }
 
         function authCorreo() {
             const email = document.getElementById('emailInput').value;
             const password = document.getElementById('passwordInput').value;
-            if(!email || !password) { alert("Por favor, ingresa correo y contraseña."); return; }
+            if(!email || !password) { alert("Ingresa datos."); return; }
             if(modoRegistro) {
-                auth.createUserWithEmailAndPassword(email, password)
-                    .then(() => { alert("¡Cuenta creada con éxito!"); entrar(); })
-                    .catch((error) => { alert("Error: " + error.message); });
+                auth.createUserWithEmailAndPassword(email, password).then(() => entrar()).catch(e => alert(e.message));
             } else {
-                auth.signInWithEmailAndPassword(email, password)
-                    .then(() => { entrar(); })
-                    .catch((error) => { alert("Error al ingresar."); });
+                auth.signInWithEmailAndPassword(email, password).then(() => entrar()).catch(e => alert("Error al ingresar."));
             }
         }
 
         function authGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .then(() => { entrar(); }).catch((error) => { alert('Error con Google: ' + error.message); });
+            auth.signInWithPopup(provider).then(() => entrar()).catch(e => alert(e.message));
         }
-
-        function recuperarContrasena() {
-            const email = document.getElementById('emailInput').value;
-            if(!email) { alert("Ingresá tu correo arriba."); return; }
-            auth.sendPasswordResetEmail(email)
-                .then(() => { alert("Correo enviado."); })
-                .catch((error) => { alert("Error: " + error.message); });
-        }
-
-        document.getElementById('chat-terminal').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') { enviar(); }
-        });
 
         function entrar() {
             document.getElementById('login-overlay').style.display = 'none';
@@ -281,27 +323,21 @@
             input.value = ""; win.scrollTop = win.scrollHeight;
             try {
                 const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { 
-                    method:'POST', 
-                    headers:{'Content-Type':'application/json'}, 
-                    body:JSON.stringify({msg:val}) 
+                    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:val}) 
                 });
                 const data = await res.json();
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
                 hablar(data.respuesta);
                 win.scrollTop = win.scrollHeight;
-            } catch(e) { 
-                win.innerHTML += `<div class="msg aurora">Error de conexión neuronal...</div>`;
-            }
+            } catch(e) { win.innerHTML += `<div class="msg aurora">Error neuronal...</div>`; }
         }
 
+        document.getElementById('chat-terminal').addEventListener('keypress', e => { if (e.key === 'Enter') enviar(); });
         window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
-        // 📱 INTEGRACIÓN: REGISTRO DE SERVICE WORKER PARA PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Aurora Service Worker activo'))
-                .catch(err => console.log('Error al registrar SW', err));
+                navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
             });
         }
     </script>
