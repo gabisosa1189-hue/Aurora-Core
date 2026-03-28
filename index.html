@@ -283,7 +283,8 @@
             win.innerHTML += `<div class="msg user">${val}</div>`;
             input.value = ""; win.scrollTop = win.scrollHeight;
             try {
-                const res = await fetch('/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:val}) });
+                // AQUÍ ESTÁ EL ÚNICO CAMBIO: LA CONEXIÓN AL SERVIDOR DE RENDER
+                const res = await fetch('https://aurora-ai-mendoza.onrender.com/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:val}) });
                 const data = await res.json();
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
                 win.scrollTop = win.scrollHeight;
