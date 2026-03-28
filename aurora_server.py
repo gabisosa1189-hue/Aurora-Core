@@ -28,31 +28,35 @@ def chat():
         keywords = ["clima", "tiempo", "hora", "hoy", "noticia", "dolar", "dólar", "partido", "futbol", "fútbol", "jugó", "jugo", "ganó", "gano", "resultado", "quien", "quién"]
         
         if any(k in msg_lower for k in keywords):
-            # EL INVESTIGADOR (Modo Búsqueda Total)
-            model = "perplexity/sonar"
-            system_prompt = (
-                "Eres Aurora, una IA con ACCESO TOTAL Y REAL a internet. "
-                "Hoy es 28 de marzo de 2026. Tu deber es BUSCAR en la web y dar el resultado real "
-                "de partidos, clima o noticias. NO digas que no tienes acceso. ¡BUSCA Y RESPONDE!"
+            # EL INVESTIGADOR (Perplexity Sonar - El mejor buscador)
+            modelo_a_usar = "perplexity/sonar"
+            prompt_sistema = (
+                "Eres Aurora, una IA con ACCESO TOTAL Y OBLIGATORIO a internet en tiempo real. "
+                "Hoy es sábado 28 de marzo de 2026. Tu misión es buscar en Google/Bing AHORA MISMO "
+                "y dar el resultado exacto de lo que pide el usuario (partidos, clima, etc). "
+                "PROHIBIDO decir que no tienes acceso. Busca y responde como una mendocina de San Martín."
             )
         else:
-            # EL JEFE (Modo Charla Rápida)
-            model = "openai/gpt-4o-mini"
-            system_prompt = "Eres Aurora, una IA amable y mendocina creada por Gabriel Sosa Scriboni."
+            # EL JEFE (GPT-4o mini - El más rápido para charlar)
+            modelo_a_usar = "openai/gpt-4o-mini"
+            prompt_sistema = "Eres Aurora, una IA amable y mendocina creada por Gabriel Sosa Scriboni."
 
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             json={
-                "model": model,
+                "model": modelo_a_usar,
                 "messages": [
-                    {"role": "system", "content": system_prompt}, 
+                    {"role": "system", "content": prompt_sistema}, 
                     {"role": "user", "content": msg}
                 ],
-                "search_domain_filter": ["google.com"] # Forzamos que use motores de búsqueda
+                "temperature": 0.1 # Baja temperatura para que sea más preciso y menos 'chamuyero'
             },
             headers={"Authorization": f"Bearer {OPENROUTER_KEY}"},
             timeout=30
         )
-        return jsonify({"respuesta": res.json()['choices'][0]['message']['content']})
+        respuesta_final = res.json()['choices'][0]['message']['content']
+        return jsonify({"respuesta": respuesta_final})
+
     except Exception as e:
-        return jsonify({"respuesta": "Error de conexión neuronal..."})
+        print(f"Error: {e}")
+        return jsonify({"respuesta": "Error de conexión neuronal... Intentá de nuevo en un segundo."})
