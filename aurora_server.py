@@ -30,6 +30,19 @@ def guardar_memoria(memoria):
     except:
         pass
 
+# 🟢 ENDPOINT CLAVE (Render necesita esto)
+@app.route('/ping')
+def ping():
+    return "pong", 200
+
+# 🌐 HOME (respuesta rápida SIEMPRE)
+@app.route('/')
+def index():
+    return jsonify({
+        "status": "ok",
+        "mensaje": "Aurora activa 😏🔥"
+    }), 200
+
 # 🕒 HORA
 def get_datetime():
     try:
@@ -56,26 +69,25 @@ def preguntar_ia(mensajes):
     if not OPENROUTER_KEY:
         return "No tengo acceso a mi IA 😔"
 
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    data = {
-        "model": "openai/gpt-4o-mini",
-        "messages": mensajes,
-        "temperature": 0.8,
-        "max_tokens": 200
-    }
-
     try:
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
-            json=data,
-            headers=headers,
-            timeout=15
+            json={
+                "model": "openai/gpt-4o-mini",
+                "messages": mensajes,
+                "temperature": 0.8,
+                "max_tokens": 200
+            },
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_KEY}",
+                "Content-Type": "application/json"
+            },
+            timeout=10
         )
-        return res.json()['choices'][0]['message']['content']
+
+        data = res.json()
+        return data['choices'][0]['message']['content']
+
     except Exception as e:
         return f"Error IA: {str(e)}"
 
@@ -94,16 +106,11 @@ def detectar(msg):
 
     return "ia"
 
-# 🌐 HOME
-@app.route('/')
-def index():
-    return "Aurora está funcionando 😏🔥"
-
 # 💬 CHAT
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True)
         msg = data.get('msg', '') if data else ''
 
         if not msg:
@@ -127,7 +134,7 @@ def chat():
         memoria = cargar_memoria()
 
         mensajes = [
-            {"role": "system", "content": f"Eres Aurora, una IA natural, cercana y con personalidad. Hoy es {fecha} y son las {hora}."}
+            {"role": "system", "content": f"Eres Aurora, una IA humana, natural y con personalidad. Hoy es {fecha} y son las {hora}."}
         ]
 
         mensajes += memoria
@@ -143,5 +150,3 @@ def chat():
 
     except Exception as e:
         return jsonify({"respuesta": f"Error: {str(e)}"})
-
-# ⚠️ IMPORTANTE: NO usar app.run() en Render
