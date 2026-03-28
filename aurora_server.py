@@ -28,26 +28,25 @@ def chat():
         if any(x in msg_lower for x in ["quien te creo", "quien te creó", "creador", "quien es tu creador"]):
             return jsonify({"respuesta": "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."})
 
-        # DETECCIÓN AGRESIVA DE INFORMACIÓN ACTUAL (internet)
-        trigger_words = [
-            "ayer", "anoche", "hoy", "partido", "resultado", "salió", "salio", "ganó", "perdió",
-            "cómo salió", "cuanto salió", "quien ganó", "clima", "tiempo", "dólar", "noticia",
-            "qué pasó", "qué está pasando", "último", "última", "en vivo"
-        ]
+        # 🔥 MODO INTERNET SIEMPRE ACTIVADO PARA CUALQUIER COSA ACTUAL
+        siempre_buscar = True   # ← Esto fuerza internet casi siempre
 
-        necesita_internet = any(word in msg_lower for word in trigger_words) or len(msg) > 25
+        # Pero si es una pregunta muy simple y corta, usamos modo rápido
+        if len(msg) < 8 and not any(word in msg_lower for word in ["ayer", "hoy", "anoche", "partido", "resultado", "clima", "noticia"]):
+            siempre_buscar = False
 
-        if necesita_internet:
-            print(f"🔍 MODO INTERNET ACTIVADO → Usando Perplexity Sonar para: {msg}")
+        if siempre_buscar:
+            print(f"🌐 MODO INTERNET TOTAL → {msg}")
             modelo = "perplexity/sonar"
             system_prompt = (
                 "Eres Aurora, IA femenina elegante creada por Gabriel Sosa Scriboni en San Martín, Mendoza. "
-                "Tienes acceso TOTAL y en tiempo real a internet. "
-                "Busca la información más actualizada posible y responde de forma breve, clara y directa. "
-                "Hoy es " + datetime.now(pytz.timezone('America/Argentina/Mendoza')).strftime("%d/%m/%Y %H:%M") + "."
+                "Tienes ACCESO TOTAL Y EN TIEMPO REAL a internet. "
+                "Busca la información más actualizada posible ANTES de responder. "
+                "Nunca digas que no tienes acceso. Responde breve, clara y directa. "
+                "Hoy es " + datetime.now(pytz.timezone('America/Argentina/Mendoza')).strftime("%d/%m/%Y") + "."
             )
         else:
-            print(f"💬 MODO CHAT RÁPIDO → Usando GPT-4o-mini")
+            print(f"💬 MODO RÁPIDO")
             modelo = "openai/gpt-4o-mini"
             system_prompt = "Eres Aurora, una IA femenina elegante y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza. Responde de forma breve y natural."
 
@@ -62,22 +61,19 @@ def chat():
                 "temperature": 0.6,
                 "max_tokens": 300
             },
-            headers={
-                "Authorization": f"Bearer {OPENROUTER_KEY}",
-                "Content-Type": "application/json"
-            },
+            headers={"Authorization": f"Bearer {OPENROUTER_KEY}", "Content-Type": "application/json"},
             timeout=30
         )
 
         if res.status_code != 200:
             print("❌ Error OpenRouter:", res.status_code, res.text)
-            return jsonify({"respuesta": "Estoy teniendo un problema de conexión. Intentá de nuevo."})
+            return jsonify({"respuesta": "Tuve un problema de conexión. Intentá de nuevo."})
 
         respuesta = res.json()['choices'][0]['message']['content']
         return jsonify({"respuesta": respuesta})
 
     except Exception as e:
-        print("🚨 Error en servidor:", str(e))
+        print("🚨 Error:", str(e))
         return jsonify({"respuesta": "Hubo un cortocircuito neuronal. Intentá de nuevo."})
 
 if __name__ == '__main__':
