@@ -28,23 +28,26 @@ def chat():
         if any(x in msg_lower for x in ["quien te creo", "quien te creó", "creador", "quien es tu creador"]):
             return jsonify({"respuesta": "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."})
 
-        # DETECCIÓN FUERTE DE INFORMACIÓN ACTUAL
-        necesita_busqueda = any(palabra in msg_lower for palabra in [
+        # DETECCIÓN AGRESIVA DE INFORMACIÓN ACTUAL (internet)
+        trigger_words = [
             "ayer", "anoche", "hoy", "partido", "resultado", "salió", "salio", "ganó", "perdió",
-            "clima", "tiempo", "dólar", "noticia", "qué pasó", "quien ganó", "cómo salió"
-        ]) or len(msg) > 20
+            "cómo salió", "cuanto salió", "quien ganó", "clima", "tiempo", "dólar", "noticia",
+            "qué pasó", "qué está pasando", "último", "última", "en vivo"
+        ]
 
-        if necesita_busqueda:
-            # MODO BÚSQUEDA EN TIEMPO REAL (Perplexity Sonar)
+        necesita_internet = any(word in msg_lower for word in trigger_words) or len(msg) > 25
+
+        if necesita_internet:
+            print(f"🔍 MODO INTERNET ACTIVADO → Usando Perplexity Sonar para: {msg}")
             modelo = "perplexity/sonar"
             system_prompt = (
-                "Eres Aurora, una IA femenina elegante y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza. "
+                "Eres Aurora, IA femenina elegante creada por Gabriel Sosa Scriboni en San Martín, Mendoza. "
                 "Tienes acceso TOTAL y en tiempo real a internet. "
                 "Busca la información más actualizada posible y responde de forma breve, clara y directa. "
-                "Hoy es " + datetime.now(pytz.timezone('America/Argentina/Mendoza')).strftime("%d/%m/%Y") + "."
+                "Hoy es " + datetime.now(pytz.timezone('America/Argentina/Mendoza')).strftime("%d/%m/%Y %H:%M") + "."
             )
         else:
-            # MODO CHAT RÁPIDO
+            print(f"💬 MODO CHAT RÁPIDO → Usando GPT-4o-mini")
             modelo = "openai/gpt-4o-mini"
             system_prompt = "Eres Aurora, una IA femenina elegante y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza. Responde de forma breve y natural."
 
@@ -57,25 +60,25 @@ def chat():
                     {"role": "user", "content": msg}
                 ],
                 "temperature": 0.6,
-                "max_tokens": 220
+                "max_tokens": 300
             },
             headers={
                 "Authorization": f"Bearer {OPENROUTER_KEY}",
                 "Content-Type": "application/json"
             },
-            timeout=20
+            timeout=30
         )
 
         if res.status_code != 200:
-            print("Error OpenRouter:", res.status_code, res.text)
+            print("❌ Error OpenRouter:", res.status_code, res.text)
             return jsonify({"respuesta": "Estoy teniendo un problema de conexión. Intentá de nuevo."})
 
         respuesta = res.json()['choices'][0]['message']['content']
         return jsonify({"respuesta": respuesta})
 
     except Exception as e:
-        print("Error en servidor:", str(e))
-        return jsonify({"respuesta": "Hubo un error interno. Intentá de nuevo por favor."})
+        print("🚨 Error en servidor:", str(e))
+        return jsonify({"respuesta": "Hubo un cortocircuito neuronal. Intentá de nuevo."})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
