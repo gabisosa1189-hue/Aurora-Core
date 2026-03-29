@@ -78,10 +78,11 @@
         .context-btn svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.8); transition: 0.2s; }
         .context-btn:hover svg { stroke: var(--accent); }
 
-        /* ✨ MODO LIVE OVERLAY */
+        /* ✨ MODO LIVE OVERLAY (INMERSIVO) */
         #live-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 5, 10, 0.9); backdrop-filter: blur(30px);
+            /* Fondo casi transparente para que se vea la aurora del fondo real */
+            background: rgba(0, 5, 10, 0.2); 
             z-index: 100010; display: none; flex-direction: column;
             align-items: center; justify-content: center; opacity: 0; transition: 0.4s;
         }
@@ -97,7 +98,8 @@
         .btn-accent-opt { border-color: var(--accent); color: var(--accent); background: rgba(0, 242, 255, 0.1); }
         .btn-danger-opt { border-color: var(--danger); color: var(--danger); margin-top: auto; }
 
-        #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; position: relative; z-index: 10; }
+        /* CONTENEDOR PRINCIPAL CON TRANSICIÓN PARA EL MODO LIVE */
+        #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
 
         /* ✨ HEADER ORIGINAL (REGLA DE ORO) */
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -178,8 +180,8 @@
 
     <div id="live-overlay">
         <div class="live-a">A</div>
-        <p style="color:rgba(255,255,255,0.8); font-family:'Plus Jakarta Sans'; font-size:1.1rem; margin-top:30px; letter-spacing:1px;">Aurora te está escuchando...</p>
-        <button onclick="cerrarLiveMode()" style="margin-top:60px; background:rgba(255,77,77,0.1); border:1px solid var(--danger); color:var(--danger); padding:15px 35px; border-radius:30px; font-family:'Orbitron'; cursor:pointer; font-size:0.8rem; letter-spacing:2px;">FINALIZAR ENLACE</button>
+        <p style="color:rgba(255,255,255,0.9); font-family:'Plus Jakarta Sans'; font-size:1.2rem; margin-top:30px; letter-spacing:1px; text-shadow: 0 0 10px rgba(0,0,0,0.8);">Aurora te está escuchando...</p>
+        <button onclick="cerrarLiveMode()" style="margin-top:60px; background:rgba(255,77,77,0.15); border:1px solid var(--danger); color:var(--danger); padding:15px 35px; border-radius:30px; font-family:'Orbitron'; cursor:pointer; font-size:0.8rem; letter-spacing:2px; box-shadow: 0 0 15px rgba(255,77,77,0.2);">FINALIZAR ENLACE</button>
     </div>
 
     <div id="context-menu" class="bottom-sheet">
@@ -207,7 +209,7 @@
 
     <div id="model-menu" class="bottom-sheet">
         <div class="context-pill"></div>
-        <h4 style="font-family:'Orbitron'; color:var(--accent); text-align:center; margin-top:0; margin-bottom:20px; font-size:0.85rem; letter-spacing:2px;">MOTORES NEURONALES</h4>
+        <h4 style="font-family:'Orbitron'; color:#fff; text-shadow:0 0 15px #fff; text-align:center; margin-top:0; margin-bottom:20px; font-size:1.2rem; letter-spacing:10px;">AURORA</h4>
         <button class="context-btn" style="border-color:var(--accent); background:rgba(0,242,255,0.05);" onclick="cerrarBottomSheets()"><span style="color:var(--accent); font-size:1.2rem;">⚡</span> Núcleo Flash (Rápido)</button>
         <button class="context-btn" onclick="cerrarBottomSheets()"><span style="font-size:1.2rem;">🧠</span> Núcleo Quántum (Profundo)</button>
     </div>
@@ -234,7 +236,10 @@
         <button class="btn-account" style="border-color:var(--accent); color:var(--accent);" onclick="cambiarCuenta()">CAMBIAR CUENTA</button>
         <button class="btn-account" onclick="cerrarSesionReal()">CERRAR SESIÓN</button>
         <button class="btn-account" style="margin-top:auto; color:var(--danger); border-color:var(--danger);" onclick="eliminarCuenta()">ELIMINAR CUENTA</button>
-        <div style="text-align:center; font-size:0.55rem; color:#fff; text-shadow:0 0 8px rgba(255,255,255,0.8); margin-top:15px; letter-spacing:1px; opacity:0.7;">AURORA PUEDE COMETER ERRORES.<br>VERIFICA LA INFORMACIÓN.</div>
+        
+        <div style="text-align:center; font-size:0.6rem; color:#fff; text-shadow:0 0 10px #fff; margin-top:15px; letter-spacing:1px; font-family:'Orbitron';">
+            AURORA ES UNA IA Y PUEDE COMETER ERRORES.
+        </div>
     </div>
 
     <div id="login-overlay">
@@ -343,44 +348,38 @@
             document.getElementById('btn-enviar').style.display = val ? 'flex' : 'none';
         }
 
-        // ✨ MICRÓFONO CON AUTO-ENVÍO Y ROJO BRILLANTE
         function iniciarDictado() {
             if(!('webkitSpeechRecognition' in window)) { alert("SISTEMA: Tu navegador no soporta el dictado de voz."); return; }
             const rec = new webkitSpeechRecognition(); 
-            rec.lang = 'es-AR';
-            rec.interimResults = false; // Solo toma el resultado final para enviarlo de una
+            rec.lang = 'es-AR'; rec.interimResults = false; 
             
             rec.onstart = () => { 
                 const mic = document.getElementById('btn-mic');
-                mic.style.color = "var(--danger)"; // Se pone rojo
-                mic.style.filter = "drop-shadow(0 0 12px var(--danger))"; // Brilla en rojo
+                mic.style.color = "var(--danger)"; mic.style.filter = "drop-shadow(0 0 12px var(--danger))"; 
                 document.getElementById('chat-terminal').placeholder = "Escuchando...";
             };
             
-            rec.onresult = (e) => { 
-                const texto = e.results[0][0].transcript;
-                document.getElementById('chat-terminal').value = texto; 
-            };
+            rec.onresult = (e) => { document.getElementById('chat-terminal').value = e.results[0][0].transcript; };
             
             rec.onend = () => { 
                 const mic = document.getElementById('btn-mic');
-                mic.style.color = "rgba(255,255,255,0.9)"; // Vuelve a blanco
-                mic.style.filter = "drop-shadow(0 0 5px rgba(255,255,255,0.3))";
+                mic.style.color = "rgba(255,255,255,0.9)"; mic.style.filter = "drop-shadow(0 0 5px rgba(255,255,255,0.3))";
                 document.getElementById('chat-terminal').placeholder = "Preguntale a Aurora...";
                 
-                // AUTO-ENVÍO: Si captó texto, lo envía directo.
-                if(document.getElementById('chat-terminal').value.trim() !== "") {
-                    enviar();
-                } else {
-                    toggleInputButtons();
-                }
+                if(document.getElementById('chat-terminal').value.trim() !== "") { enviar(); } else { toggleInputButtons(); }
             };
-            
             rec.start();
         }
 
-        function abrirLiveMode() { document.getElementById('live-overlay').classList.add('show'); }
-        function cerrarLiveMode() { document.getElementById('live-overlay').classList.remove('show'); }
+        // ✨ MAGIA DEL MODO LIVE (SE OCULTA EL CHAT Y BRILLA EL FONDO)
+        function abrirLiveMode() { 
+            document.getElementById('live-overlay').classList.add('show'); 
+            document.getElementById('app-container').style.opacity = '0'; // Desvanece el chat
+        }
+        function cerrarLiveMode() { 
+            document.getElementById('live-overlay').classList.remove('show'); 
+            document.getElementById('app-container').style.opacity = '1'; // Vuelve el chat
+        }
 
         let modoRegistro = false;
         function toggleRegistro() {
