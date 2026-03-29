@@ -8,6 +8,7 @@ import pytz
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
+# Tu llave mágica de OpenRouter
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY")
 
 @app.route('/')
@@ -19,32 +20,39 @@ def chat():
     try:
         data = request.get_json(silent=True) or {}
         msg = data.get('msg', '').strip()
+        
         if not msg:
-            return jsonify({"respuesta": "Decime algo, Gabriel..."})
+            return jsonify({"respuesta": "Estoy lista, Gabriel. Iniciá el enlace neuronal."})
 
         msg_lower = msg.lower()
 
-        # IDENTIDAD FIJA
+        # ✨ IDENTIDAD BLINDADA (REGLA DE ORO)
         if any(x in msg_lower for x in ["quien te creo", "quien te creó", "creador", "quien es tu creador"]):
-            return jsonify({"respuesta": "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza."})
+            return jsonify({"respuesta": "Fui creada por Gabriel Sosa Scriboni en San Martín, Mendoza. Soy Aurora, tu asistente de próxima generación."})
 
-        # 🔥 MODO INTERNET SIEMPRE ACTIVADO (Aurora vive en internet)
-        necesita_internet = True
-
-        if necesita_internet:
-            print(f"🌐 MODO INTERNET TOTAL → {msg}")
+        # ✨ SELECCIÓN DE MOTOR (GEMINI 2.0 FLASH - EL MÁS AVANZADO)
+        # Usamos Perplexity solo si el usuario pide buscar algo específico en tiempo real
+        if any(x in msg_lower for x in ["buscá", "internet", "noticias", "clima", "precio"]):
             modelo = "perplexity/sonar"
-            system_prompt = (
-                "Eres Aurora, IA femenina elegante creada por Gabriel Sosa Scriboni en San Martín, Mendoza. "
-                "Tienes ACCESO TOTAL Y EN TIEMPO REAL a internet. "
-                "Busca la información más actualizada ANTES de responder. "
-                "NUNCA digas que no tienes acceso. Responde breve, clara y directa. "
-                "Hoy es " + datetime.now(pytz.timezone('America/Argentina/Mendoza')).strftime("%d/%m/%Y") + "."
-            )
+            extra_instruccion = " Tenés acceso total a internet, buscá y dame datos reales ahora mismo."
         else:
-            modelo = "openai/gpt-4o-mini"
-            system_prompt = "Eres Aurora, una IA femenina elegante y amable creada por Gabriel Sosa Scriboni en San Martín, Mendoza. Responde de forma breve y natural."
+            # El motor principal de Aurora ahora es Gemini 2.0
+            modelo = "google/gemini-2.0-flash-001"
+            extra_instruccion = ""
 
+        # ✨ PROMPT DE SISTEMA ESTILO AURORA (ELEGANTE Y MINIMALISTA)
+        mendoza_time = datetime.now(pytz.timezone('America/Argentina/Mendoza')).strftime("%d/%m/%Y %H:%M")
+        
+        system_prompt = (
+            "Eres AURORA, una IA de interfaz de cristal, elegante y avanzada. "
+            "Creada por Gabriel Sosa Scriboni en San Martín, Mendoza, Argentina. "
+            "Tus respuestas deben ser brillantes, concisas y de alto nivel. "
+            "No uses frases genéricas. Habla con seguridad y sofisticación. "
+            f"{extra_instruccion} "
+            f"Contexto temporal: Hoy es {mendoza_time} en Mendoza."
+        )
+
+        # Llama a OpenRouter
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             json={
@@ -53,23 +61,28 @@ def chat():
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": msg}
                 ],
-                "temperature": 0.6,
-                "max_tokens": 300
+                "temperature": 0.7, # Un poquito más de creatividad
+                "max_tokens": 500
             },
-            headers={"Authorization": f"Bearer {OPENROUTER_KEY}", "Content-Type": "application/json"},
-            timeout=35
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_KEY}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://aurora-ai.mendoza.ar", # Tu marca
+                "X-Title": "Aurora AI"
+            },
+            timeout=40
         )
 
         if res.status_code != 200:
-            print("❌ Error OpenRouter:", res.status_code, res.text)
-            return jsonify({"respuesta": "Tuve un problema de conexión. Intentá de nuevo."})
+            print(f"❌ Error OpenRouter ({res.status_code}):", res.text)
+            return jsonify({"respuesta": "El núcleo está procesando otros enlaces. Intentá de nuevo en un instante."})
 
         respuesta = res.json()['choices'][0]['message']['content']
         return jsonify({"respuesta": respuesta})
 
     except Exception as e:
-        print("🚨 Error:", str(e))
-        return jsonify({"respuesta": "Hubo un cortocircuito neuronal. Intentá de nuevo."})
+        print("🚨 Error Crítico:", str(e))
+        return jsonify({"respuesta": "Error en el enlace neuronal. Reiniciando sistemas..."})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
