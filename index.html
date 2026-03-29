@@ -18,7 +18,6 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* 🔒 PARCHE CSS ANTI-REBOTE */
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100vh; 
             overflow: hidden; background-color: #000;
@@ -70,27 +69,35 @@
 
         #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; position: relative; z-index: 10; }
 
-        header { padding: 40px 20px 10px 20px; text-align: center; position: relative; }
-        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0 auto; display: inline-block; }
+        /* ✨ CABEZAL AJUSTADO PARA NO CHOCAR CON LA HORA/BATERÍA */
+        header { 
+            padding-top: calc(env(safe-area-inset-top, 40px) + 20px); 
+            padding-bottom: 15px; padding-left: 20px; padding-right: 20px;
+            display: flex; justify-content: center; align-items: center; position: relative;
+            min-height: 45px;
+        }
+        
+        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; z-index: 1; pointer-events: none; }
 
-        /* ✨ MENÚ HAMBURGUESA A LA IZQUIERDA */
+        /* ✨ MENÚ HAMBURGUESA TRANSPARENTE CON BRILLO */
         .btn-menu-top { 
-            position: absolute; left: 20px; top: 40px; 
-            background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 242, 255, 0.3); 
-            cursor: pointer; color: #fff; font-size: 1.2rem; 
-            padding: 10px 14px; border-radius: 15px;
-            backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 999;
+            position: absolute; left: 20px; 
+            background: transparent; border: none; 
+            cursor: pointer; color: #fff; font-size: 2rem; 
+            text-shadow: 0 0 15px var(--accent); z-index: 999;
+            transition: 0.3s; padding: 0;
+        }
+        .btn-menu-top:hover { color: var(--accent); text-shadow: 0 0 25px var(--accent); }
+
+        /* ✨ FOTO DE PERFIL A LA DERECHA (TIPO GEMINI) */
+        #user-avatar {
+            position: absolute; right: 20px;
+            width: 42px; height: 42px; border-radius: 50%;
+            border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4);
+            object-fit: cover; display: none; z-index: 999; cursor: pointer;
             transition: 0.3s;
         }
-        .btn-menu-top:hover { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
-
-        /* ✨ FOTO DE PERFIL A LA DERECHA */
-        #user-avatar {
-            position: absolute; right: 20px; top: 40px;
-            width: 44px; height: 44px; border-radius: 50%;
-            border: 2px solid var(--accent); box-shadow: 0 0 10px rgba(0,242,255,0.2);
-            object-fit: cover; display: none; z-index: 999;
-        }
+        #user-avatar:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0,242,255,0.8); }
 
         #chat-window { 
             flex: 1; overflow-y: auto; padding: 20px; 
@@ -147,7 +154,7 @@
 
     <div id="config-panel">
         <div class="config-card">
-            <h2 style="font-family:'Orbitron'; color:var(--accent); margin-bottom: 30px;">CONFIG</h2>
+            <h2 style="font-family:'Orbitron'; color:var(--accent); margin-bottom: 30px;">MI CUENTA</h2>
             <button onclick="location.reload()" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); padding:15px; width:100%; border-radius:15px; cursor:pointer; font-family:'Orbitron'; transition:0.3s; margin-bottom: 15px;">CERRAR SESIÓN</button>
             <button onclick="eliminarCuenta()" style="background:rgba(255, 77, 77, 0.1); color:var(--danger); border:1px solid var(--danger); padding:15px; width:100%; border-radius:15px; cursor:pointer; font-family:'Orbitron'; transition:0.3s;">ELIMINAR CUENTA</button>
             <button style="margin-top:30px; background:none; border:none; color:var(--accent); cursor:pointer; font-family:'Orbitron'; letter-spacing: 2px;" onclick="document.getElementById('config-panel').style.display='none'">VOLVER</button>
@@ -173,11 +180,9 @@
 
     <div id="app-container">
         <header>
-            <button class="btn-menu-top" onclick="document.getElementById('config-panel').style.display='flex'">
-                <span>☰</span>
-            </button>
+            <button class="btn-menu-top" onclick="alert('Funciones avanzadas en construcción')">☰</button>
             <div class="titulo-app">AURORA</div>
-            <img id="user-avatar" src="" alt="Perfil">
+            <img id="user-avatar" src="" alt="Perfil" onclick="document.getElementById('config-panel').style.display='flex'">
         </header>
         <div id="chat-window">
             <div class="msg aurora">Bienvenido al núcleo de <b>Aurora</b>. Tu enlace neuronal está activo. ¿En qué puedo ayudarte?</div>
@@ -207,7 +212,6 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // 🔒 PARCHE JS ANTI-REBOTE (GOMA) PARA iOS
         document.body.addEventListener('touchmove', function(e) {
             const isChatWindow = e.target.closest('#chat-window');
             if (!isChatWindow) {
@@ -335,7 +339,7 @@
             document.getElementById('app-container').style.display = 'flex';
             document.getElementById('bg-video').play(); 
 
-            // ✨ LÓGICA PARA CARGAR LA FOTO DE GOOGLE DEL USUARIO
+            // Lógica de carga de Avatar
             const user = firebase.auth().currentUser;
             if (user && user.photoURL) {
                 const avatar = document.getElementById('user-avatar');
