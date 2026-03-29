@@ -52,7 +52,7 @@
         .chat-item.active { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); }
         .chat-item.pinned { border-left: 4px solid var(--accent); }
 
-        /* ✨ BOTTOM SHEETS (MENÚS DESLIZANTES) */
+        /* ✨ BOTTOM SHEETS */
         #context-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 100005; opacity: 0; pointer-events: none; transition: 0.3s; }
         #context-overlay.show { opacity: 1; pointer-events: all; }
         
@@ -78,24 +78,28 @@
         .context-btn svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.8); transition: 0.2s; }
         .context-btn:hover svg { stroke: var(--accent); }
 
-        /* ✨ MODO LIVE OVERLAY (NUEVO DISEÑO AURORA) */
+        /* ✨ MODO LIVE OVERLAY (CON CÁMARA OCULTA) */
         #live-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 5, 10, 0.2); z-index: 100010; display: none; flex-direction: column;
+            background: rgba(0, 5, 10, 0.4); z-index: 100010; display: none; flex-direction: column;
             align-items: center; justify-content: center; opacity: 0; transition: 0.4s;
         }
         #live-overlay.show { opacity: 1; display: flex; }
         
-        @keyframes pulseAWhite { 
-            0% { transform: scale(1); text-shadow: 0 0 20px rgba(255,255,255,0.8); } 
-            50% { transform: scale(1.15); text-shadow: 0 0 60px rgba(255,255,255,1); } 
-            100% { transform: scale(1); text-shadow: 0 0 20px rgba(255,255,255,0.8); } 
+        /* El Feed de la Cámara en AR */
+        #camera-stream {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: 0; opacity: 0; transition: opacity 0.8s ease;
         }
+
+        .live-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+
+        @keyframes pulseAWhite { 0% { transform: scale(1); text-shadow: 0 0 20px rgba(255,255,255,0.8); } 50% { transform: scale(1.15); text-shadow: 0 0 60px rgba(255,255,255,1); } 100% { transform: scale(1); text-shadow: 0 0 20px rgba(255,255,255,0.8); } }
         .live-a { font-family: 'Orbitron'; font-size: 6rem; color: #fff; display: flex; align-items: center; justify-content: center; animation: pulseAWhite 2s infinite ease-in-out; text-shadow: 0 0 30px rgba(255,255,255,0.9); }
 
-        /* NUEVA PÍLDORA DE CONTROL MODO LIVE */
+        /* PÍLDORA DE CONTROL LIVE */
         .live-controls {
-            position: absolute; bottom: 50px;
+            position: absolute; bottom: 50px; z-index: 2;
             background: rgba(0, 10, 20, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 40px;
             display: flex; align-items: center; gap: 25px; padding: 12px 25px;
@@ -108,14 +112,17 @@
         }
         .live-btn:hover { background: rgba(255,255,255,0.2); }
         .live-btn svg { width: 22px; height: 22px; stroke: #fff; stroke-width: 1.5; }
+        .live-btn.active { background: rgba(0, 242, 255, 0.2); border: 1px solid var(--accent); }
+        .live-btn.active svg { stroke: var(--accent); }
         
+        /* ✨ NUEVO BOTÓN "X" ROJO */
         .live-btn-end {
             background: rgba(255, 77, 77, 0.15); border: 1px solid var(--danger);
             width: 60px; height: 60px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
             box-shadow: 0 0 20px rgba(255, 77, 77, 0.3); transition: 0.3s;
         }
-        .live-btn-end svg { width: 28px; height: 28px; stroke: var(--danger); stroke-width: 2; transition: 0.3s; }
+        .live-btn-end svg { width: 30px; height: 30px; stroke: var(--danger); stroke-width: 2; transition: 0.3s; }
         .live-btn-end:hover { background: var(--danger); box-shadow: 0 0 30px var(--danger); }
         .live-btn-end:hover svg { stroke: #fff; }
 
@@ -126,10 +133,9 @@
         .btn-accent-opt { border-color: var(--accent); color: var(--accent); background: rgba(0, 242, 255, 0.1); }
         .btn-danger-opt { border-color: var(--danger); color: var(--danger); margin-top: auto; }
 
-        /* CONTENEDOR PRINCIPAL */
         #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
 
-        /* HEADER ORIGINAL */
+        /* HEADER */
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; }
         .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; text-shadow: 0 0 15px var(--accent); padding: 0; }
@@ -140,19 +146,9 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* PANEL UNIFICADO INFERIOR */
+        /* PANEL UNIFICADO */
         .bottom-section { padding: 0; display: flex; justify-content: center; width: 100%; box-sizing: border-box; }
-        
-        .unified-panel {
-            width: 100%; max-width: 100%;
-            background: rgba(0, 10, 20, 0.45); 
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: none; border-radius: 35px 35px 0 0;
-            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px; 
-            display: flex; flex-direction: column; gap: 15px;
-            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
-        }
-
+        .unified-panel { width: 100%; max-width: 100%; background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: none; border-radius: 35px 35px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4); }
         #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 0; box-sizing: border-box; }
         #chat-terminal::placeholder { color: rgba(255,255,255,0.6); }
 
@@ -166,13 +162,7 @@
         .btn-pill-model { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 20px; padding: 8px 16px; font-size: 0.85rem; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
         .btn-pill-model:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px rgba(0,242,255,0.2); }
 
-        /* ✨ LA "A" BLANCA BRILLANTE */
-        .btn-live-glow {
-            background: transparent; border: none; color: #fff; /* AHORA ES BLANCA */
-            font-family: 'Orbitron'; font-size: 1.8rem; padding: 0 5px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s;
-        }
+        .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; padding: 0 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s; }
         .btn-live-glow:hover { transform: scale(1.1); text-shadow: 0 0 25px rgba(255,255,255,1); }
 
         /* LOGIN */
@@ -192,17 +182,23 @@
     <div id="context-overlay" onclick="cerrarBottomSheets()"></div>
 
     <div id="live-overlay">
-        <div class="live-a">A</div>
-        <p style="color:rgba(255,255,255,0.9); font-family:'Plus Jakarta Sans'; font-size:1.2rem; margin-top:30px; letter-spacing:1px; text-shadow: 0 0 10px rgba(0,0,0,0.8);">Aurora te escucha...</p>
+        <video id="camera-stream" autoplay playsinline muted></video>
         
+        <div class="live-content">
+            <div class="live-a">A</div>
+            <p style="color:rgba(255,255,255,0.9); font-family:'Plus Jakarta Sans'; font-size:1.2rem; margin-top:30px; letter-spacing:1px; text-shadow: 0 0 10px rgba(0,0,0,0.8);">Aurora te escucha...</p>
+        </div>
+
         <div class="live-controls">
             <button class="live-btn" onclick="cerrarLiveMode()">
                 <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><circle cx="8" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="16" cy="14" r="1"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="10" r="1"/><circle cx="16" cy="10" r="1"/></svg>
             </button>
+            
             <button class="live-btn-end" onclick="cerrarLiveMode()">
-                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="23" y1="1" x2="1" y2="23"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
-            <button class="live-btn" onclick="alert('Módulo de Visión Neuronal en desarrollo...')">
+            
+            <button id="btn-live-cam" class="live-btn" onclick="toggleCamaraLive()">
                 <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
             </button>
         </div>
@@ -217,9 +213,18 @@
 
     <div id="attachment-menu" class="bottom-sheet">
         <div class="context-pill"></div>
-        <button class="context-btn" onclick="cerrarBottomSheets()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Cámara</button>
-        <button class="context-btn" onclick="cerrarBottomSheets()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Galería</button>
-        <button class="context-btn" onclick="cerrarBottomSheets()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Documento</button>
+        <button class="context-btn" onclick="cerrarBottomSheets()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> 
+            Cámara
+        </button>
+        <button class="context-btn" onclick="cerrarBottomSheets()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Galería
+        </button>
+        <button class="context-btn" onclick="cerrarBottomSheets()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Documento
+        </button>
     </div>
 
     <div id="model-menu" class="bottom-sheet">
@@ -363,15 +368,12 @@
         function iniciarDictado() {
             if(!('webkitSpeechRecognition' in window)) { alert("SISTEMA: Tu navegador no soporta el dictado de voz."); return; }
             const rec = new webkitSpeechRecognition(); rec.lang = 'es-AR'; rec.interimResults = false; 
-            
             rec.onstart = () => { 
                 const mic = document.getElementById('btn-mic');
                 mic.style.color = "var(--danger)"; mic.style.filter = "drop-shadow(0 0 12px var(--danger))"; 
                 document.getElementById('chat-terminal').placeholder = "Escuchando...";
             };
-            
             rec.onresult = (e) => { document.getElementById('chat-terminal').value = e.results[0][0].transcript; };
-            
             rec.onend = () => { 
                 const mic = document.getElementById('btn-mic');
                 mic.style.color = "rgba(255,255,255,0.9)"; mic.style.filter = "drop-shadow(0 0 5px rgba(255,255,255,0.3))";
@@ -381,8 +383,45 @@
             rec.start();
         }
 
-        function abrirLiveMode() { document.getElementById('live-overlay').classList.add('show'); document.getElementById('app-container').style.opacity = '0'; }
-        function cerrarLiveMode() { document.getElementById('live-overlay').classList.remove('show'); document.getElementById('app-container').style.opacity = '1'; }
+        // ✨ MAGIA DE LA CÁMARA AR EN MODO LIVE
+        let cameraStream = null;
+
+        function abrirLiveMode() { 
+            document.getElementById('live-overlay').classList.add('show'); 
+            document.getElementById('app-container').style.opacity = '0'; 
+        }
+        
+        function cerrarLiveMode() { 
+            document.getElementById('live-overlay').classList.remove('show'); 
+            document.getElementById('app-container').style.opacity = '1'; 
+            if(cameraStream) {
+                cameraStream.getTracks().forEach(t => t.stop());
+                cameraStream = null;
+                document.getElementById('camera-stream').style.opacity = '0';
+                document.getElementById('btn-live-cam').classList.remove('active');
+            }
+        }
+
+        async function toggleCamaraLive() {
+            const vid = document.getElementById('camera-stream');
+            const btnCam = document.getElementById('btn-live-cam');
+            
+            if (cameraStream) {
+                // Apagar cámara
+                cameraStream.getTracks().forEach(t => t.stop());
+                cameraStream = null;
+                vid.style.opacity = '0';
+                btnCam.classList.remove('active');
+            } else {
+                // Encender cámara (Visión Neuronal)
+                try {
+                    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                    vid.srcObject = cameraStream;
+                    vid.style.opacity = '0.35'; // 35% de opacidad para que se funda con la Aurora negra de fondo
+                    btnCam.classList.add('active');
+                } catch(e) { alert("SISTEMA: Permiso de cámara denegado."); }
+            }
+        }
 
         let modoRegistro = false;
         function toggleRegistro() {
