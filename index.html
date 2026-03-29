@@ -152,7 +152,7 @@
         <div id="history-list" style="flex:1; overflow-y:auto; scrollbar-width:none;"></div>
         <button class="btn-premium-add" onclick="nuevoEnlace()">+ NUEVO CHAT</button>
         <div style="margin-top:25px;">
-            <p id="txt-progreso" style="color:var(--accent); font-size:0.7rem; margin-bottom:8px; font-family:'Orbitron';">CHATS: 1 / 5</p>
+            <p id="txt-progreso" style="color:var(--accent); font-size:0.7rem; margin-bottom:8px; font-family:'Orbitron';">CHATS: <span id="span-contador">1</span> / 5</p>
             <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:10px;">
                 <div id="bar-progreso" style="width:20%; height:100%; background:var(--accent); border-radius:10px; box-shadow:0 0 10px var(--accent); transition:0.5s;"></div>
             </div>
@@ -219,8 +219,15 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        let chats = [{ id: 1, nombre: "Chat 1", pinned: false }];
-        let enlacesContador = 1;
+        // ✨ HUELLA DE DISPOSITIVO (CANDADO ANTI-TRAMPA)
+        let enlacesContador = parseInt(localStorage.getItem('aurora_limite_celular')) || 1;
+        let chats = [];
+        
+        // Reconstruimos visualmente los chats que ya gastó este celular
+        for(let i=1; i<=enlacesContador; i++) {
+            chats.push({ id: i, nombre: `Chat ${i}`, pinned: false });
+        }
+
         let chatSeleccionado = null;
         let timerLongPress;
 
@@ -241,7 +248,6 @@
 
         function cerrarModal() { document.getElementById('premium-modal').style.display = 'none'; }
 
-        // ✨ MAGIA DEL LONG PRESS
         function bindLongPress() {
             const items = document.querySelectorAll('.chat-item');
             items.forEach(item => {
@@ -267,7 +273,6 @@
             document.getElementById('context-overlay').classList.remove('show');
         }
 
-        // ACCIONES DEL MENÚ
         function renombrarChatActual() {
             const nuevo = prompt("Ingresá un nuevo nombre para este chat:");
             if(nuevo && nuevo.trim() !== "") { 
@@ -299,6 +304,7 @@
                 return;
             }
             enlacesContador++;
+            localStorage.setItem('aurora_limite_celular', enlacesContador); // GUARDA EN EL DISPOSITIVO 🔒
             chats.push({ id: enlacesContador, nombre: `Chat ${enlacesContador}`, pinned: false });
             actualizarUI();
             document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Nuevo chat establecido. ¿En qué te ayudo?</div>`;
@@ -306,7 +312,7 @@
         }
 
         function actualizarUI() {
-            document.getElementById('txt-progreso').innerText = `CHATS: ${enlacesContador} / 5`;
+            document.getElementById('span-contador').innerText = enlacesContador;
             document.getElementById('bar-progreso').style.width = (enlacesContador * 20) + "%";
             
             const list = document.getElementById('history-list');
@@ -326,7 +332,6 @@
             if (navigator.share) { navigator.share({ title: 'AURORA AI', text: '¡Sincronizá tu mente con Aurora!', url: window.location.href }); }
         }
 
-        // AUTH ORIGINAL
         let modoRegistro = false;
         function toggleRegistro() {
             modoRegistro = !modoRegistro;
@@ -351,8 +356,18 @@
         }
 
         function authGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+        
         function cerrarSesionReal() { auth.signOut().then(() => location.reload()); }
-        function cambiarCuenta() { auth.signOut().then(() => authGoogle()); }
+        
+        // ✨ CAMBIO DE CUENTA EXPRESS (SALTO DIRECTO GOOGLE)
+        function cambiarCuenta() { 
+            cerrarPaneles();
+            auth.signOut().then(() => {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' }); // ESTA LÍNEA ES MAGIA
+                auth.signInWithPopup(provider).catch(e => { /* si cancela, se queda en login */ });
+            }); 
+        }
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -362,7 +377,7 @@
                     const avatar = document.getElementById('user-avatar');
                     avatar.src = user.photoURL; avatar.style.display = 'block';
                 }
-                actualizarUI();
+                actualizarUI(); // Refresca UI leyendo la huella del celular
             } else {
                 document.getElementById('login-overlay').style.display = 'flex';
                 document.getElementById('app-container').style.display = 'none';
@@ -372,7 +387,10 @@
         function eliminarCuenta() {
             const user = firebase.auth().currentUser;
             if (user && confirm("⚠️ ¿Eliminar cuenta para siempre?")) {
-                user.delete().then(() => location.reload()).catch(e => alert("Re-logueate e intenta de nuevo."));
+                user.delete().then(() => {
+                    localStorage.removeItem('aurora_limite_celular'); // Limpiamos la huella si elimina la cuenta
+                    location.reload();
+                }).catch(e => alert("Re-logueate e intenta de nuevo."));
             }
         }
 
