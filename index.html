@@ -20,8 +20,7 @@
         
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100vh; 
-            overflow: hidden; 
-            background-color: #000; /* Base negra por si tarda 1 ms el video, pero sin tapar */
+            overflow: hidden; background-color: #000;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
         }
 
@@ -29,9 +28,8 @@
         #bg-video { 
             position: fixed !important; 
             top: 0; left: 0; width: 100vw; height: 100vh; 
-            z-index: 0; /* Lo sacamos del sótano para que sea la capa base real */
-            object-fit: cover !important; 
-            pointer-events: none; /* Para que los clicks pasen a la app */
+            z-index: 0; object-fit: cover !important; 
+            pointer-events: none; 
         }
 
         #login-overlay { 
@@ -71,8 +69,20 @@
 
         #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; position: relative; z-index: 10; }
 
-        header { padding: 40px 0 10px 0; text-align: center; }
-        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); }
+        /* ✨ CABEZAL ACTUALIZADO PARA ALBERGAR EL BOTÓN TOP-RIGHT */
+        header { padding: 40px 20px 10px 20px; text-align: center; position: relative; /* Clave para posicionar el botón */ }
+        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0 auto; display: inline-block; }
+
+        /* ✨ NUEVO ESTILO MINIMALISTA PARA EL ENGRANAJE TOP-RIGHT */
+        .btn-config-top { 
+            position: absolute; right: 20px; top: 40px; /* Alineado con el padding del header */ 
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 242, 255, 0.3); 
+            cursor: pointer; color: #fff; font-size: 1.2rem; /* Icono un poco más grande y solo */
+            padding: 10px 12px; border-radius: 15px;
+            backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 999;
+            transition: 0.3s;
+        }
+        .btn-config-top:hover { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
 
         #chat-window { 
             flex: 1; overflow-y: auto; padding: 20px; 
@@ -89,14 +99,6 @@
 
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 4px; }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 4px; }
-
-        .btn-config-fixed { 
-            position: fixed; left: 25px; bottom: 85px; 
-            background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 242, 255, 0.3); 
-            cursor: pointer; color: #fff; font-family: 'Orbitron'; font-size: 0.85rem; 
-            letter-spacing: 2px; padding: 10px 15px; border-radius: 20px;
-            backdrop-filter: blur(10px); display: flex; align-items: center; gap: 10px; z-index: 999;
-        }
 
         .bottom-section { padding: 10px 20px 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
         .chat-group { display: flex; align-items: center; gap: 15px; width: 100%; max-width: 500px; }
@@ -135,10 +137,6 @@
         <button class="btn-hangup" onclick="cerrarVoz()">COLGAR ENLACE</button>
     </div>
 
-    <button class="btn-config-fixed" onclick="document.getElementById('config-panel').style.display='flex'">
-        <span>⚙️</span> CONFIG
-    </button>
-    
     <div id="config-panel">
         <div class="config-card">
             <h2 style="font-family:'Orbitron'; color:var(--accent); margin-bottom: 30px;">CONFIG</h2>
@@ -166,7 +164,12 @@
     </div>
 
     <div id="app-container">
-        <header><div class="titulo-app">AURORA</div></header>
+        <header>
+            <div class="titulo-app">AURORA</div>
+            <button class="btn-config-top" onclick="document.getElementById('config-panel').style.display='flex'">
+                <span>⚙️</span>
+            </button>
+        </header>
         <div id="chat-window">
             <div class="msg aurora">Bienvenido al núcleo de <b>Aurora</b>. Tu enlace neuronal está activo. ¿En qué puedo ayudarte?</div>
         </div>
