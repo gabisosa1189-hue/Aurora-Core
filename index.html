@@ -34,15 +34,17 @@
         .panel-open { transform: translateX(0) !important; }
         .panel-title { font-family: 'Orbitron'; font-size: 0.9rem; color: var(--accent); letter-spacing: 3px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
         
-        /* ✨ HISTORIAL DE CHATS (1/5) */
         .chat-item { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; margin-bottom: 10px; transition: 0.3s; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
         .chat-item.active { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); }
+        
+        #context-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 100005; opacity: 0; pointer-events: none; transition: 0.3s; }
+        #context-overlay.show { opacity: 1; pointer-events: all; }
         
         .bottom-sheet { position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(0, 15, 25, 0.85); backdrop-filter: blur(40px); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 30px 30px 0 0; padding: 25px 25px 40px 25px; z-index: 100006; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 -10px 40px rgba(0, 242, 255, 0.15); }
         .bottom-sheet.show { bottom: 0; }
         .context-btn { background: transparent; color: #fff; border: none; padding: 16px 15px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; text-align: left; width: 100%; border-radius: 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; }
 
-        /* ✨ MODO LIVE (AR) */
+        /* ✨ MODO LIVE */
         #live-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 5, 10, 0.4); z-index: 100010; display: none; flex-direction: column; align-items: center; justify-content: center; }
         #live-overlay.show { display: flex; opacity: 1; }
         #camera-stream { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s; }
@@ -54,20 +56,20 @@
         .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
 
-        /* ✨ TUS BURBUJAS DE CHAT EXACTAS */
+        /* ✨ BURBUJAS DE CHAT */
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* ✨ TU UNIFIED PANEL INVISIBLE */
+        /* ✨ UNIFIED PANEL */
         .unified-panel { width: 100%; background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); border-radius: 35px 35px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4); }
         #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 0; }
         
         #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; position: relative; z-index: 10; }
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); }
-        #user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); display: none; cursor: pointer; }
+        .btn-pill-model { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 20px; padding: 8px 16px; font-size: 0.85rem; font-family: 'Orbitron'; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -76,11 +78,6 @@
     
     <div id="panels-overlay" onclick="cerrarPaneles()"></div>
     <div id="context-overlay" onclick="cerrarBottomSheets()"></div>
-
-    <div id="live-overlay">
-        <video id="camera-stream" autoplay playsinline muted></video>
-        <div class="live-content"><div class="live-a">A</div><p style="color:white; font-family:'Plus Jakarta Sans'; margin-top:30px;">Aurora te escucha...</p></div>
-    </div>
 
     <div id="login-overlay">
         <div class="login-card">
@@ -98,9 +95,7 @@
             <div class="titulo-app">AURORA</div>
             <img id="user-avatar" src="" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--accent); display:none;" onclick="abrirPerfil()">
         </header>
-        
         <div id="chat-window"><div class="msg aurora">Bienvenido al núcleo de <b>Aurora</b>. Tu enlace neuronal está activo. ¿En qué puedo ayudarte?</div></div>
-        
         <div class="unified-panel">
             <input type="text" id="chat-terminal" placeholder="Habla con el Nexus..." style="width:100%; background:none; border:none; color:white; outline:none; font-size:1.1rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
@@ -116,7 +111,7 @@
 
     <div id="sidebar-menu" class="panel-side">
         <h3 class="panel-title">MIS CHATS</h3>
-        <div id="history-list" style="flex:1; overflow-y:auto; scrollbar-width:none;"></div>
+        <div id="history-list" style="flex:1; overflow-y:auto;"></div>
         <div style="margin-top:20px;">
             <p style="color:var(--accent); font-size:0.7rem; font-family:'Orbitron';">CHATS: 1 / 5</p>
             <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:10px;"><div style="width:20%; height:100%; background:var(--accent); border-radius:10px; box-shadow:0 0 10px var(--accent);"></div></div>
@@ -124,35 +119,37 @@
     </div>
 
     <div id="model-menu" class="bottom-sheet">
-        <button class="context-btn" onclick="seleccionarMotor('flash')">⚡ Flash (Rápido)</button>
+        <button class="context-btn" onclick="seleccionarMotor('flash')">⚡ Flash (Velocidad)</button>
         <button class="context-btn" onclick="seleccionarMotor('quantum')">🧠 Quantum (Deep)</button>
     </div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
-        let motorActual = 'flash'; let cameraStream = null;
+        let motorActual = 'flash';
 
-        // 🛡️ EL VIGILANTE (REGLA DE ORO)
+        // 🛡️ EL VIGILANTE (SOPORTE REDIRECT)
         auth.onAuthStateChanged(user => {
+            const login = document.getElementById('login-overlay');
+            const app = document.getElementById('app-container');
             if (user) {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('app-container').style.display = 'flex';
-                if (user.photoURL) { const img = document.getElementById('user-avatar'); img.src = user.photoURL; img.style.display = 'block'; }
-            } else {
-                document.getElementById('login-overlay').style.display = 'flex';
-                document.getElementById('app-container').style.display = 'none';
-            }
+                login.style.display = 'none'; app.style.display = 'flex';
+                if (user.photoURL) document.getElementById('user-avatar').src = user.photoURL;
+            } else { login.style.display = 'flex'; app.style.display = 'none'; }
         });
 
-        // ✨ LOGIN GOOGLE REDIRECT (Fix para Safari)
-        function authGoogle() { const p = new firebase.auth.GoogleAuthProvider(); auth.signInWithRedirect(p); }
+        // ✨ LOGIN GOOGLE REDIRECT (Fix Safari)
+        function authGoogle() { 
+            const p = new firebase.auth.GoogleAuthProvider(); 
+            auth.signInWithRedirect(p); 
+        }
+        // Atrapamos el resultado al volver
         auth.getRedirectResult().catch(e => console.error(e));
 
         function authCorreo() {
             const e = document.getElementById('emailInput').value;
             const p = document.getElementById('passwordInput').value;
-            auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
+            auth.signInWithEmailAndPassword(e, p).catch(err => alert("Error: " + err.message));
         }
 
         async function enviar() {
@@ -177,13 +174,11 @@
             win.scrollTop = win.scrollHeight;
         }
 
-        // TUS FUNCIONES UI (REGLA DE ORO)
         function seleccionarMotor(m) { motorActual = m; document.getElementById('engine-pill').innerHTML = m === 'flash' ? '⚡ Flash' : '🧠 Quantum'; cerrarBottomSheets(); }
         function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
         function abrirMotores() { document.getElementById('model-menu').classList.add('show'); document.getElementById('context-overlay').classList.add('show'); }
-        function cerrarPaneles() { document.querySelectorAll('.panel-side').forEach(p => p.classList.remove('panel-open')); document.getElementById('panels-overlay').style.display = 'none'; }
+        function cerrarPaneles() { document.getElementById('sidebar-menu').classList.remove('panel-open'); document.getElementById('panels-overlay').style.display = 'none'; }
         function cerrarBottomSheets() { document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('show')); document.getElementById('context-overlay').classList.remove('show'); }
-        function abrirLiveMode() { document.getElementById('live-overlay').classList.add('show'); }
     </script>
 </body>
 </html>
