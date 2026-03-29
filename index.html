@@ -24,6 +24,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
         }
 
+        /* ✨ EL FONDO DE LA AURORA SIEMPRE VISIBLE */
         #bg-video { 
             position: fixed !important; 
             top: 0; left: 0; width: 100vw; height: 100vh; 
@@ -138,7 +139,8 @@
     <div id="config-panel">
         <div class="config-card">
             <h2 style="font-family:'Orbitron'; color:var(--accent); margin-bottom: 30px;">CONFIG</h2>
-            <button onclick="location.reload()" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); padding:15px; width:100%; border-radius:15px; cursor:pointer; font-family:'Orbitron'; transition:0.3s;">CERRAR SESIÓN</button>
+            <button onclick="location.reload()" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); padding:15px; width:100%; border-radius:15px; cursor:pointer; font-family:'Orbitron'; transition:0.3s; margin-bottom: 15px;">CERRAR SESIÓN</button>
+            <button onclick="eliminarCuenta()" style="background:rgba(255, 77, 77, 0.1); color:var(--danger); border:1px solid var(--danger); padding:15px; width:100%; border-radius:15px; cursor:pointer; font-family:'Orbitron'; transition:0.3s;">ELIMINAR CUENTA</button>
             <button style="margin-top:30px; background:none; border:none; color:var(--accent); cursor:pointer; font-family:'Orbitron'; letter-spacing: 2px;" onclick="document.getElementById('config-panel').style.display='none'">VOLVER</button>
         </div>
     </div>
@@ -190,6 +192,28 @@
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+
+        // ✨ FUNCIÓN PARA ELIMINAR CUENTA (REQUISITO GOOGLE PLAY)
+        function eliminarCuenta() {
+            const user = firebase.auth().currentUser;
+            if (user) {
+                const confirmar = confirm("⚠️ ¿Estás seguro de que querés eliminar tu cuenta y todos tus datos? Esta acción NO se puede deshacer.");
+                if (confirmar) {
+                    user.delete().then(() => {
+                        alert("Tu cuenta y tus datos han sido eliminados correctamente.");
+                        location.reload(); 
+                    }).catch((error) => {
+                        if(error.code === 'auth/requires-recent-login') {
+                            alert("Por seguridad, cerrá sesión, volvé a ingresar e intentá eliminar la cuenta de nuevo.");
+                        } else {
+                            alert("Error al eliminar la cuenta: " + error.message);
+                        }
+                    });
+                }
+            } else {
+                alert("No hay ninguna sesión iniciada.");
+            }
+        }
 
         const synth = window.speechSynthesis;
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
