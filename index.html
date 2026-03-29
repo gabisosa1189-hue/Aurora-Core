@@ -110,17 +110,18 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* ✨ PANEL UNIFICADO TIPO GEMINI (SÚPER TRANSPARENTE PARA REGLA DE ORO) */
-        .bottom-section { padding: 10px 15px 25px 15px; display: flex; justify-content: center; width: 100%; box-sizing: border-box; }
+        /* ✨ PANEL UNIFICADO PEGADO A LA INTERFAZ (ESTILO GEMINI) */
+        .bottom-section { padding: 0; display: flex; justify-content: center; width: 100%; box-sizing: border-box; }
         
         .unified-panel {
-            width: 100%; max-width: 600px;
-            /* Extra transparencia para que se vea el fondo perfecto */
-            background: rgba(0, 15, 25, 0.5); 
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 28px;
-            padding: 15px 20px; display: flex; flex-direction: column; gap: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(0, 242, 255, 0.1);
+            width: 100%; max-width: 100%;
+            /* Totalmente transparente y fundido, SIN BORDES */
+            background: rgba(0, 10, 20, 0.45); 
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: none; border-radius: 35px 35px 0 0;
+            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px; 
+            display: flex; flex-direction: column; gap: 15px;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
         }
 
         #chat-terminal {
@@ -133,7 +134,7 @@
         .panel-actions { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .action-group { display: flex; align-items: center; gap: 12px; }
 
-        /* Íconos brillantes y elegantes */
+        /* Íconos brillantes */
         .btn-mini-icon {
             background: transparent; border: none; color: rgba(255,255,255,0.9);
             display: flex; align-items: center; justify-content: center;
@@ -224,6 +225,10 @@
         <button class="btn-account" style="border-color:var(--accent); color:var(--accent);" onclick="cambiarCuenta()">CAMBIAR CUENTA</button>
         <button class="btn-account" onclick="cerrarSesionReal()">CERRAR SESIÓN</button>
         <button class="btn-account" style="margin-top:auto; color:var(--danger); border-color:var(--danger);" onclick="eliminarCuenta()">ELIMINAR CUENTA</button>
+        
+        <div style="text-align:center; font-size:0.55rem; color:#fff; text-shadow:0 0 8px rgba(255,255,255,0.8); margin-top:15px; letter-spacing:1px; opacity:0.7;">
+            AURORA PUEDE COMETER ERRORES.<br>VERIFICA LA INFORMACIÓN.
+        </div>
     </div>
 
     <div id="login-overlay">
@@ -276,7 +281,6 @@
                     </div>
                 </div>
             </div>
-            <div style="text-align:center; font-size:0.6rem; color:rgba(255,255,255,0.4); margin-top:8px; letter-spacing:1px;">AURORA PUEDE COMETER ERRORES. VERIFICA LA INFORMACIÓN.</div>
         </div>
     </div>
 
