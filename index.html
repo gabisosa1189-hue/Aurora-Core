@@ -20,21 +20,19 @@
         
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100vh; 
-            overflow: hidden; background-color: #050a15; /* Color base oscuro por si tarda 0.1s el video */
+            overflow: hidden; background-color: #050a15;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
         }
 
-        /* ✨ 1. EL FONDO DE AURORA (PRIORIDAD ABSOLUTA) */
         #bg-video { 
             position: fixed !important; 
             top: 0; left: 0; width: 100vw; height: 100vh; 
             z-index: -1; object-fit: cover !important; 
         }
 
-        /* ✨ 2. LOGIN INMERSIVO (Traslúcido) */
         #login-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); /* Efecto cristal */
+            background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px);
             z-index: 9999; display: flex; align-items: center; justify-content: center; 
         }
         .login-card { 
@@ -56,10 +54,9 @@
         .form-links a:hover { color: var(--accent); text-shadow: 0 0 5px var(--accent); }
         .separator { margin: 15px 0; color: rgba(255,255,255,0.4); font-size: 0.8rem; }
 
-        /* ✨ 3. CONFIGURACIÓN "FANTASMA" */
         #config-panel { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(25px); /* Desenfoque que deja ver el video */
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(25px);
             z-index: 100000; display: none; align-items: center; justify-content: center; 
         }
         .config-card { 
@@ -68,7 +65,6 @@
             box-shadow: 0 0 40px rgba(0, 242, 255, 0.1);
         }
 
-        /* 📱 APP CONTAINER Y CHAT */
         #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; position: relative; z-index: 10; }
 
         header { padding: 40px 0 10px 0; text-align: center; }
@@ -105,7 +101,6 @@
         #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 0; outline: none; font-size: 1rem; }
         .disclaimer { text-align: center; font-size: 0.6rem; color: rgba(255,255,255,0.5); letter-spacing: 1px; width: 100%; }
 
-        /* 🎙️ INTERFAZ DE VOZ AURORA */
         #voice-interface {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 10, 20, 0.6); backdrop-filter: blur(30px);
@@ -150,15 +145,18 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <h2 id="titulo-login">Acceso Neuronal</h2>
+            <h2 id="titulo-login" style="line-height: 1.4;">BIENVENIDO A AURORA<br><span style="font-size: 0.8rem; font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 1px; color: rgba(255,255,255,0.7); text-shadow: none;">¿CÓMO DESEA REGISTRARSE?</span></h2>
             <input type="email" placeholder="Email" class="login-input" id="emailInput">
             <input type="password" placeholder="Contraseña" class="login-input" id="passwordInput">
             <button id="btn-principal" style="background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 15px; width: 100%; border-radius: 18px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; letter-spacing: 2px; margin-bottom: 15px;" onclick="authCorreo()">INGRESAR</button>
             <div class="form-links">
                 <a onclick="toggleRegistro()" id="link-registro">Crear Cuenta</a>
             </div>
-            <div class="separator">ó</div>
-            <button style="background: rgba(255,255,255,0.9); color: #000; border: none; padding: 15px; border-radius: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: 0.3s;" onclick="authGoogle()">Ingresar con Google</button>
+            <div class="separator">──────── ó ────────</div>
+            <button style="background: rgba(255,255,255,0.9); color: #000; border: none; padding: 15px; border-radius: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: 0.3s;" onclick="authGoogle()">
+                <svg width="20" height="20" viewBox="0 0 488 512" fill="#000"><path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/></svg>
+                Ingresar con Google
+            </button>
         </div>
     </div>
 
@@ -180,7 +178,6 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo",
             authDomain: "aurora-ai-oficia.firebaseapp.com",
@@ -193,7 +190,6 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // 🎙️ CORE DE VOZ (Base preparada para la Fase 2)
         const synth = window.speechSynthesis;
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         if (recognition) {
@@ -250,7 +246,6 @@
             } catch(e) { cerrarVoz(); }
         }
 
-        // LOGIN Y CHAT TEXTO
         let modoRegistro = false;
         function toggleRegistro() {
             modoRegistro = !modoRegistro;
@@ -258,27 +253,41 @@
             const btnPrincipal = document.getElementById('btn-principal');
             const linkRegistro = document.getElementById('link-registro');
             if(modoRegistro) {
-                titulo.innerText = "Crear Cuenta"; btnPrincipal.innerText = "REGISTRARSE"; linkRegistro.innerText = "Ya tengo cuenta";
+                titulo.innerHTML = "CREAR CUENTA<br><span style='font-size: 0.8rem; font-family: \"Plus Jakarta Sans\", sans-serif; letter-spacing: 1px; color: rgba(255,255,255,0.7); text-shadow: none;'>INGRESE SUS DATOS</span>"; 
+                btnPrincipal.innerText = "REGISTRARSE"; 
+                linkRegistro.innerText = "Ya tengo cuenta";
             } else {
-                titulo.innerText = "Acceso Neuronal"; btnPrincipal.innerText = "INGRESAR"; linkRegistro.innerText = "Crear Cuenta";
+                titulo.innerHTML = "BIENVENIDO A AURORA<br><span style='font-size: 0.8rem; font-family: \"Plus Jakarta Sans\", sans-serif; letter-spacing: 1px; color: rgba(255,255,255,0.7); text-shadow: none;'>¿CÓMO DESEA REGISTRARSE?</span>"; 
+                btnPrincipal.innerText = "INGRESAR"; 
+                linkRegistro.innerText = "Crear Cuenta";
             }
         }
+        
         function authCorreo() {
             const email = document.getElementById('emailInput').value;
             const password = document.getElementById('passwordInput').value;
-            if(!email || !password) return;
-            if(modoRegistro) { auth.createUserWithEmailAndPassword(email, password).then(() => entrar()); } 
-            else { auth.signInWithEmailAndPassword(email, password).then(() => entrar()); }
+            if(!email || !password) {
+                alert("Por favor, ingresá un email y contraseña para continuar.");
+                return;
+            }
+            if(modoRegistro) { 
+                auth.createUserWithEmailAndPassword(email, password).then(() => entrar()).catch(e => alert("Error: " + e.message)); 
+            } else { 
+                auth.signInWithEmailAndPassword(email, password).then(() => entrar()).catch(e => alert("Error al ingresar. Verificá tus datos.")); 
+            }
         }
+        
         function authGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then(() => entrar());
+            auth.signInWithPopup(provider).then(() => entrar()).catch(e => console.log(e));
         }
+        
         function entrar() {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('app-container').style.display = 'flex';
             document.getElementById('bg-video').play(); 
         }
+        
         async function enviar() {
             const input = document.getElementById('chat-terminal');
             if(!input.value.trim()) return;
@@ -295,6 +304,7 @@
                 win.scrollTop = win.scrollHeight;
             } catch(e) { win.innerHTML += `<div class="msg aurora" style="color:#ff4d4d;">Error de red...</div>`; }
         }
+        
         document.getElementById('chat-terminal').addEventListener('keypress', e => { if (e.key === 'Enter') enviar(); });
     </script>
 </body>
