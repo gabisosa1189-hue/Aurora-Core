@@ -20,30 +20,27 @@
         
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100vh; 
-            overflow: hidden; background: none !important; 
+            overflow: hidden; background-color: #050a15; /* Color base oscuro por si tarda 0.1s el video */
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
         }
 
-        /* ✨ EL FONDO DE AURORA (PRIORIDAD DE RENDER) */
+        /* ✨ 1. EL FONDO DE AURORA (PRIORIDAD ABSOLUTA) */
         #bg-video { 
             position: fixed !important; 
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
-            height: 100vh; 
-            z-index: -1; 
-            object-fit: cover !important; 
+            top: 0; left: 0; width: 100vw; height: 100vh; 
+            z-index: -1; object-fit: cover !important; 
         }
 
-        /* 🚪 LOGIN TRASLÚCIDO */
+        /* ✨ 2. LOGIN INMERSIVO (Traslúcido) */
         #login-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(20px); z-index: 9999; 
-            display: flex; align-items: center; justify-content: center; 
+            background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); /* Efecto cristal */
+            z-index: 9999; display: flex; align-items: center; justify-content: center; 
         }
         .login-card { 
             background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; 
             border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; 
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
         }
 
         .login-card h2 { font-family: 'Orbitron'; font-size: 1.5rem; margin-bottom: 25px; text-shadow: 0 0 10px var(--accent); }
@@ -51,14 +48,27 @@
             width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px;
             border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: 0.3s;
         }
-        .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
+        .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
         .form-links { display: flex; justify-content: space-between; font-size: 0.8rem; opacity: 0.8; margin-bottom: 20px; }
         .form-links a { color: #fff; text-decoration: none; cursor: pointer; transition: 0.3s; }
         .form-links a:hover { color: var(--accent); text-shadow: 0 0 5px var(--accent); }
         .separator { margin: 15px 0; color: rgba(255,255,255,0.4); font-size: 0.8rem; }
 
-        /* 📱 APP CONTAINER */
+        /* ✨ 3. CONFIGURACIÓN "FANTASMA" */
+        #config-panel { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(25px); /* Desenfoque que deja ver el video */
+            z-index: 100000; display: none; align-items: center; justify-content: center; 
+        }
+        .config-card { 
+            background: rgba(0, 242, 255, 0.05); padding: 40px; border-radius: 35px; 
+            border: 1px solid rgba(0, 242, 255, 0.3); text-align: center; width: 85%; max-width: 400px; 
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.1);
+        }
+
+        /* 📱 APP CONTAINER Y CHAT */
         #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; position: relative; z-index: 10; }
 
         header { padding: 40px 0 10px 0; text-align: center; }
@@ -67,78 +77,49 @@
         #chat-window { 
             flex: 1; overflow-y: auto; padding: 20px; 
             display: flex; flex-direction: column; gap: 20px; 
-            scrollbar-width: none;
-            width: 100%; max-width: 700px; 
-            margin: 0 auto; 
+            scrollbar-width: none; width: 100%; max-width: 700px; margin: 0 auto; 
         }
         
         .msg { 
             max-width: 85%; padding: 14px 22px; border-radius: 22px; 
             backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5;
-            animation: slideUp 0.3s ease-out;
-            z-index: 5;
+            animation: slideUp 0.3s ease-out; z-index: 5;
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .aurora { 
-            align-self: flex-start; background: rgba(0, 242, 255, 0.08); 
-            border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 4px;
-        }
-        .user { 
-            align-self: flex-end; background: rgba(255, 255, 255, 0.08); 
-            border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 4px;
-        }
+        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 4px; }
+        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 4px; }
 
         .btn-config-fixed { 
             position: fixed; left: 25px; bottom: 85px; 
-            background: none; border: none; cursor: pointer; color: #fff; 
-            font-family: 'Orbitron'; font-size: 0.85rem; 
-            letter-spacing: 2px; text-shadow: 0 0 15px var(--accent);
-            display: flex; align-items: center; gap: 10px; z-index: 999;
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 242, 255, 0.3); 
+            cursor: pointer; color: #fff; font-family: 'Orbitron'; font-size: 0.85rem; 
+            letter-spacing: 2px; padding: 10px 15px; border-radius: 20px;
+            backdrop-filter: blur(10px); display: flex; align-items: center; gap: 10px; z-index: 999;
         }
 
-        .bottom-section { 
-            padding: 10px 20px 30px 20px; 
-            display: flex; flex-direction: column; align-items: center; gap: 12px;
-        }
+        .bottom-section { padding: 10px 20px 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
         .chat-group { display: flex; align-items: center; gap: 15px; width: 100%; max-width: 500px; }
         .btn-a { font-family: 'Orbitron'; font-size: 1.8rem; color: #fff; background: none; border: none; cursor: pointer; text-shadow: 0 0 15px var(--accent); transition: 0.3s; }
-        .input-bar { 
-            flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 242, 255, 0.4); 
-            border-radius: 40px; display: flex; align-items: center; padding: 5px 22px; backdrop-filter: blur(20px); 
-        }
+        .input-bar { flex: 1; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(0, 242, 255, 0.4); border-radius: 40px; display: flex; align-items: center; padding: 5px 22px; backdrop-filter: blur(20px); }
         #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px 0; outline: none; font-size: 1rem; }
+        .disclaimer { text-align: center; font-size: 0.6rem; color: rgba(255,255,255,0.5); letter-spacing: 1px; width: 100%; }
 
-        .disclaimer { 
-            text-align: center; font-size: 0.6rem; color: #fff; 
-            text-shadow: 0 0 10px var(--accent); letter-spacing: 1px; width: 100%;
-        }
-
-        #config-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(40px); z-index: 100000; display: none; align-items: center; justify-content: center; }
-        .config-card { background: rgba(255, 255, 255, 0.04); padding: 40px; border-radius: 35px; border: 1px solid var(--accent); text-align: center; width: 85%; max-width: 400px; }
-
-        /* ✨ INTERFAZ DE VOZ AURORA (Ajustada) */
+        /* 🎙️ INTERFAZ DE VOZ AURORA */
         #voice-interface {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 10, 20, 0.5); backdrop-filter: blur(45px);
+            background: rgba(0, 10, 20, 0.6); backdrop-filter: blur(30px);
             z-index: 10000; display: none; flex-direction: column;
             align-items: center; justify-content: center;
         }
-
         .voice-status { font-family: 'Orbitron'; font-size: 1.1rem; color: var(--accent); margin-bottom: 40px; letter-spacing: 3px; text-shadow: 0 0 20px var(--accent); text-align: center; }
-        
         .visualizer { display: flex; align-items: center; gap: 8px; height: 100px; }
         .bar { width: 4px; height: 15px; background: var(--accent); border-radius: 10px; animation: wave 1.2s ease-in-out infinite; box-shadow: 0 0 15px var(--accent); }
         .bar:nth-child(2) { animation-delay: 0.2s; } .bar:nth-child(3) { animation-delay: 0.4s; }
         .bar:nth-child(4) { animation-delay: 0.6s; } .bar:nth-child(5) { animation-delay: 0.8s; }
         @keyframes wave { 0%, 100% { height: 15px; } 50% { height: 80px; } }
-
-        .btn-hangup {
-            margin-top: 60px; background: rgba(255, 77, 77, 0.1); border: 1px solid var(--danger);
-            color: var(--danger); padding: 15px 40px; border-radius: 50px;
-            font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 2px;
-            cursor: pointer; z-index: 10001;
-        }
+        .btn-hangup { margin-top: 60px; background: rgba(255, 77, 77, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 15px 40px; border-radius: 50px; font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; z-index: 10001; transition: 0.3s; }
+        .btn-hangup:hover { background: var(--danger); color: white; box-shadow: 0 0 20px var(--danger); }
     </style>
 </head>
 <body>
@@ -156,14 +137,14 @@
     </div>
 
     <button class="btn-config-fixed" onclick="document.getElementById('config-panel').style.display='flex'">
-        <span style="font-size:1.5rem">⚙️</span> CONFIGURACIÓN
+        <span>⚙️</span> CONFIG
     </button>
-
     <div id="config-panel">
         <div class="config-card">
-            <h2 style="font-family:'Orbitron';">SISTEMA</h2>
-            <button onclick="location.reload()" style="background:rgba(255,255,255,0.1); color:white; border:none; padding:15px; width:100%; border-radius:15px; cursor:pointer;">CERRAR SESIÓN</button>
-            <button style="margin-top:30px; background:none; border:none; color:var(--accent); cursor:pointer;" onclick="document.getElementById('config-panel').style.display='none'">VOLVER</button>
+            <h2 style="font-family:'Orbitron'; color:var(--accent);">SISTEMA</h2>
+            <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 30px;">Gestión de enlace neuronal</p>
+            <button onclick="location.reload()" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); padding:15px; width:100%; border-radius:15px; cursor:pointer; font-family:'Orbitron'; transition:0.3s;">CERRAR SESIÓN</button>
+            <button style="margin-top:30px; background:none; border:none; color:var(--accent); cursor:pointer; font-family:'Orbitron'; letter-spacing: 2px;" onclick="document.getElementById('config-panel').style.display='none'">[ VOLVER ]</button>
         </div>
     </div>
 
@@ -177,7 +158,7 @@
                 <a onclick="toggleRegistro()" id="link-registro">Crear Cuenta</a>
             </div>
             <div class="separator">ó</div>
-            <button style="background: #fff; color: #000; border: none; padding: 15px; border-radius: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%;" onclick="authGoogle()">Ingresar con Google</button>
+            <button style="background: rgba(255,255,255,0.9); color: #000; border: none; padding: 15px; border-radius: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: 0.3s;" onclick="authGoogle()">Ingresar con Google</button>
         </div>
     </div>
 
@@ -191,15 +172,15 @@
                 <button class="btn-a" id="btn-voz" onclick="activarVoz()">A</button>
                 <div class="input-bar">
                     <input type="text" id="chat-terminal" placeholder="Mensaje neuronal..." autocomplete="off">
-                    <button onclick="enviar()" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:1.5rem;">➤</button>
+                    <button onclick="enviar()" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:1.5rem; transition:0.3s;">➤</button>
                 </div>
             </div>
-            <div class="disclaimer">SISTEMA NEURONAL EN VIVO.</div>
+            <div class="disclaimer">SISTEMA NEURONAL EN VIVO</div>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE FIREBASE (No tocada)
+        // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo",
             authDomain: "aurora-ai-oficia.firebaseapp.com",
@@ -212,7 +193,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // 🎙️ CORE DE VOZ (Actualizado)
+        // 🎙️ CORE DE VOZ (Base preparada para la Fase 2)
         const synth = window.speechSynthesis;
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         if (recognition) {
@@ -223,9 +204,6 @@
         function hablar(texto) {
             synth.cancel();
             const utter = new SpeechSynthesisUtterance(texto);
-            const voices = synth.getVoices();
-            const femaleVoice = voices.find(v => v.lang.includes('es') && (v.name.includes('female') || v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Sabina')));
-            if (femaleVoice) utter.voice = femaleVoice;
             utter.pitch = 1.05; utter.rate = 1.0;
             utter.onstart = () => { document.getElementById('voice-txt').innerText = "AURORA HABLANDO..."; };
             utter.onend = () => { 
@@ -238,10 +216,8 @@
         }
 
         function activarVoz() {
-            // HACK iPHONE: "Despertar" el audio con un clic del usuario
             const sss = new SpeechSynthesisUtterance("");
             synth.speak(sss);
-
             if (navigator.vibrate) navigator.vibrate(50);
             document.getElementById('voice-interface').style.display = 'flex';
             document.getElementById('voice-txt').innerText = "INICIALIZANDO...";
@@ -274,10 +250,30 @@
             } catch(e) { cerrarVoz(); }
         }
 
-        // AUTH Y OTROS
-        function toggleRegistro() { /* ... */ }
-        function authCorreo() { /* ... */ }
-        function authGoogle() { /* ... */ }
+        // LOGIN Y CHAT TEXTO
+        let modoRegistro = false;
+        function toggleRegistro() {
+            modoRegistro = !modoRegistro;
+            const titulo = document.getElementById('titulo-login');
+            const btnPrincipal = document.getElementById('btn-principal');
+            const linkRegistro = document.getElementById('link-registro');
+            if(modoRegistro) {
+                titulo.innerText = "Crear Cuenta"; btnPrincipal.innerText = "REGISTRARSE"; linkRegistro.innerText = "Ya tengo cuenta";
+            } else {
+                titulo.innerText = "Acceso Neuronal"; btnPrincipal.innerText = "INGRESAR"; linkRegistro.innerText = "Crear Cuenta";
+            }
+        }
+        function authCorreo() {
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            if(!email || !password) return;
+            if(modoRegistro) { auth.createUserWithEmailAndPassword(email, password).then(() => entrar()); } 
+            else { auth.signInWithEmailAndPassword(email, password).then(() => entrar()); }
+        }
+        function authGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then(() => entrar());
+        }
         function entrar() {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('app-container').style.display = 'flex';
@@ -288,7 +284,16 @@
             if(!input.value.trim()) return;
             const win = document.getElementById('chat-window');
             win.innerHTML += `<div class="msg user">${input.value}</div>`;
+            const msj = input.value;
             input.value = ""; win.scrollTop = win.scrollHeight;
+            try {
+                const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { 
+                    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:msj}) 
+                });
+                const data = await res.json();
+                win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
+                win.scrollTop = win.scrollHeight;
+            } catch(e) { win.innerHTML += `<div class="msg aurora" style="color:#ff4d4d;">Error de red...</div>`; }
         }
         document.getElementById('chat-terminal').addEventListener('keypress', e => { if (e.key === 'Enter') enviar(); });
     </script>
