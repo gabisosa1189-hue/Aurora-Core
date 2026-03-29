@@ -87,8 +87,8 @@
         }
         #live-overlay.show { opacity: 1; display: flex; }
         
-        @keyframes pulseA { 0% { transform: scale(1); box-shadow: 0 0 20px var(--accent); } 50% { transform: scale(1.15); box-shadow: 0 0 60px var(--accent); } 100% { transform: scale(1); box-shadow: 0 0 20px var(--accent); } }
-        .live-a { font-family: 'Orbitron'; font-size: 4rem; color: #fff; width: 120px; height: 120px; border-radius: 50%; background: rgba(0, 242, 255, 0.1); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; animation: pulseA 2s infinite ease-in-out; text-shadow: 0 0 20px var(--accent); }
+        @keyframes pulseA { 0% { transform: scale(1); text-shadow: 0 0 20px var(--accent); } 50% { transform: scale(1.15); text-shadow: 0 0 60px var(--accent); } 100% { transform: scale(1); text-shadow: 0 0 20px var(--accent); } }
+        .live-a { font-family: 'Orbitron'; font-size: 6rem; color: var(--accent); display: flex; align-items: center; justify-content: center; animation: pulseA 2s infinite ease-in-out; text-shadow: 0 0 30px var(--accent); }
 
         /* MODAL PREMIUM */
         #premium-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 320px; background: rgba(0, 15, 25, 0.9); backdrop-filter: blur(30px); border: 1px solid var(--accent); border-radius: 30px; padding: 30px; z-index: 100005; text-align: center; display: none; }
@@ -110,12 +110,11 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* ✨ PANEL UNIFICADO PEGADO A LA INTERFAZ (ESTILO GEMINI) */
+        /* ✨ PANEL UNIFICADO GEMINI (CRISTAL PURO) */
         .bottom-section { padding: 0; display: flex; justify-content: center; width: 100%; box-sizing: border-box; }
         
         .unified-panel {
             width: 100%; max-width: 100%;
-            /* Totalmente transparente y fundido, SIN BORDES */
             background: rgba(0, 10, 20, 0.45); 
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: none; border-radius: 35px 35px 0 0;
@@ -134,7 +133,7 @@
         .panel-actions { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .action-group { display: flex; align-items: center; gap: 12px; }
 
-        /* Íconos brillantes */
+        /* Íconos de Control */
         .btn-mini-icon {
             background: transparent; border: none; color: rgba(255,255,255,0.9);
             display: flex; align-items: center; justify-content: center;
@@ -152,15 +151,16 @@
         }
         .btn-pill-model:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px rgba(0,242,255,0.2); }
 
+        /* ✨ LA NUEVA "A" LIBERADA */
         .btn-live-glow {
-            background: rgba(0, 242, 255, 0.15); border: 1px solid var(--accent); color: #fff;
-            width: 36px; height: 36px; border-radius: 50%; font-family: 'Orbitron'; font-size: 1.1rem;
+            background: transparent; border: none; color: var(--accent);
+            font-family: 'Orbitron'; font-size: 1.8rem; padding: 0 5px;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
-            text-shadow: 0 0 10px var(--accent); box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); transition: 0.3s;
+            text-shadow: 0 0 15px var(--accent); transition: 0.3s;
         }
-        .btn-live-glow:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--accent); }
+        .btn-live-glow:hover { transform: scale(1.1); text-shadow: 0 0 25px var(--accent); }
 
-        /* ✨ LOGIN ORIGINAL (REGLA DE ORO) */
+        /* LOGIN */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
@@ -191,9 +191,18 @@
 
     <div id="attachment-menu" class="bottom-sheet">
         <div class="context-pill"></div>
-        <button class="context-btn" onclick="cerrarBottomSheets()"><span style="font-size:1.2rem;">📷</span> Cámara (Próximamente)</button>
-        <button class="context-btn" onclick="cerrarBottomSheets()"><span style="font-size:1.2rem;">🖼️</span> Galería</button>
-        <button class="context-btn" onclick="cerrarBottomSheets()"><span style="font-size:1.2rem;">📄</span> Documento</button>
+        <button class="context-btn" onclick="cerrarBottomSheets()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> 
+            Cámara
+        </button>
+        <button class="context-btn" onclick="cerrarBottomSheets()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Galería
+        </button>
+        <button class="context-btn" onclick="cerrarBottomSheets()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Documento
+        </button>
     </div>
 
     <div id="model-menu" class="bottom-sheet">
@@ -225,10 +234,7 @@
         <button class="btn-account" style="border-color:var(--accent); color:var(--accent);" onclick="cambiarCuenta()">CAMBIAR CUENTA</button>
         <button class="btn-account" onclick="cerrarSesionReal()">CERRAR SESIÓN</button>
         <button class="btn-account" style="margin-top:auto; color:var(--danger); border-color:var(--danger);" onclick="eliminarCuenta()">ELIMINAR CUENTA</button>
-        
-        <div style="text-align:center; font-size:0.55rem; color:#fff; text-shadow:0 0 8px rgba(255,255,255,0.8); margin-top:15px; letter-spacing:1px; opacity:0.7;">
-            AURORA PUEDE COMETER ERRORES.<br>VERIFICA LA INFORMACIÓN.
-        </div>
+        <div style="text-align:center; font-size:0.55rem; color:#fff; text-shadow:0 0 8px rgba(255,255,255,0.8); margin-top:15px; letter-spacing:1px; opacity:0.7;">AURORA PUEDE COMETER ERRORES.<br>VERIFICA LA INFORMACIÓN.</div>
     </div>
 
     <div id="login-overlay">
@@ -337,12 +343,39 @@
             document.getElementById('btn-enviar').style.display = val ? 'flex' : 'none';
         }
 
+        // ✨ MICRÓFONO CON AUTO-ENVÍO Y ROJO BRILLANTE
         function iniciarDictado() {
-            if(!('webkitSpeechRecognition' in window)) { alert("SISTEMA: Tu navegador no soporta el dictado."); return; }
-            const rec = new webkitSpeechRecognition(); rec.lang = 'es-AR';
-            rec.onstart = () => { document.getElementById('btn-mic').style.color = "var(--accent)"; document.getElementById('btn-mic').style.filter = "drop-shadow(0 0 10px var(--accent))"; };
-            rec.onresult = (e) => { document.getElementById('chat-terminal').value = e.results[0][0].transcript; toggleInputButtons(); };
-            rec.onend = () => { document.getElementById('btn-mic').style.color = "rgba(255,255,255,0.9)"; document.getElementById('btn-mic').style.filter = "drop-shadow(0 0 5px rgba(255,255,255,0.3))"; };
+            if(!('webkitSpeechRecognition' in window)) { alert("SISTEMA: Tu navegador no soporta el dictado de voz."); return; }
+            const rec = new webkitSpeechRecognition(); 
+            rec.lang = 'es-AR';
+            rec.interimResults = false; // Solo toma el resultado final para enviarlo de una
+            
+            rec.onstart = () => { 
+                const mic = document.getElementById('btn-mic');
+                mic.style.color = "var(--danger)"; // Se pone rojo
+                mic.style.filter = "drop-shadow(0 0 12px var(--danger))"; // Brilla en rojo
+                document.getElementById('chat-terminal').placeholder = "Escuchando...";
+            };
+            
+            rec.onresult = (e) => { 
+                const texto = e.results[0][0].transcript;
+                document.getElementById('chat-terminal').value = texto; 
+            };
+            
+            rec.onend = () => { 
+                const mic = document.getElementById('btn-mic');
+                mic.style.color = "rgba(255,255,255,0.9)"; // Vuelve a blanco
+                mic.style.filter = "drop-shadow(0 0 5px rgba(255,255,255,0.3))";
+                document.getElementById('chat-terminal').placeholder = "Preguntale a Aurora...";
+                
+                // AUTO-ENVÍO: Si captó texto, lo envía directo.
+                if(document.getElementById('chat-terminal').value.trim() !== "") {
+                    enviar();
+                } else {
+                    toggleInputButtons();
+                }
+            };
+            
             rec.start();
         }
 
