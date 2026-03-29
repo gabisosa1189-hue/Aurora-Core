@@ -128,7 +128,7 @@
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
         let motorActual = 'flash';
 
-        // 🛡️ EL VIGILANTE (SOPORTE REDIRECT)
+        // 🛡️ EL VIGILANTE (REGLA DE ORO)
         auth.onAuthStateChanged(user => {
             const login = document.getElementById('login-overlay');
             const app = document.getElementById('app-container');
@@ -138,13 +138,15 @@
             } else { login.style.display = 'flex'; app.style.display = 'none'; }
         });
 
-        // ✨ LOGIN GOOGLE REDIRECT (Fix Safari)
-        function authGoogle() { 
-            const p = new firebase.auth.GoogleAuthProvider(); 
-            auth.signInWithRedirect(p); 
-        }
-        // Atrapamos el resultado al volver
-        auth.getRedirectResult().catch(e => console.error(e));
+        // ✨ PROCESADOR DE RETORNO (SOLUCIÓN GOOGLE IPHONE)
+        auth.getRedirectResult().then((result) => {
+            if (result.user) {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+            }
+        }).catch(e => console.error("Error redirect:", e));
+
+        function authGoogle() { const p = new firebase.auth.GoogleAuthProvider(); auth.signInWithRedirect(p); }
 
         function authCorreo() {
             const e = document.getElementById('emailInput').value;
@@ -176,9 +178,9 @@
 
         function seleccionarMotor(m) { motorActual = m; document.getElementById('engine-pill').innerHTML = m === 'flash' ? '⚡ Flash' : '🧠 Quantum'; cerrarBottomSheets(); }
         function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
-        function abrirMotores() { document.getElementById('model-menu').classList.add('show'); document.getElementById('context-overlay').classList.add('show'); }
+        function abrirMotores() { document.getElementById('model-menu').classList.add('show'); }
         function cerrarPaneles() { document.getElementById('sidebar-menu').classList.remove('panel-open'); document.getElementById('panels-overlay').style.display = 'none'; }
-        function cerrarBottomSheets() { document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('show')); document.getElementById('context-overlay').classList.remove('show'); }
+        function cerrarBottomSheets() { document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('show')); }
     </script>
 </body>
 </html>
