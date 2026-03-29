@@ -279,7 +279,9 @@
         
         function authGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then(() => entrar()).catch(e => console.log(e));
+            auth.signInWithPopup(provider)
+                .then(() => entrar())
+                .catch(e => alert("Error de Google: " + e.message)); // ESTE ES EL ÚNICO CAMBIO
         }
         
         function entrar() {
