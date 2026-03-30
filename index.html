@@ -18,7 +18,7 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ FONDO BASE NEGRO */
+        /* ✨ 1. FONDO BASE */
         html, body {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
@@ -29,16 +29,25 @@
             overscroll-behavior-y: none;
         }
 
-        /* ✨ LA FUSIÓN: Empujado hacia arriba (-15vh) y recontra estirado hacia abajo (130vh) */
-        #bg-video {
+        /* ✨ 2. LA FUSIÓN: EL WRAPPER QUE ROMPE LOS LÍMITES */
+        #video-wrapper {
             position: fixed !important;
-            top: -15vh !important; /* Tapa la cabeza (la hora/batería) */
-            left: -15vw !important; /* Tapa los costados */
-            width: 130vw !important; /* Súper ancho */
-            height: 130vh !important; /* Súper largo para tapar los pies (barra negra abajo) */
+            /* Tiramos el contenedor 100 píxeles por FUERA de la pantalla física */
+            top: -100px !important;    /* Arregla lo de arriba */
+            bottom: -100px !important; /* Arregla lo de abajo */
+            left: -50px !important;
+            right: -50px !important;
             z-index: 0 !important; 
+            overflow: hidden;
+        }
+
+        /* ✨ 3. EL VIDEO ADENTRO DEL WRAPPER */
+        #bg-video {
+            width: 100% !important;
+            height: 100% !important;
             object-fit: cover !important;
             pointer-events: none !important;
+            transform: scale(1.05); /* Un toquecito de zoom para el remate */
         }
 
         /* ========================================= */
@@ -76,7 +85,7 @@
         }
         .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.15); box-shadow: 0 0 15px rgba(0,242,255,0.2); }
 
-        /* APP CONTAINER FIJO PARA EVITAR SCROLL DE PANTALLA */
+        /* APP CONTAINER FIJO */
         #app-container { 
             display: none; flex-direction: column; 
             position: fixed; inset: 0; 
@@ -94,7 +103,7 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); border-bottom-left-radius: 5px;}
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 5px;}
 
-        /* ✨ DISEÑO GEMINI DESNUDO ABAJO */
+        /* DISEÑO GEMINI DESNUDO ABAJO */
         .bottom-section { 
             padding: 5px 15px calc(env(safe-area-inset-bottom, 10px) + 8px) 15px; 
             display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; 
@@ -112,7 +121,6 @@
         .chat-tools { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
         .tools-left, .tools-right { display: flex; align-items: center; gap: 15px; }
 
-        /* ✨ BOTONES NUEVOS */
         .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 10px #fff); transform: scale(1.1); padding: 5px; }
         .btn-plus-white svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 3; }
 
@@ -129,9 +137,11 @@
 </head>
 <body>
 
-    <video autoplay muted loop playsinline webkit-playsinline id="bg-video">
-        <source src="fondo.mp4" type="video/mp4">
-    </video>
+    <div id="video-wrapper">
+        <video autoplay muted loop playsinline webkit-playsinline id="bg-video">
+            <source src="fondo.mp4" type="video/mp4">
+        </video>
+    </div>
 
     <div id="loading-bar"></div>
     <div id="panels-overlay" onclick="cerrarPaneles()"></div>
@@ -194,7 +204,6 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        // FORZAR PLAY
         document.addEventListener('DOMContentLoaded', () => { 
             const v = document.getElementById('bg-video'); 
             v.play().catch(() => document.body.addEventListener('touchstart', () => v.play(), {once:true}));
