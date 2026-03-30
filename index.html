@@ -51,24 +51,26 @@
 
         #app-container { display: none; flex-direction: column; width: 100vw; height: 100dvh; position: fixed; inset: 0; z-index: 10; }
         
-        /* ✨ HEADER REDISEÑADO PARA CENTRADO PERFECTO */
+        /* ✨ HEADER BLINDADO PARA IPHONE 14 PRO MAX */
         header { 
-            padding: calc(env(safe-area-inset-top, 40px) + 15px) 20px 10px; 
+            padding: calc(env(safe-area-inset-top, 50px) + 10px) 20px 15px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            position: relative; /* Clave para el centrado del título */
+            position: relative; 
+            min-height: 60px;
         }
 
         .titulo-app { 
             font-family: 'Orbitron'; 
             letter-spacing: 12px; 
             font-size: 1.6rem; 
-            text-shadow: 0 0 20px var(--accent); 
+            text-shadow: 0 0 20px var(--accent), 0 0 40px rgba(0, 242, 255, 0.3); 
             margin: 0;
-            position: absolute; /* Centrado absoluto respecto al header */
+            position: absolute; 
             left: 50%;
-            transform: translateX(-50%);
+            top: 55%; /* Ajuste fino para que se vea centrado debajo de la isla */
+            transform: translate(-50%, -50%);
             white-space: nowrap;
             pointer-events: none;
         }
@@ -78,43 +80,29 @@
             height: 42px; 
             border-radius: 50%; 
             border: 2px solid var(--accent); 
-            box-shadow: 0 0 15px rgba(0,242,255,0.5); 
+            box-shadow: 0 0 15px var(--accent); 
             object-fit: cover; 
             display: none; 
             cursor: pointer; 
             z-index: 20;
+            transition: 0.3s;
         }
+        #user-avatar:hover { transform: scale(1.1); box-shadow: 0 0 25px var(--accent); }
 
         .btn-menu-lateral {
             background: transparent; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; z-index: 20;
         }
 
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
-        
-        .msg { 
-            max-width: 85%; padding: 14px 22px; border-radius: 22px; 
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            font-size: 1rem; line-height: 1.5; 
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        }
+        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        .unified-panel {
-            background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border-radius: 35px 35px 0 0;
-            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px !important; 
-            display: flex; flex-direction: column; gap: 15px;
-            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
-        }
-
+        .unified-panel { background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 35px 35px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px !important; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4); }
         #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; outline: none; transition: 0.3s; }
         #chat-terminal:focus { filter: drop-shadow(0 0 8px var(--accent)); }
 
         .btn-pill-model { background: rgba(0, 242, 255, 0.1); border: 1px solid rgba(0, 242, 255, 0.3); color: #fff; border-radius: 20px; padding: 8px 16px; font-size: 0.85rem; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; }
-        .btn-pill-model:hover { background: rgba(0, 242, 255, 0.2); box-shadow: 0 0 15px var(--accent); }
-
         .panel-side { position: fixed; top: 0; width: 280px; height: 100%; background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; display: flex; flex-direction: column; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
@@ -147,7 +135,7 @@
         </header>
         
         <div id="chat-window">
-            <div class="msg aurora">Bienvenido, Gabriel. Sistema Aurora centrado y listo para operar. ¿Qué misión tenemos hoy?</div>
+            <div class="msg aurora">Sistema sincronizado, Gabriel. Interfaz centrada y foto de enlace activa. ¿Cuál es el siguiente paso?</div>
         </div>
 
         <div class="bottom-section">
