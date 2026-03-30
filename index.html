@@ -28,7 +28,7 @@
         
         html, body { 
             margin: 0; padding: 0; width: 100%;
-            height: 100%;
+            height: 100dvh !important;
             min-height: -webkit-fill-available;
             background-color: #000;
             overflow: hidden;
@@ -37,8 +37,8 @@
         }
 
         #bg-video {
-            width: 115vw !important;
-            height: 115dvh !important;
+            width: 130vw !important;
+            height: 130vh !important;
             top: 50% !important;
             left: 50% !important;
             transform: translate(-50%, -50%) !important;
@@ -149,7 +149,7 @@
         .btn-danger-opt { border-color: var(--danger); color: var(--danger); margin-top: auto; }
 
         /* CONTENEDOR PRINCIPAL */
-        #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
+        #app-container { display: none; flex-direction: column; height: 100dvh !important; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
 
         /* HEADER ORIGINAL */
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -170,8 +170,8 @@
             background: rgba(0, 10, 20, 0.45); 
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: none; border-radius: 35px 35px 0 0;
-            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px; 
-            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 20px) !important;
+            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 15px) 20px; 
+            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 15px) !important;
             display: flex; flex-direction: column; gap: 15px;
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
         }
@@ -198,7 +198,7 @@
         .btn-live-glow:hover { transform: scale(1.1); text-shadow: 0 0 25px rgba(255,255,255,1); }
 
         /* LOGIN */
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        #login-overlay { position: fixed; inset: 0; width: 100vw; height: 100dvh; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
         .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
