@@ -7,50 +7,96 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
     <style>
-        /* ✨ LA BASE: Fondo negro absoluto */
+        :root { --accent: #00f2ff; --danger: #ff4d4d; }
+        
+        /* ✨ 1. CHASIS RECUPERADO Y BLINDADO */
         html, body { 
-            margin: 0; padding: 0; width: 100vw; height: 100%;
-            overflow: hidden; position: fixed; inset: 0;
+            margin: 0; padding: 0; width: 100vw; 
+            height: 100dvh; /* Altura dinámica para iPhone */
             background-color: #000;
+            overflow: hidden; position: fixed; inset: 0; 
+            font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
+            overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* ✨ EL VIDEO: Forzamos a que sea un 10% más grande que la pantalla */
+        /* ✨ 2. EL VIDEO: Táctica de Inmersión (Pasa por debajo de todo) */
         #bg-video { 
             position: fixed !important; 
-            top: -5% !important; /* Sube un poco para que no quede corto abajo */
-            left: -5% !important;
-            width: 110vw !important; /* Desborda a los costados */
-            height: 110vh !important; /* Desborda abajo (matando la barra) */
+            inset: 0 !important;
+            width: 100% !important; 
+            height: 100% !important; 
             object-fit: cover !important; 
-            z-index: -1; 
+            z-index: 0; 
             pointer-events: none; 
         }
-
-        /* ✨ EL PANEL DE ABAJO: Flotante y transparente */
-        .bottom-section { 
-            position: fixed; 
-            bottom: 0; left: 0; right: 0;
-            padding-bottom: calc(env(safe-area-inset-bottom) + 15px); /* Respeto dinámico */
-            z-index: 100;
-        }
-
-        .unified-panel {
-            margin: 0 15px;
-            background: rgba(0, 10, 20, 0.5); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 25px; padding: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.1rem; outline: none; }
         
-        /* LOGIN */
-        #login-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(15px); }
-        .login-card { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 30px; text-align: center; width: 80%; }
+        #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
+
+        /* ✨ 3. PANELES LATERALES (RECUPERADOS) */
+        .panel-side {
+            position: fixed; top: 0; width: 280px; height: 100%;
+            background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px);
+            z-index: 100001; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column; padding: 25px; 
+            padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box;
+        }
+        #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
+        #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
+        .panel-open { transform: translateX(0) !important; }
+
+        .chat-item { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; margin-bottom: 10px; transition: 0.3s; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+        .chat-item.active { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); }
+
+        /* ✨ 4. BOTTOM SHEETS (RECUPERADOS) */
+        #context-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 100005; opacity: 0; pointer-events: none; transition: 0.3s; }
+        #context-overlay.show { opacity: 1; pointer-events: all; }
+        .bottom-sheet { position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(0, 15, 25, 0.85); backdrop-filter: blur(40px); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 30px 30px 0 0; padding: 25px 25px calc(env(safe-area-inset-bottom, 20px) + 20px) 25px; z-index: 100006; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 5px; box-shadow: 0 -10px 40px rgba(0, 242, 255, 0.15); box-sizing: border-box; }
+        .bottom-sheet.show { bottom: 0; }
+
+        /* ✨ 5. MODO LIVE (RECUPERADO) */
+        #live-overlay { position: fixed; inset: 0; background: rgba(0, 5, 10, 0.4); z-index: 100010; display: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: 0.4s; }
+        #live-overlay.show { opacity: 1; display: flex; }
+        #camera-stream { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0; transition: opacity 0.8s ease; }
+        .live-a { font-family: 'Orbitron'; font-size: 6rem; color: #fff; animation: pulseAWhite 2s infinite ease-in-out; text-shadow: 0 0 30px rgba(255,255,255,0.9); }
+        @keyframes pulseAWhite { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        /* ✨ 6. APP CONTAINER Y LOGIN */
+        #app-container { display: none; flex-direction: column; position: fixed; inset: 0; z-index: 10; }
+        #login-overlay { position: fixed; inset: 0; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+
+        header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; }
+        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); display: none; }
+
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); background: rgba(255, 255, 255, 0.05); }
+        .aurora { align-self: flex-start; border: 1px solid rgba(0, 242, 255, 0.3); }
+        .user { align-self: flex-end; border: 1px solid rgba(255, 255, 255, 0.15); }
+
+        /* ✨ EL PANEL UNIFICADO FINAL (Arreglado para el teclado) */
+        .bottom-section { width: 100%; box-sizing: border-box; }
+        .unified-panel {
+            background: rgba(0, 10, 20, 0.45); 
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-radius: 35px 35px 0 0;
+            /* Usamos env(safe-area-inset-bottom) para que "flote" sobre la barra del teclado */
+            padding: 25px 20px calc(env(safe-area-inset-bottom, 15px) + 15px) 20px; 
+            display: flex; flex-direction: column; gap: 15px;
+        }
+
+        #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; outline: none; }
+        .panel-actions { display: flex; justify-content: space-between; align-items: center; }
+        .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; text-shadow: 0 0 15px #fff; }
     </style>
 </head>
 <body>
@@ -59,23 +105,80 @@
         <source src="fondo.mp4" type="video/mp4">
     </video>
 
+    <div id="panels-overlay" onclick="cerrarPaneles()"></div>
+    <div id="context-overlay" onclick="cerrarBottomSheets()"></div>
+
+    <div id="live-overlay">
+        <video id="camera-stream" autoplay playsinline muted></video>
+        <div class="live-a">A</div>
+        <button onclick="cerrarLiveMode()" style="position:absolute; bottom:50px; color:#fff; background:none; border:none; font-family:'Orbitron';">CERRAR</button>
+    </div>
+
+    <div id="sidebar-menu" class="panel-side">
+        <h3 style="font-family:'Orbitron'; color:var(--accent);">MIS CHATS</h3>
+        <div id="history-list"></div>
+    </div>
+
+    <div id="profile-panel" class="panel-side">
+        <h3 style="font-family:'Orbitron'; color:var(--accent);">MI CUENTA</h3>
+        <button onclick="auth.signOut().then(()=>location.reload())" style="color:red; background:none; border:none;">CERRAR SESIÓN</button>
+    </div>
+
     <div id="login-overlay">
-        <div class="login-card">
-            <h2 style="color:#fff; font-family: sans-serif; letter-spacing: 3px;">AURORA</h2>
-            <button onclick="document.getElementById('login-overlay').style.display='none'; document.getElementById('app-container').style.display='flex';" style="width:100%; padding:15px; border-radius:15px; background:#00f2ff; border:none; font-weight:bold;">INGRESAR</button>
+        <div style="background:rgba(255,255,255,0.05); padding:40px; border-radius:40px; border:1px solid var(--accent); text-align:center; width:80%;">
+            <h2 style="font-family:'Orbitron'; color:#fff;">AURORA</h2>
+            <input type="email" id="emailInput" placeholder="Email" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; background:#000; border:1px solid #333; color:#fff;">
+            <input type="password" id="passwordInput" placeholder="Contraseña" style="width:100%; padding:15px; margin-bottom:15px; border-radius:10px; background:#000; border:1px solid #333; color:#fff;">
+            <button onclick="authCorreo()" style="width:100%; padding:15px; background:var(--accent); border:none; border-radius:10px; font-weight:bold;">ENTRAR</button>
         </div>
     </div>
 
-    <div id="app-container" style="display:none; flex-direction:column; height:100vh;">
-        <div id="chat-window" style="flex:1; overflow-y:auto; padding:20px;">
-            <div style="background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; color:#fff;">Núcleo activo. Sin bordes.</div>
+    <div id="app-container">
+        <header>
+            <button onclick="abrirSidebar()" style="background:none; border:none; color:#fff; font-size:1.5rem;">☰</button>
+            <div class="titulo-app">AURORA</div>
+            <img id="user-avatar" src="" onclick="abrirPerfil()">
+        </header>
+        <div id="chat-window">
+            <div class="msg aurora">Hola Gabriel. Tu interfaz completa está recuperada y blindada.</div>
         </div>
         <div class="bottom-section">
             <div class="unified-panel">
-                <input type="text" id="chat-terminal" placeholder="Sintonizar...">
+                <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off">
+                <div class="panel-actions">
+                    <button class="btn-live-glow" onclick="abrirLiveMode()">A</button>
+                    <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.5rem;">➤</button>
+                </div>
             </div>
         </div>
     </div>
 
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
+        firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+                if (user.photoURL) { document.getElementById('user-avatar').src = user.photoURL; document.getElementById('user-avatar').style.display = 'block'; }
+            }
+        });
+
+        function authCorreo() { const e=document.getElementById('emailInput').value, p=document.getElementById('passwordInput').value; auth.signInWithEmailAndPassword(e,p).catch(err=>alert(err.message)); }
+        async function enviar() {
+            const i=document.getElementById('chat-terminal'), m=i.value; if(!m)return;
+            const w=document.getElementById('chat-window'); w.innerHTML+=`<div class="msg user">${m}</div>`; i.value=""; w.scrollTop=w.scrollHeight;
+            const r=await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({msg:m})});
+            const d=await r.json(); w.innerHTML+=`<div class="msg aurora">${d.respuesta}</div>`; w.scrollTop=w.scrollHeight;
+        }
+
+        function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display='block'; }
+        function abrirPerfil() { document.getElementById('profile-panel').classList.add('panel-open'); document.getElementById('panels-overlay').style.display='block'; }
+        function cerrarPaneles() { document.querySelectorAll('.panel-side').forEach(p=>p.classList.remove('panel-open')); document.getElementById('panels-overlay').style.display='none'; }
+        function abrirLiveMode() { document.getElementById('live-overlay').classList.add('show'); }
+        function cerrarLiveMode() { document.getElementById('live-overlay').classList.remove('show'); }
+        function cerrarBottomSheets() {}
+    </script>
 </body>
 </html>
