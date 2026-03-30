@@ -18,7 +18,7 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* 🔥 FIX DEFINITIVO IPHONE: Todo transparente para el video */
+        /* 🔥 FIX TOTAL IPHONE: Fondo transparente absoluto */
         html, body {
             margin: 0; padding: 0; width: 100%;
             height: 100vh; height: 100dvh;
@@ -28,20 +28,20 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: #fff;
             overscroll-behavior-y: none;
+            -webkit-text-size-adjust: 100%;
         }
 
-        /* 🔥 EL "CIERRE DE HIERRO" PARA EL VIDEO (ENTIERRA EL NEGRO) */
+        /* 🔥 VIDEO COMO BASE DEFINITIVA (Z-INDEX NEGATIVO) */
         #bg-video {
             position: fixed !important;
             top: 0; left: 0;
             width: 100vw; 
-            /* 👇 Obliga al video a medir más que la pantalla para tapar la barra de Apple */
-            height: calc(100vh + env(safe-area-inset-bottom) + 30px) !important;
-            height: calc(100dvh + env(safe-area-inset-bottom) + 30px) !important;
+            height: calc(100vh + env(safe-area-inset-bottom, 0px) + 30px) !important;
+            height: calc(100dvh + env(safe-area-inset-bottom, 0px) + 30px) !important;
             object-fit: cover !important;
             z-index: -9999 !important;
             pointer-events: none;
-            transform: scale(1.1); /* Zoom extra de seguridad */
+            transform: scale(1.1); /* Zoom de seguridad */
         }
 
         /* CAPA EXTRA DE ESTABILIDAD SAFARI */
@@ -54,41 +54,47 @@
         .panel-side {
             position: fixed; top: 0; width: 280px; height: 100dvh;
             background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            z-index: 100001; transition: 0.3s;
+            z-index: 100001; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; flex-direction: column; padding: 25px; 
             padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box;
         }
-        #sidebar-menu { left: 0; transform: translateX(-100%); }
-        #profile-panel { right: 0; transform: translateX(100%); }
+        #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
+        #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
         .panel-open { transform: translateX(0) !important; }
-
-        /* LOGIN LIMPIO */
+        .panel-title { font-family: 'Orbitron'; font-size: 0.9rem; color: var(--accent); letter-spacing: 3px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; text-transform: uppercase; }
+        
+        /* LOGIN LIMPIO Y TRANSPARENTE */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; z-index: 9999; display: flex; align-items: center; justify-content: center; background: transparent; }
         .login-card { text-align: center; max-width: 380px; width: 90%; background: transparent !important; }
-        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.45) !important; border: 1px solid rgba(255,255,255,0.15); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
+        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.45) !important; border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
+        .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.18) !important; box-shadow: 0 0 15px rgba(0,242,255,0.2); }
 
-        /* INTERFAZ */
-        #app-container { display: none; flex-direction: column; height: 100dvh; width: 100%; position: relative; z-index: 10; }
-        header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; flex: 1; text-align: center; padding-left: 15px; }
-        .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; width: 44px; }
-        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); display: none; }
+        /* INTERFAZ PRINCIPAL */
+        #app-container { display: none; flex-direction: column; height: 100dvh; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
+        header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; flex: 1; text-align: center; padding-left: 15px;}
+        .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; text-shadow: 0 0 15px var(--accent); padding: 0; width: 44px; text-align: left; }
+        .header-spacer { width: 44px; display: flex; justify-content: flex-end; }
+        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); object-fit: cover; display: none; cursor: pointer; }
 
+        /* BURBUJAS DE CHAT */
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
-        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; }
+        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; }
+        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 5px;}
+        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 5px;}
 
-        /* ✨ DISEÑO GEMINI "DESNUDO": BAJO Y BRILLANTE */
+        /* ✨ DISEÑO GEMINI "DESNUDO": EL SECRETO */
         .bottom-section { 
-            padding: 5px 15px calc(env(safe-area-inset-bottom, 5px) + 5px) 15px; 
-            display: flex; flex-direction: column; gap: 6px; width: 100%; box-sizing: border-box; 
-            background: transparent; 
+            padding: 5px 15px calc(env(safe-area-inset-bottom, 5px) + 8px) 15px; 
+            display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; 
+            background: transparent; /* ← BORRÉ EL FONDO BLANCO ACÁ */
         }
         
         #chat-terminal { 
-            width: 100%; background: transparent; border: none; color: #fff; font-size: 1.1rem; 
+            width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; 
             font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 10px; box-sizing: border-box; 
             resize: none; overflow-y: hidden; min-height: 40px; 
-            text-shadow: 0 0 10px #fff; 
+            text-shadow: 0 0 10px #fff; /* Letras brillosas flotantes */
         }
         #chat-terminal::placeholder { color: #fff; opacity: 0.8; text-shadow: 0 0 15px #fff; font-family: 'Orbitron'; }
 
@@ -99,15 +105,17 @@
         .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 12px #fff); transform: scale(1.1); }
         .btn-plus-white svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 3; }
 
+        .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 5px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
         .btn-pill-model { background: rgba(0, 242, 255, 0.05); border: 1px solid var(--accent); color: #fff; border-radius: 20px; padding: 6px 14px; font-family: 'Orbitron'; font-size: 0.8rem; backdrop-filter: blur(10px); }
 
-        /* ✨ BOTÓN A BLANCA LUMINOSA */
+        /* ✨ BOTÓN A LUMINOSA SIN FONDO */
         .btn-a-glow { 
             background: transparent; border: none; color: #fff; 
             font-family: 'Orbitron'; font-size: 1.8rem; cursor: pointer; 
             text-shadow: 0 0 20px #fff, 0 0 30px var(--accent); 
             transition: 0.3s; padding: 0; margin-right: 5px;
         }
+        .btn-a-glow:hover { transform: scale(1.1); text-shadow: 0 0 35px #fff; }
     </style>
 </head>
 <body>
@@ -118,15 +126,16 @@
 
     <div id="loading-bar"></div>
     <div id="panels-overlay" onclick="cerrarPaneles()"></div>
+    <div id="context-overlay" onclick="cerrarBottomSheets()"></div>
 
     <div id="sidebar-menu" class="panel-side">
-        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px;">MIS CHATS</h3>
+        <h3 class="panel-title">MIS CHATS</h3>
         <div id="history-list" style="flex:1; overflow-y:auto;"></div>
         <button onclick="nuevoEnlace()" style="background:rgba(0,242,255,0.1); border:1px dashed var(--accent); color:var(--accent); width:100%; padding:12px; border-radius:12px; font-family:'Orbitron'; font-size:0.7rem;">+ NUEVO CHAT</button>
     </div>
 
     <div id="profile-panel" class="panel-side">
-        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px;">MI CUENTA</h3>
+        <h3 class="panel-title">MI CUENTA</h3>
         <button onclick="cambiarCuenta()" style="width:100%; padding:15px; border-radius:15px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid var(--accent); font-family:'Orbitron';">CAMBIAR CUENTA</button>
         <button onclick="cerrarSesionReal()" style="width:100%; padding:15px; border-radius:15px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); margin-top:15px; font-family:'Orbitron';">CERRAR SESIÓN</button>
         <button onclick="eliminarCuenta()" style="margin-top:auto; width:100%; padding:15px; border-radius:15px; background:rgba(255,77,77,0.05); color:var(--danger); border:1px solid var(--danger); font-family:'Orbitron';">ELIMINAR CUENTA</button>
@@ -161,7 +170,7 @@
             <textarea id="chat-terminal" rows="1" placeholder="Preguntale a Aurora..." oninput="autoResize(this); toggleInputButtons()"></textarea>
             <div class="chat-tools">
                 <div class="tools-left">
-                    <button class="btn-plus-white" onclick="alert('Carga...')">
+                    <button class="btn-plus-white" onclick="alert('Funciones de red...')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
                     <button class="btn-pill-model">⚡ Flash</button>
@@ -178,10 +187,12 @@
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
-
+        let enlacesContador = parseInt(localStorage.getItem('aurora_limite_celular')) || 1;
+        
         function autoResize(t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
         function toggleInputButtons() {
             const val = document.getElementById('chat-terminal').value.trim();
+            document.getElementById('btn-mic').style.display = val ? 'none' : 'flex';
             document.getElementById('btn-enviar').style.display = val ? 'flex' : 'none';
         }
 
@@ -202,7 +213,7 @@
                 document.getElementById('app-container').style.display = 'none';
             }
         });
-
+        
         auth.getRedirectResult().catch(e => console.error(e));
         window.addEventListener('resize', () => { document.body.style.height = window.innerHeight + 'px'; });
     </script>
