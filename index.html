@@ -18,21 +18,15 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
 
-        /* ✨ EL CHASIS: Camuflaje azul profundo para Safari */
-        html {
-            height: -webkit-fill-available;
-            background-color: #0c1425; 
-        }
+        html { height: -webkit-fill-available; background-color: #0c1425; }
 
         body { 
             margin: 0; padding: 0; width: 100vw; height: 100dvh;
-            background-color: #0c1425; /* Camuflaje Regla de Oro */
-            overflow: hidden; position: fixed; inset: 0;
+            background-color: #0c1425; overflow: hidden; position: fixed; inset: 0;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* ✨ FUERZA BRUTA: Video al 150% centrado absoluto */
         #bg-video {
             position: fixed !important; top: 50% !important; left: 50% !important;
             width: 150vw !important; height: 150dvh !important;
@@ -43,7 +37,6 @@
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* ✨ LOGIN CENTRADO ABSOLUTO */
         #login-overlay { 
             position: fixed; inset: 0; width: 100vw; height: 100dvh;
             display: flex; align-items: center; justify-content: center;
@@ -56,18 +49,24 @@
         }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
 
-        /* ✨ ESTRUCTURA APP */
         #app-container { display: none; flex-direction: column; width: 100vw; height: 100dvh; position: fixed; inset: 0; z-index: 10; }
         header { padding: calc(env(safe-area-inset-top, 40px) + 15px) 20px 10px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; }
         #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); object-fit: cover; display: none; cursor: pointer; }
 
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
-        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; }
-        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
-        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
+        
+        /* ✨ EFECTO CRISTAL (Glassmorphism) */
+        .msg { 
+            max-width: 85%; padding: 14px 22px; border-radius: 22px; 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            font-size: 1rem; line-height: 1.5; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
+        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* PANEL INFERIOR UNIFICADO */
         .unified-panel {
             background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-radius: 35px 35px 0 0;
@@ -75,9 +74,21 @@
             display: flex; flex-direction: column; gap: 15px;
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
         }
-        #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; outline: none; }
 
-        /* PANELES LATERALES */
+        /* ✨ GLOW EN EL TERMINAL */
+        #chat-terminal { 
+            width: 100%; background: transparent; border: none; color: white; 
+            font-size: 1.05rem; outline: none; transition: 0.3s;
+        }
+        #chat-terminal:focus { filter: drop-shadow(0 0 8px var(--accent)); }
+
+        .btn-pill-model { 
+            background: rgba(0, 242, 255, 0.1); border: 1px solid rgba(0, 242, 255, 0.3); 
+            color: #fff; border-radius: 20px; padding: 8px 16px; font-size: 0.85rem; 
+            font-family: 'Orbitron'; cursor: pointer; transition: 0.3s;
+        }
+        .btn-pill-model:hover { background: rgba(0, 242, 255, 0.2); box-shadow: 0 0 15px var(--accent); }
+
         .panel-side { position: fixed; top: 0; width: 280px; height: 100%; background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; display: flex; flex-direction: column; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
@@ -94,7 +105,7 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <h2 style="font-family:'Orbitron';">AURORA</h2>
+            <h2 style="font-family:'Orbitron'; letter-spacing: 5px;">AURORA</h2>
             <input type="email" placeholder="Email" class="login-input" id="emailInput">
             <input type="password" placeholder="Contraseña" class="login-input" id="passwordInput">
             <button style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:15px; width:100%; border-radius:18px; font-weight:bold; cursor:pointer; font-family:'Orbitron'; margin-bottom:15px;" onclick="authCorreo()">INGRESAR</button>
@@ -104,7 +115,7 @@
 
     <div id="app-container">
         <header>
-            <button style="background:transparent; border:none; color:#fff; font-size:2rem;" onclick="abrirSidebar()">☰</button>
+            <button style="background:transparent; border:none; color:#fff; font-size:2rem; cursor:pointer;" onclick="abrirSidebar()">☰</button>
             <div class="titulo-app">AURORA</div>
             <img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()">
         </header>
@@ -116,7 +127,7 @@
                 <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off" oninput="toggleInputButtons()">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <button class="btn-pill-model">⚡ Flash</button>
-                    <button id="btn-enviar" style="background:transparent; border:none; color:var(--accent); display:none;" onclick="enviar()">
+                    <button id="btn-enviar" style="background:transparent; border:none; color:var(--accent); cursor:pointer; display:none;" onclick="enviar()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </div>
@@ -128,26 +139,17 @@
         <h3 style="font-family:'Orbitron'; color:var(--accent);">MIS CHATS</h3>
     </div>
     <div id="profile-panel" class="panel-side">
-        <h3 style="font-family:'Orbitron'; color:var(--accent);">MI CUENTA</h3>
-        <button class="msg user" style="margin-top:auto; cursor:pointer;" onclick="auth.signOut().then(() => location.reload())">Cerrar Sesión</button>
+        <h3 style="font-family:'Orbitron'; color:var(--accent);">CUENTA</h3>
+        <button class="msg user" style="margin-top:auto; cursor:pointer; background:rgba(255, 77, 77, 0.1); border:1px solid var(--danger);" onclick="auth.signOut().then(() => location.reload())">Cerrar Sesión</button>
     </div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        function abrirSidebar() { 
-            const menu = document.getElementById('sidebar-menu');
-            if(menu) { menu.classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
-        }
-        function abrirPerfil() { 
-            const prof = document.getElementById('profile-panel');
-            if(prof) { prof.classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
-        }
-        function cerrarPaneles() { 
-            document.querySelectorAll('.panel-side').forEach(p => p.classList.remove('panel-open')); 
-            document.getElementById('panels-overlay').style.display = 'none'; 
-        }
+        function abrirSidebar() { const menu = document.getElementById('sidebar-menu'); if(menu) { menu.classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; } }
+        function abrirPerfil() { const prof = document.getElementById('profile-panel'); if(prof) { prof.classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; } }
+        function cerrarPaneles() { document.querySelectorAll('.panel-side').forEach(p => p.classList.remove('panel-open')); document.getElementById('panels-overlay').style.display = 'none'; }
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -177,7 +179,7 @@
                 }); 
                 const data = await res.json(); 
                 document.getElementById('chat-window').innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
-                document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
+                const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
             } catch(e) { console.log(e); }
         }
 
