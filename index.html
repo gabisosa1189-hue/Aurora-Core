@@ -18,83 +18,91 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* 🔥 FIX TOTAL IPHONE: Fondo transparente absoluto */
+        /* 🔥 FIX GLOBAL SAFARI (TU CLAVE) */
         html, body {
             margin: 0; padding: 0; width: 100%;
-            height: 100vh; height: 100dvh;
-            min-height: 100vh; min-height: 100dvh;
+            height: 100%; min-height: 100vh; min-height: 100dvh;
             overflow: hidden;
-            background: transparent !important;
+            background: #000;
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: #fff;
             overscroll-behavior-y: none;
-            -webkit-text-size-adjust: 100%;
         }
 
-        /* 🔥 VIDEO COMO BASE DEFINITIVA (Z-INDEX NEGATIVO) */
+        /* 🔥 CONTENEDOR REAL (LA CLAVE) */
+        #video-bg {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            z-index: -999;
+            background: #000;
+        }
+
+        /* 🔥 VIDEO COMO BACKGROUND REAL */
         #bg-video {
-            position: fixed !important;
-            top: 0; left: 0;
-            width: 100vw; 
-            height: calc(100vh + env(safe-area-inset-bottom, 0px) + 30px) !important;
-            height: calc(100dvh + env(safe-area-inset-bottom, 0px) + 30px) !important;
-            object-fit: cover !important;
-            z-index: -9999 !important;
+            position: absolute;
+            top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            transform: translate(-50%, -50%) scale(1.3); /* Zoom masivo para pisar todo */
+            object-fit: cover;
             pointer-events: none;
-            transform: scale(1.1); /* Zoom de seguridad */
         }
 
-        /* CAPA EXTRA DE ESTABILIDAD SAFARI */
-        body::after { content: ""; position: fixed; inset: 0; background: transparent; z-index: -998; }
+        /* 🔥 CAPA EXTRA PARA BUGS DE RENDER */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -998;
+            background: transparent;
+        }
 
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: 0.3s; z-index: 1000000; }
         #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 
-        /* PANELES LATERALES */
+        /* PANELES */
         .panel-side {
             position: fixed; top: 0; width: 280px; height: 100dvh;
             background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            z-index: 100001; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100001; transition: 0.3s;
             display: flex; flex-direction: column; padding: 25px; 
             padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box;
         }
-        #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
-        #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
+        #sidebar-menu { left: 0; transform: translateX(-100%); }
+        #profile-panel { right: 0; transform: translateX(100%); }
         .panel-open { transform: translateX(0) !important; }
-        .panel-title { font-family: 'Orbitron'; font-size: 0.9rem; color: var(--accent); letter-spacing: 3px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; text-transform: uppercase; }
-        
-        /* LOGIN LIMPIO Y TRANSPARENTE */
+
+        /* LOGIN LIMPIO */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; z-index: 9999; display: flex; align-items: center; justify-content: center; background: transparent; }
-        .login-card { text-align: center; max-width: 380px; width: 90%; background: transparent !important; }
-        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.45) !important; border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
-        .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.18) !important; box-shadow: 0 0 15px rgba(0,242,255,0.2); }
+        .login-card { text-align: center; max-width: 380px; width: 90%; }
+        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
 
-        /* INTERFAZ PRINCIPAL */
-        #app-container { display: none; flex-direction: column; height: 100dvh; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
-        header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; flex: 1; text-align: center; padding-left: 15px;}
-        .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; text-shadow: 0 0 15px var(--accent); padding: 0; width: 44px; text-align: left; }
-        .header-spacer { width: 44px; display: flex; justify-content: flex-end; }
-        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); object-fit: cover; display: none; cursor: pointer; }
+        /* INTERFAZ */
+        #app-container { display: none; flex-direction: column; height: 100dvh; width: 100%; position: relative; z-index: 10; }
+        header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; flex: 1; text-align: center; padding-left: 15px; }
+        .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; width: 44px; }
+        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); display: none; }
 
-        /* BURBUJAS DE CHAT */
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
-        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; }
-        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 5px;}
-        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 5px;}
+        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; }
 
-        /* ✨ DISEÑO GEMINI "DESNUDO": EL SECRETO */
+        /* ✨ DISEÑO GEMINI "DESNUDO": ABAJO Y COMPACTO */
         .bottom-section { 
-            padding: 5px 15px calc(env(safe-area-inset-bottom, 5px) + 8px) 15px; 
-            display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; 
-            background: transparent; /* ← BORRÉ EL FONDO BLANCO ACÁ */
+            padding: 5px 15px calc(env(safe-area-inset-bottom, 5px) + 10px) 15px; 
+            display: flex; flex-direction: column; gap: 6px; width: 100%; box-sizing: border-box; 
+            background: transparent; 
         }
         
         #chat-terminal { 
-            width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; 
+            width: 100%; background: transparent; border: none; color: #fff; font-size: 1.1rem; 
             font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 10px; box-sizing: border-box; 
             resize: none; overflow-y: hidden; min-height: 40px; 
-            text-shadow: 0 0 10px #fff; /* Letras brillosas flotantes */
+            text-shadow: 0 0 10px #fff; 
         }
         #chat-terminal::placeholder { color: #fff; opacity: 0.8; text-shadow: 0 0 15px #fff; font-family: 'Orbitron'; }
 
@@ -102,40 +110,39 @@
         .tools-left, .tools-right { display: flex; align-items: center; gap: 15px; }
 
         /* ✨ BOTÓN + BLANCO Y BRILLANTE */
-        .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 12px #fff); transform: scale(1.1); }
+        .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 10px #fff); transform: scale(1.1); }
         .btn-plus-white svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 3; }
 
-        .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 5px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
         .btn-pill-model { background: rgba(0, 242, 255, 0.05); border: 1px solid var(--accent); color: #fff; border-radius: 20px; padding: 6px 14px; font-family: 'Orbitron'; font-size: 0.8rem; backdrop-filter: blur(10px); }
 
-        /* ✨ BOTÓN A LUMINOSA SIN FONDO */
+        /* ✨ BOTÓN A BLANCA LUMINOSA */
         .btn-a-glow { 
             background: transparent; border: none; color: #fff; 
             font-family: 'Orbitron'; font-size: 1.8rem; cursor: pointer; 
             text-shadow: 0 0 20px #fff, 0 0 30px var(--accent); 
-            transition: 0.3s; padding: 0; margin-right: 5px;
+            transition: 0.3s; padding: 0;
         }
-        .btn-a-glow:hover { transform: scale(1.1); text-shadow: 0 0 35px #fff; }
     </style>
 </head>
 <body>
 
-    <video autoplay muted loop playsinline id="bg-video">
-        <source src="fondo.mp4" type="video/mp4">
-    </video>
+    <div id="video-bg">
+        <video autoplay muted loop playsinline id="bg-video">
+            <source src="fondo.mp4" type="video/mp4">
+        </video>
+    </div>
 
     <div id="loading-bar"></div>
     <div id="panels-overlay" onclick="cerrarPaneles()"></div>
-    <div id="context-overlay" onclick="cerrarBottomSheets()"></div>
 
     <div id="sidebar-menu" class="panel-side">
-        <h3 class="panel-title">MIS CHATS</h3>
+        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px;">MIS CHATS</h3>
         <div id="history-list" style="flex:1; overflow-y:auto;"></div>
         <button onclick="nuevoEnlace()" style="background:rgba(0,242,255,0.1); border:1px dashed var(--accent); color:var(--accent); width:100%; padding:12px; border-radius:12px; font-family:'Orbitron'; font-size:0.7rem;">+ NUEVO CHAT</button>
     </div>
 
     <div id="profile-panel" class="panel-side">
-        <h3 class="panel-title">MI CUENTA</h3>
+        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px;">MI CUENTA</h3>
         <button onclick="cambiarCuenta()" style="width:100%; padding:15px; border-radius:15px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid var(--accent); font-family:'Orbitron';">CAMBIAR CUENTA</button>
         <button onclick="cerrarSesionReal()" style="width:100%; padding:15px; border-radius:15px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); margin-top:15px; font-family:'Orbitron';">CERRAR SESIÓN</button>
         <button onclick="eliminarCuenta()" style="margin-top:auto; width:100%; padding:15px; border-radius:15px; background:rgba(255,77,77,0.05); color:var(--danger); border:1px solid var(--danger); font-family:'Orbitron';">ELIMINAR CUENTA</button>
@@ -144,13 +151,11 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <h2 id="titulo-login" style="font-family:'Orbitron'; text-shadow: 0 0 15px var(--accent); margin-bottom: 30px; letter-spacing: 3px;">BIENVENIDO A AURORA</h2>
+            <h2 style="font-family:'Orbitron'; text-shadow: 0 0 15px var(--accent); margin-bottom: 30px; letter-spacing: 3px;">BIENVENIDO A AURORA</h2>
             <input type="email" placeholder="Correo electrónico" class="login-input" id="emailInput">
             <input type="password" placeholder="Contraseña" class="login-input" id="passwordInput">
             <button id="btn-principal" style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:15px; width:100%; border-radius:18px; font-weight:bold; font-family:'Orbitron';" onclick="authCorreo()">INGRESAR</button>
-            <div style="display:flex; justify-content:center; margin-top:20px;">
-                <a onclick="toggleRegistro()" id="link-registro" style="color:#fff; font-size:0.85rem; cursor:pointer;">Crear Cuenta</a>
-            </div>
+            <div style="display:flex; justify-content:center; margin-top:20px;"><a onclick="toggleRegistro()" id="link-registro" style="color:#fff; font-size:0.85rem; cursor:pointer;">Crear Cuenta</a></div>
             <button style="background:#fff; color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; width:100%; margin-top:35px;" onclick="authGoogle()">Ingresar con Google</button>
         </div>
     </div>
@@ -163,14 +168,14 @@
         </header>
 
         <div id="chat-window">
-            <div class="msg aurora" style="background:rgba(0,242,255,0.05); border:1px solid rgba(0,242,255,0.2);">Bienvenido al núcleo de Aurora. Tu enlace neuronal está activo.</div>
+            <div class="msg aurora" style="background:rgba(0,242,255,0.05); border:1px solid rgba(0,242,255,0.2);">Tu enlace neuronal está activo. ¿Qué deseas consultar?</div>
         </div>
 
         <div class="bottom-section">
             <textarea id="chat-terminal" rows="1" placeholder="Preguntale a Aurora..." oninput="autoResize(this); toggleInputButtons()"></textarea>
             <div class="chat-tools">
                 <div class="tools-left">
-                    <button class="btn-plus-white" onclick="alert('Funciones de red...')">
+                    <button class="btn-plus-white" onclick="alert('Carga...')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
                     <button class="btn-pill-model">⚡ Flash</button>
@@ -187,12 +192,10 @@
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
-        let enlacesContador = parseInt(localStorage.getItem('aurora_limite_celular')) || 1;
-        
+
         function autoResize(t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
         function toggleInputButtons() {
             const val = document.getElementById('chat-terminal').value.trim();
-            document.getElementById('btn-mic').style.display = val ? 'none' : 'flex';
             document.getElementById('btn-enviar').style.display = val ? 'flex' : 'none';
         }
 
@@ -213,7 +216,7 @@
                 document.getElementById('app-container').style.display = 'none';
             }
         });
-        
+
         auth.getRedirectResult().catch(e => console.error(e));
         window.addEventListener('resize', () => { document.body.style.height = window.innerHeight + 'px'; });
     </script>
