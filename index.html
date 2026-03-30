@@ -19,12 +19,13 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ 1. BASE ABSOLUTA: Con póster de respaldo */
+        /* ✨ 1. BASE ABSOLUTA: Con póster de respaldo (poster.jpg) */
         html { height: -webkit-fill-available; background-color: #001a2c; }
         body { 
             margin: 0; padding: 0; width: 100vw; 
             height: 100dvh; overflow: hidden; position: fixed; inset: 0; 
             background-color: #001a2c !important;
+            /* 👇 ACÁ ESTÁ EL TRUCO 1: Fondo de estrellas de respaldo 👇 */
             background-image: url('poster.jpg') !important; 
             background-size: cover !important;
             background-position: bottom center !important;
@@ -32,25 +33,22 @@
             overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* ✨ 2. VIDEO CON ZOOM EXTREMO: Escala al 115% para matar márgenes */
+        /* ✨ 2. VIDEO CON INVASIÓN TOTAL: Desborda físicamente hacia el subsuelo del teléfono */
         #bg-video { 
-            position: fixed !important; 
-            top: 50%; left: 50%; 
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
-            transform: translateX(-50%) translateY(-50%) scale(1.15) !important; 
-            object-fit: cover !important; 
-            z-index: 0; pointer-events: none; 
+            position: absolute !important; 
+            top: 0% !important; 
+            left: 50% !important; 
+            min-width: 100% !important; 
+            height: calc(100dvh + 50px) !important; /* 👇 ACÁ ESTÁ EL TRUCO 2: Forzamos la invasión 👇 */
+            object-fit: cover !important; z-index: 0; 
+            pointer-events: none; 
+            transform: translateX(-50%) !important; /* Mantenemos el video centrado */
         }
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* ✨ 3. CONTENEDOR PRINCIPAL ESTIRADO */
-        #app-container { 
-            display: none; flex-direction: column; 
-            position: fixed; inset: 0; height: 100dvh; 
-            z-index: 10; transition: opacity 0.4s ease; 
-        }
+        /* ✨ 3. CONTENEDOR PRINCIPAL CLAVADO AL PISO */
+        #app-container { display: none; flex-direction: column; position: fixed; inset: 0; height: 100dvh; z-index: 10; transition: opacity 0.4s ease; }
 
         /* ✨ PANELES LATERALES */
         .panel-side {
@@ -148,7 +146,7 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* ✨ 4. PANEL INFERIOR ANCLADO AL PISO */
+        /* ✨ 4. PANEL UNIFICADO CLAVADO AL PISO CON RESPETO AL MARGEN 👇 */
         .bottom-section { padding: 0; display: flex; justify-content: center; width: 100%; box-sizing: border-box; }
         
         .unified-panel {
