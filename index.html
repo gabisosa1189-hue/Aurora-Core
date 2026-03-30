@@ -17,35 +17,29 @@
 
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
-
-        /* 🛠️ AJUSTE DINÁMICO: Clava la app al vidrio del iPhone */
-        html, body, #login-overlay, #app-container {
-            height: 100dvh !important;
-            width: 100vw !important;
-            position: fixed !important;
-            inset: 0 !important;
-            overflow: hidden !important;
-            margin: 0; padding: 0;
-        }
         
+        /* ✨ CHASIS BLINDADO: Altura dinámica (dvh) para iPhone */
         html, body { 
+            margin: 0; padding: 0; width: 100vw;
+            height: 100dvh !important;
             background-color: #000;
+            overflow: hidden; position: fixed; inset: 0;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; 
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* 🛠️ VIDEO INMERSIVO: 40% de exceso para borrar barras negras */
+        /* ✨ VIDEO INMERSIVO: 130% de tamaño para desbordar los bordes negros */
         #bg-video {
             position: fixed !important;
             top: 50% !important;
             left: 50% !important;
-            width: 140vw !important;
-            height: 140dvh !important;
+            width: 130vw !important;
+            height: 130dvh !important;
             transform: translate(-50%, -50%) !important;
             object-fit: cover !important;
             z-index: -100 !important;
-            pointer-events: none;
+            pointer-events: none !important;
         }
         
         #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
@@ -137,8 +131,18 @@
         .live-btn-end svg { width: 40px; height: 40px; stroke: var(--danger); stroke-width: 2; filter: drop-shadow(0 0 12px var(--danger)); transition: 0.3s; }
         .live-btn-end:hover svg { filter: drop-shadow(0 0 25px var(--danger)); transform: scale(1.15); }
 
-        /* HEADER & PANEL: Safe Area adjustments */
-        header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px) !important; padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        /* ESTRUCTURA PRINCIPAL */
+        #app-container { 
+            display: none; flex-direction: column; 
+            height: 100dvh !important; 
+            width: 100vw; position: relative; z-index: 10; transition: opacity 0.4s ease; 
+        }
+
+        header { 
+            padding-top: calc(env(safe-area-inset-top, 40px) + 15px); 
+            padding-left: 20px; padding-right: 20px; padding-bottom: 10px; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; }
         #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); object-fit: cover; display: none; cursor: pointer; }
 
@@ -147,24 +151,32 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
+        /* PANEL UNIFICADO INFERIOR */
         .unified-panel {
+            width: 100%; 
             background: rgba(0, 10, 20, 0.45); 
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-radius: 35px 35px 0 0;
-            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 15px) 20px !important; 
+            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px !important; 
             display: flex; flex-direction: column; gap: 15px;
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
         }
 
-        #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 0; }
+        #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; outline: none; padding: 0; box-sizing: border-box; }
         .panel-actions { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .action-group { display: flex; align-items: center; gap: 12px; }
+        .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 5px; transition: 0.3s; }
         .btn-pill-model { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 20px; padding: 8px 16px; font-size: 0.85rem; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
         .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s; }
 
-        /* LOGIN CARD */
+        /* LOGIN OVERLAY */
+        #login-overlay { 
+            position: fixed; inset: 0; width: 100vw; 
+            height: 100dvh !important; 
+            background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); 
+            z-index: 9999; display: flex; align-items: center; justify-content: center; 
+        }
         .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); }
-        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; transition: 0.3s; }
     </style>
 </head>
 <body>
@@ -183,30 +195,25 @@
             <p style="color:rgba(255,255,255,0.9); font-family:'Plus Jakarta Sans'; font-size:1.2rem; margin-top:30px; letter-spacing:1px; text-shadow: 0 0 10px rgba(0,0,0,0.8);">Aurora te escucha...</p>
         </div>
         <div class="live-controls">
-            <button class="live-btn" onclick="cerrarLiveMode()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><circle cx="8" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="16" cy="14" r="1"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="10" r="1"/><circle cx="16" cy="10" r="1"/></svg></button>
-            <button class="live-btn-end" onclick="cerrarLiveMode()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            <button id="btn-live-cam" class="live-btn" onclick="toggleCamaraLive()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
+            <button class="live-btn" onclick="cerrarLiveMode()">
+                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><circle cx="8" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="16" cy="14" r="1"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="10" r="1"/><circle cx="16" cy="10" r="1"/></svg>
+            </button>
+            <button class="live-btn-end" onclick="cerrarLiveMode()">
+                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <button id="btn-live-cam" class="live-btn" onclick="toggleCamaraLive()">
+                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </button>
         </div>
-    </div>
-
-    <div id="context-menu" class="bottom-sheet">
-        <div class="context-pill"></div>
-        <button class="context-btn" onclick="fijarChatActual()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg> Fijar Chat</button>
-        <button class="context-btn" onclick="renombrarChatActual()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Cambiar Nombre</button>
-        <button class="context-btn" onclick="compartirChatActual()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> Compartir Conversación</button>
     </div>
 
     <div id="login-overlay">
         <div class="login-card">
-            <h2 id="titulo-login" style="font-family:'Orbitron'; line-height:1.4;">BIENVENIDO A AURORA<br><span style="font-size:0.8rem; font-family:'Plus Jakarta Sans', sans-serif; letter-spacing:1px; color:rgba(255,255,255,0.7); text-shadow:none;">¿CÓMO DESEA REGISTRARSE?</span></h2>
+            <h2 id="titulo-login" style="font-family:'Orbitron'; line-height:1.4;">BIENVENIDO A AURORA</h2>
             <input type="email" placeholder="Email" class="login-input" id="emailInput">
             <input type="password" placeholder="Contraseña" class="login-input" id="passwordInput">
-            <button id="btn-principal" style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:15px; width:100%; border-radius:18px; font-weight:bold; cursor:pointer; font-family:'Orbitron'; letter-spacing:2px; margin-bottom:15px;" onclick="authCorreo()">INGRESAR</button>
-            <div style="display:flex; justify-content:space-between; font-size:0.8rem; opacity:0.8; margin-bottom:20px;"><a onclick="toggleRegistro()" id="link-registro" style="color:#fff; cursor:pointer; text-decoration:none;">Crear Cuenta</a></div>
-            <div style="margin:15px 0; color:rgba(255,255,255,0.4); font-size:0.8rem;">──────── ó ────────</div>
-            <button style="background:rgba(255,255,255,0.9); color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:12px; width:100%;" onclick="authGoogle()">
-                <svg width="20" height="20" viewBox="0 0 488 512" fill="#000"><path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/></svg> Ingresar con Google
-            </button>
+            <button style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:15px; width:100%; border-radius:18px; font-weight:bold; cursor:pointer; font-family:'Orbitron'; margin-bottom:15px;" onclick="authCorreo()">INGRESAR</button>
+            <button style="background:rgba(255,255,255,0.9); color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; cursor:pointer; width:100%;" onclick="authGoogle()">Ingresar con Google</button>
         </div>
     </div>
 
@@ -216,20 +223,28 @@
             <div class="titulo-app">AURORA</div>
             <img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()">
         </header>
+
         <div id="chat-window">
-            <div class="msg aurora">Bienvenido al núcleo de <b>Aurora</b>. Tu enlace neuronal está activo. ¿En qué puedo ayudarte?</div>
+            <div class="msg aurora">Tu enlace neuronal está activo. ¿En qué puedo ayudarte?</div>
         </div>
+
         <div class="bottom-section">
             <div class="unified-panel">
                 <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off" oninput="toggleInputButtons()">
                 <div class="panel-actions">
                     <div class="action-group">
-                        <button class="btn-mini-icon" onclick="abrirAdjuntos()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
-                        <button class="btn-pill-model" onclick="abrirMotores()"><span style="color:var(--accent);">⚡</span> Flash</button>
+                        <button class="btn-mini-icon" onclick="abrirAdjuntos()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </button>
+                        <button class="btn-pill-model" onclick="abrirMotores()">⚡ Flash</button>
                     </div>
                     <div class="action-group">
-                        <button id="btn-mic" class="btn-mini-icon" onclick="iniciarDictado()"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"></path></svg></button>
-                        <button id="btn-enviar" class="btn-mini-icon" onclick="enviar()" style="display:none; color:var(--accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+                        <button id="btn-mic" class="btn-mini-icon" onclick="iniciarDictado()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"></path></svg>
+                        </button>
+                        <button id="btn-enviar" class="btn-mini-icon" onclick="enviar()" style="display:none; color:var(--accent);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
                         <button class="btn-live-glow" onclick="abrirLiveMode()">A</button>
                     </div>
                 </div>
@@ -237,112 +252,50 @@
         </div>
     </div>
 
+    <div id="sidebar-menu" class="panel-side">
+        <h3 class="panel-title">MIS CHATS</h3>
+        <div id="history-list" style="flex:1; overflow-y:auto;"></div>
+    </div>
+
+    <div id="profile-panel" class="panel-side">
+        <h3 class="panel-title">MI CUENTA</h3>
+        <button class="chat-item" onclick="auth.signOut().then(() => location.reload())">Cerrar Sesión</button>
+    </div>
+
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        let enlacesContador = parseInt(localStorage.getItem('aurora_limite_celular')) || 1;
-        let chats = []; for(let i=1; i<=enlacesContador; i++) { chats.push({ id: i, nombre: `Chat ${i}`, pinned: false }); }
-        let chatSeleccionado = null; let timerLongPress;
-
-        document.body.addEventListener('touchmove', function(e) { if (!e.target.closest('#chat-window') && !e.target.closest('.panel-side') && !e.target.closest('.bottom-sheet') && !e.target.closest('#live-overlay')) e.preventDefault(); }, { passive: false });
-
         function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
         function abrirPerfil() { document.getElementById('profile-panel').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
-        function cerrarPaneles() { document.getElementById('sidebar-menu').classList.remove('panel-open'); document.getElementById('profile-panel').classList.remove('panel-open'); document.getElementById('panels-overlay').style.display = 'none'; cerrarModal(); }
-        function cerrarModal() { document.getElementById('premium-modal').style.display = 'none'; }
-        function cerrarBottomSheets() { document.querySelectorAll('.bottom-sheet').forEach(sheet => sheet.classList.remove('show')); document.getElementById('context-overlay').classList.remove('show'); }
-        function abrirMenu(id) { document.getElementById('context-overlay').classList.add('show'); document.getElementById(id).classList.add('show'); }
-        function abrirAdjuntos() { abrirMenu('attachment-menu'); } function abrirMotores() { abrirMenu('model-menu'); }
+        function cerrarPaneles() { document.getElementById('sidebar-menu').classList.remove('panel-open'); document.getElementById('profile-panel').classList.remove('panel-open'); document.getElementById('panels-overlay').style.display = 'none'; }
+        function cerrarBottomSheets() { /* lógica para sheets */ }
 
-        function bindLongPress() {
-            const items = document.querySelectorAll('.chat-item');
-            items.forEach(item => {
-                item.addEventListener('touchstart', (e) => { timerLongPress = setTimeout(() => { chatSeleccionado = parseInt(item.getAttribute('data-id')); if (navigator.vibrate) navigator.vibrate(50); abrirMenu('context-menu'); }, 500); });
-                item.addEventListener('touchend', () => clearTimeout(timerLongPress)); item.addEventListener('touchmove', () => clearTimeout(timerLongPress));
-            });
-        }
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+                if (user.photoURL) { const avatar = document.getElementById('user-avatar'); avatar.src = user.photoURL; avatar.style.display = 'block'; }
+            } else {
+                document.getElementById('login-overlay').style.display = 'flex';
+                document.getElementById('app-container').style.display = 'none';
+            }
+        });
 
-        function renombrarChatActual() { const nuevo = prompt("Nuevo nombre:"); if(nuevo && nuevo.trim() !== "") { chats.find(c => c.id === chatSeleccionado).nombre = nuevo; actualizarUI(); } cerrarBottomSheets(); }
-        function fijarChatActual() { const c = chats.find(c => c.id === chatSeleccionado); c.pinned = !c.pinned; actualizarUI(); cerrarBottomSheets(); }
-        function compartirChatActual() { const c = chats.find(c => c.id === chatSeleccionado); if (navigator.share) { navigator.share({ title: 'AURORA AI', text: `Revisá mi chat: ${c.nombre}`, url: window.location.href }); } cerrarBottomSheets(); }
-
-        function nuevoEnlace() {
-            if (enlacesContador >= 5) { document.getElementById('premium-modal').style.display = 'block'; document.getElementById('panels-overlay').style.display = 'block'; return; }
-            enlacesContador++; localStorage.setItem('aurora_limite_celular', enlacesContador); chats.push({ id: enlacesContador, nombre: `Chat ${enlacesContador}`, pinned: false });
-            actualizarUI(); document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Nuevo chat establecido. ¿En qué te ayudo?</div>`; cerrarPaneles();
-        }
-
-        function actualizarUI() {
-            document.getElementById('span-contador').innerText = enlacesContador; document.getElementById('bar-progreso').style.width = (enlacesContador * 20) + "%";
-            const list = document.getElementById('history-list'); list.innerHTML = "";
-            const ordenados = [...chats].sort((a,b) => b.pinned === a.pinned ? 0 : b.pinned ? 1 : -1);
-            ordenados.forEach(c => { list.innerHTML += `<div class="chat-item ${c.id === enlacesContador ? 'active' : ''} ${c.pinned ? 'pinned' : ''}" data-id="${c.id}"><span>${c.nombre}</span><span style="opacity: ${c.pinned ? '1' : '0.3'}; font-size: 0.8rem;">${c.pinned ? '📌' : ''}</span></div>`; });
-            bindLongPress();
-        }
-
-        function invitarAmigo() { if (navigator.share) { navigator.share({ title: 'AURORA AI', text: '¡Sincronizá tu mente con Aurora!', url: window.location.href }); } }
         function toggleInputButtons() {
             const val = document.getElementById('chat-terminal').value.trim();
             document.getElementById('btn-mic').style.display = val ? 'none' : 'flex';
             document.getElementById('btn-enviar').style.display = val ? 'flex' : 'none';
         }
 
-        function iniciarDictado() {
-            if(!('webkitSpeechRecognition' in window)) { alert("SISTEMA: Tu navegador no soporta el dictado de voz."); return; }
-            const rec = new webkitSpeechRecognition(); rec.lang = 'es-AR'; rec.interimResults = false; 
-            rec.onstart = () => { 
-                const mic = document.getElementById('btn-mic');
-                mic.style.color = "var(--danger)"; mic.style.filter = "drop-shadow(0 0 12px var(--danger))"; 
-                document.getElementById('chat-terminal').placeholder = "Escuchando...";
-            };
-            rec.onresult = (e) => { document.getElementById('chat-terminal').value = e.results[0][0].transcript; };
-            rec.onend = () => { 
-                const mic = document.getElementById('btn-mic');
-                mic.style.color = "rgba(255,255,255,0.9)"; mic.style.filter = "drop-shadow(0 0 5px rgba(255,255,255,0.3))";
-                document.getElementById('chat-terminal').placeholder = "Preguntale a Aurora...";
-                if(document.getElementById('chat-terminal').value.trim() !== "") { enviar(); } else { toggleInputButtons(); }
-            };
-            rec.start();
-        }
-
-        let cameraStream = null;
-        function abrirLiveMode() { document.getElementById('live-overlay').classList.add('show'); document.getElementById('app-container').style.opacity = '0'; }
-        function cerrarLiveMode() { 
-            document.getElementById('live-overlay').classList.remove('show'); document.getElementById('app-container').style.opacity = '1'; 
-            if(cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; document.getElementById('camera-stream').style.opacity = '0'; document.getElementById('btn-live-cam').classList.remove('active'); }
-        }
-
-        async function toggleCamaraLive() {
-            const vid = document.getElementById('camera-stream');
-            const btnCam = document.getElementById('btn-live-cam');
-            if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; vid.style.opacity = '0'; btnCam.classList.remove('active'); }
-            else { try { cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }); vid.srcObject = cameraStream; vid.style.opacity = '0.35'; btnCam.classList.add('active'); } catch(e) { alert("SISTEMA: Permiso de cámara denegado."); } }
-        }
-
-        let modoRegistro = false;
-        function toggleRegistro() {
-            modoRegistro = !modoRegistro;
-            const titulo = document.getElementById('titulo-login'); const btnPrincipal = document.getElementById('btn-principal'); const linkRegistro = document.getElementById('link-registro');
-            if(modoRegistro) { titulo.innerHTML = "CREAR CUENTA<br><span style='font-size:0.8rem; font-family:\"Plus Jakarta Sans\"; color:rgba(255,255,255,0.7); text-shadow:none;'>INGRESE SUS DATOS</span>"; btnPrincipal.innerText = "REGISTRARSE"; linkRegistro.innerText = "Ya tengo cuenta";
-            } else { titulo.innerHTML = "BIENVENIDO A AURORA<br><span style='font-size:0.8rem; font-family:\"Plus Jakarta Sans\"; color:rgba(255,255,255,0.7); text-shadow:none;'>¿CÓMO DESEA REGISTRARSE?</span>"; btnPrincipal.innerText = "INGRESAR"; linkRegistro.innerText = "Crear Cuenta"; }
-        }
-
-        function authCorreo() { const email = document.getElementById('emailInput').value; const password = document.getElementById('passwordInput').value; if(!email || !password) { alert("Por favor, ingresá email y contraseña."); return; } if(modoRegistro) { auth.createUserWithEmailAndPassword(email, password).catch(e => alert("Error: " + e.message)); } else { auth.signInWithEmailAndPassword(email, password).catch(e => alert("Error: Verificá tus datos.")); } }
-        function authGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-        function cambiarCuenta() { cerrarPaneles(); auth.signOut().then(() => { const provider = new firebase.auth.GoogleAuthProvider(); provider.setCustomParameters({ prompt: 'select_account' }); auth.signInWithPopup(provider).catch(e => {}); }); }
-        function cerrarSesionReal() { auth.signOut().then(() => location.reload()); }
-        function eliminarCuenta() { const user = firebase.auth().currentUser; if (user && confirm("⚠️ ¿Eliminar cuenta para siempre?")) { user.delete().then(() => { localStorage.removeItem('aurora_limite_celular'); location.reload(); }).catch(e => alert("Re-logueate e intenta de nuevo.")); } }
-
-        auth.onAuthStateChanged((user) => { if (user) { document.getElementById('login-overlay').style.display = 'none'; document.getElementById('app-container').style.display = 'flex'; if (user.photoURL) { const avatar = document.getElementById('user-avatar'); avatar.src = user.photoURL; avatar.style.display = 'block'; } actualizarUI(); } else { document.getElementById('login-overlay').style.display = 'flex'; document.getElementById('app-container').style.display = 'none'; } });
-
         async function enviar() {
             const input = document.getElementById('chat-terminal'); if(!input.value.trim()) return;
-            const win = document.getElementById('chat-window'); win.innerHTML += `<div class="msg user">${input.value}</div>`;
-            const msj = input.value; input.value = ""; toggleInputButtons(); win.scrollTop = win.scrollHeight;
-            try { const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:msj}) }); const data = await res.json(); win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`; win.scrollTop = win.scrollHeight; } catch(e) { win.innerHTML += `<div class="msg aurora" style="color:red;">Error de conexión...</div>`; }
+            const win = document.getElementById('chat-window');
+            win.innerHTML += `<div class="msg user">${input.value}</div>`;
+            input.value = ""; toggleInputButtons(); win.scrollTop = win.scrollHeight;
         }
-        document.getElementById('chat-terminal').addEventListener('keypress', e => { if (e.key === 'Enter') enviar(); });
+
+        function authGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     </script>
 </body>
 </html>
