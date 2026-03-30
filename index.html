@@ -4,92 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AURORA - Acceso Neuronal</title>
-    
+   
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
-
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
-        
-        /* ✨ 1. BLOQUEO TOTAL DE PANTALLA */
+       
+        /* 🔥 FIX TOTAL PARA IPHONE: SIN BARRA NEGRA DE ABAJO */
         html, body {
-            margin: 0; padding: 0; 
-            width: 100%; height: 100%;
-            overflow: hidden; 
-            position: fixed; /* Clava la app al cristal */
-            background-color: #000 !important; 
+            margin: 0; padding: 0;
+            width: 100%; height: 100dvh;          /* ← dvh es clave para iPhone */
+            overflow: hidden;
+            position: fixed;
+            background: transparent !important;   /* ← sin negro */
             font-family: 'Plus Jakarta Sans', sans-serif;
             overscroll-behavior: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ✨ 2. EL VIDEO: MODO EXPLOSIÓN (Tapa todo) */
+        /* 🔥 VIDEO FULL SCREEN REAL (cubre hasta debajo de la home indicator) */
         #bg-video {
             position: fixed !important;
-            /* 👇 Forzamos desborde de 100px para que Safari no encuentre bordes 👇 */
-            top: -50px !important;
-            left: -50px !important;
-            width: calc(100% + 100px) !important;
-            height: calc(100% + 100px) !important;
-            z-index: 0; 
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100dvh !important;            /* ← cubre TODO el iPhone */
+            z-index: -1 !important;
             object-fit: cover !important;
             pointer-events: none !important;
         }
 
-        /* ✨ 3. INTERFAZ GEMINI FLOTANTE */
-        #app-container { 
-            display: none; flex-direction: column; 
-            position: absolute; inset: 0; 
-            z-index: 10; 
+        /* INTERFAZ FLOTANTE (todo encima del video) */
+        #app-container {
+            display: none; flex-direction: column;
+            position: absolute; inset: 0;
+            z-index: 10;
             background: transparent;
         }
-
-        header { padding-top: calc(env(safe-area-inset-top, 44px) + 5px); padding-left: 20px; padding-right: 20px; display: flex; justify-content: space-between; align-items: center; }
+        header { 
+            padding-top: calc(env(safe-area-inset-top, 44px) + 5px); 
+            padding-left: 20px; padding-right: 20px; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 12px; font-size: 1.6rem; text-shadow: 0 0 15px var(--accent); flex: 1; text-align: center; color: #fff; margin: 0; }
         .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; width: 44px; text-align: left; }
         #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); display: none; object-fit: cover; }
-
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; color: #fff; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); border-bottom-left-radius: 5px;}
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-bottom-right-radius: 5px;}
 
-        /* ✨ BARRA DE ABAJO ADAPTADA AL IPHONE */
-        .bottom-section { 
-            padding: 5px 15px calc(env(safe-area-inset-bottom, 10px) + 10px) 15px; 
+        /* BARRA DE ABAJO: solo el input sube un poquito para no tapar la home indicator */
+        .bottom-section {
+            padding: 5px 15px calc(env(safe-area-inset-bottom, 10px) + 10px) 15px;
             display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box;
         }
-        
-        #chat-terminal { 
-            width: 100%; background: transparent; border: none; color: white; font-size: 1.1rem; 
-            font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 10px; 
-            resize: none; overflow-y: hidden; min-height: 40px; text-shadow: 0 0 10px #fff; 
+       
+        #chat-terminal {
+            width: 100%; background: transparent; border: none; color: white; font-size: 1.1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 10px;
+            resize: none; overflow-y: hidden; min-height: 40px; text-shadow: 0 0 10px #fff;
         }
         #chat-terminal::placeholder { color: #fff; opacity: 0.6; font-family: 'Orbitron'; }
-
         .chat-tools { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
         .tools-left, .tools-right { display: flex; align-items: center; gap: 15px; }
-
         .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 10px #fff); transform: scale(1.2); }
         .btn-mini-icon { background: transparent; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .btn-pill-model { background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent); color: #fff; border-radius: 20px; padding: 6px 14px; font-family: 'Orbitron'; font-size: 0.75rem; }
         .btn-a-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 2rem; cursor: pointer; text-shadow: 0 0 20px #fff, 0 0 30px var(--accent); }
 
-        /* LOGIN */
-        #login-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(15px); }
+        /* LOGIN TRANSPARENTE */
+        #login-overlay { 
+            position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; 
+            background: rgba(0, 0, 0, 0.2); 
+        }
         .login-card { text-align: center; max-width: 380px; width: 90%; }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
         .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
 
         /* PANELES LATERALES */
-        .panel-side { position: fixed; top: 0; width: 280px; height: 100%; background: rgba(0, 10, 20, 0.8); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; }
+        .panel-side { position: fixed; top: 0; width: 280px; height: 100dvh; background: rgba(0, 10, 20, 0.8); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
         .panel-open { transform: translateX(0) !important; }
@@ -97,7 +96,7 @@
     </style>
 </head>
 <body>
-
+    <!-- VIDEO PRIMERO Y FULL (esto es lo que tapa la barra de abajo) -->
     <video autoplay muted loop playsinline webkit-playsinline id="bg-video">
         <source src="fondo.mp4" type="video/mp4">
     </video>
@@ -110,7 +109,6 @@
         <button onclick="cerrarSesionReal()" style="width:100%; padding:15px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); border-radius:15px; font-family:'Orbitron'; margin-top:20px;">CERRAR SESIÓN</button>
         <button onclick="eliminarCuenta()" style="margin-top:auto; width:100%; padding:15px; background:rgba(255,77,77,0.05); color:var(--danger); border:1px solid var(--danger); border-radius:15px; font-family:'Orbitron';">ELIMINAR CUENTA</button>
     </div>
-
     <div id="sidebar-menu" class="panel-side">
         <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px;">CHATS</h3>
     </div>
@@ -132,11 +130,9 @@
             <div class="titulo-app">AURORA</div>
             <div style="width:44px;"><img id="user-avatar" src="" alt="P" onclick="abrirPerfil()"></div>
         </header>
-
         <div id="chat-window">
             <div class="msg aurora">Bienvenido al núcleo de Aurora.</div>
         </div>
-
         <div class="bottom-section">
             <textarea id="chat-terminal" rows="1" placeholder="Preguntale a Aurora..." oninput="autoResize(this); toggleInputButtons()"></textarea>
             <div class="chat-tools">
@@ -157,7 +153,6 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        // BLOQUEO DE ARRASTRE
         document.addEventListener('touchmove', function(e){ if(!e.target.closest('#chat-window')) e.preventDefault(); }, {passive:false});
 
         function autoResize(t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
@@ -165,17 +160,15 @@
             const val = document.getElementById('chat-terminal').value.trim();
             document.getElementById('btn-enviar').style.display = val ? 'flex' : 'none';
         }
-
         function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
         function abrirPerfil() { document.getElementById('profile-panel').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
         function cerrarPaneles() { document.querySelectorAll('.panel-side').forEach(p => p.classList.remove('panel-open')); document.getElementById('panels-overlay').style.display = 'none'; }
-        
+       
         function authGoogle() { const p = new firebase.auth.GoogleAuthProvider(); auth.signInWithRedirect(p); }
         function authCorreo() { const e = document.getElementById('emailInput').value; const p = document.getElementById('passwordInput').value; auth.signInWithEmailAndPassword(e,p).catch(err => alert("Error")); }
         function cerrarSesionReal() { auth.signOut().then(() => location.reload()); }
-
         async function enviar() {
-            const input = document.getElementById('chat-terminal'); 
+            const input = document.getElementById('chat-terminal');
             const msj = input.value; if(!msj.trim()) return;
             const win = document.getElementById('chat-window');
             win.innerHTML += `<div class="msg user">${msj}</div>`;
@@ -191,7 +184,6 @@
                 win.scrollTop = win.scrollHeight;
             } catch(e) { win.innerHTML += `<div class="msg aurora">Error de conexión...</div>`; }
         }
-
         auth.onAuthStateChanged(user => {
             if (user) {
                 document.getElementById('login-overlay').style.display = 'none';
@@ -201,6 +193,12 @@
                 document.getElementById('login-overlay').style.display = 'flex';
                 document.getElementById('app-container').style.display = 'none';
             }
+        });
+
+        /* 🔥 Fuerza el video en Safari/iPhone */
+        window.addEventListener('load', () => {
+            const video = document.getElementById('bg-video');
+            if (video) video.play();
         });
     </script>
 </body>
