@@ -18,23 +18,23 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ FIX PANTALLA NEGRA: Quitamos el !important que tapaba el video */
+        /* ✨ FIX DEFINITIVO PANTALLA NEGRA: FONDO TRANSPARENTE PARA QUE EL VIDEO RESPIRE */
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100vh; height: 100dvh; 
-            overflow: hidden; background-color: #000; 
+            overflow: hidden; background-color: transparent !important; 
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-text-size-adjust: 100%;
         }
 
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: 0.3s; z-index: 1000000; }
 
-        /* ✨ TRUCO MAESTRO: z-index 0 para que siempre esté visible y escalado para comerse los bordes */
+        /* ✨ EL TRUCO MAESTRO: VIDEO CENTRADO, ESCALADO Y EN EL FONDO ABSOLUTO */
         #bg-video { 
             position: fixed !important; top: 50%; left: 50%; 
             min-width: 100vw; min-height: 100vh; min-height: 100dvh; 
-            width: auto; height: auto; z-index: 0; 
-            transform: translate(-50%, -50%) scale(1.1); 
-            object-fit: cover !important; pointer-events: none; background: transparent; 
+            width: auto; height: auto; z-index: -999 !important; 
+            transform: translate(-50%, -50%) scale(1.15); 
+            object-fit: cover !important; pointer-events: none;
         }
         
         #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0,0,0,0.5); z-index: 100000; display: none; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
@@ -118,7 +118,7 @@
         .btn-accent-opt { border-color: var(--accent); color: var(--accent); background: rgba(0, 242, 255, 0.1); }
 
         /* LOGIN LIMPIO Y TRANSPARENTE */
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0,0,0,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { text-align: center; max-width: 380px; width: 90%; }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
         .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.15); box-shadow: 0 0 15px rgba(0,242,255,0.2); }
@@ -137,12 +137,11 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 5px;}
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 5px;}
 
-        /* ✨ DISEÑO GEMINI BAJADO Y COMPACTO */
+        /* DISEÑO GEMINI "DESNUDO" */
         .bottom-section { 
-            /* Se reduce el padding bottom para pegar los controles al borde inferior */
-            padding: 5px 15px calc(env(safe-area-inset-bottom, 0px) + 8px) 15px; 
-            display: flex; flex-direction: column; gap: 6px; width: 100%; box-sizing: border-box; 
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%); 
+            padding: 10px 15px calc(env(safe-area-inset-bottom, 10px) + 15px) 15px; 
+            display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; 
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%); 
         }
         
         #chat-terminal { 
@@ -157,6 +156,11 @@
         .tools-left { display: flex; align-items: center; gap: 8px; }
         .tools-right { display: flex; align-items: center; gap: 8px; }
 
+        /* ✨ BOTÓN + BLANCO, BRILLANTE Y UN POQUITO MÁS GRANDE COMO PEDISTE */
+        .btn-plus-icon { background: transparent; border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 5px; transition: 0.3s; filter: drop-shadow(0 0 10px rgba(255,255,255,0.9)); transform: scale(1.1); }
+        .btn-plus-icon svg { width: 24px; height: 24px; stroke: currentColor; transition: 0.3s; stroke-width: 2.5; }
+        .btn-plus-icon:hover { color: var(--accent); filter: drop-shadow(0 0 15px var(--accent)); }
+
         .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 5px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
         .btn-mini-icon svg { width: 24px; height: 24px; stroke: currentColor; transition: 0.3s; }
         .btn-mini-icon:hover { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); }
@@ -164,6 +168,7 @@
         .btn-pill-model { background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 20px; padding: 6px 14px; font-size: 0.85rem; font-family: 'Orbitron'; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.3s; backdrop-filter: blur(10px); }
         .btn-pill-model:hover { border-color: var(--accent); }
 
+        /* BOTÓN A LUMINOSO (SIN BORDE) */
         .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s; padding: 0 10px; }
         .btn-live-glow:hover { transform: scale(1.1); text-shadow: 0 0 25px var(--accent); color: var(--accent); }
     </style>
@@ -281,8 +286,8 @@
             
             <div class="chat-tools">
                 <div class="tools-left">
-                    <button class="btn-mini-icon" onclick="abrirAdjuntos()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <button class="btn-plus-icon" onclick="abrirAdjuntos()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
                     <button class="btn-pill-model" id="engine-pill" onclick="abrirMotores()">
                         <span style="color:var(--accent);">⚡</span> Flash
