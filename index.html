@@ -27,7 +27,7 @@
 
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: 0.3s; z-index: 1000000; }
 
-        /* ✨ VIDEO DE FONDO PERMANENTE */
+        /* ✨ VIDEO DE FONDO PERMANENTE (NUNCA NEGRO) */
         #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 0; object-fit: cover !important; pointer-events: none; }
         
         #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
@@ -73,7 +73,7 @@
         .context-btn {
             background: transparent; color: #fff; border: none; padding: 16px 15px;
             font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem;
-            text-align: left; width: 100%; border-radius: 15px; display: flex; align-items: center; gap: 15px; transition: 0.2s; cursor: pointer;
+            text-align: left; width: 100%; border-radius: 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s;
         }
         .context-btn:hover { background: rgba(0, 242, 255, 0.1); color: var(--accent); }
         .context-btn svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.8); transition: 0.2s; }
@@ -111,7 +111,7 @@
         .btn-account { width: 100%; padding: 15px; border-radius: 15px; font-family: 'Orbitron'; font-size: 0.75rem; cursor: pointer; margin-bottom: 12px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
         .btn-accent-opt { border-color: var(--accent); color: var(--accent); background: rgba(0, 242, 255, 0.1); }
 
-        /* ✨ LOGIN ESTILO AURORA (SIN BORDES MOLESTOS) */
+        /* LOGIN ESTILO AURORA 11:18 (IMPECABLE Y TRANSPARENTE) */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { text-align: center; max-width: 380px; width: 90%; }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
@@ -119,12 +119,9 @@
 
         /* APP CONTAINER Y HEADER */
         #app-container { display: none; flex-direction: column; height: 100dvh; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
-        
-        /* ✨ HEADER CENTRADO */
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; flex: 1; text-align: center; }
-        .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; text-shadow: 0 0 15px var(--accent); padding: 0; width: 44px; text-align: left; }
-        .header-spacer { width: 44px; } /* Spacer para que el titulo quede centrado si no hay avatar */
+        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; }
+        .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; text-shadow: 0 0 15px var(--accent); padding: 0; }
         #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); object-fit: cover; display: none; cursor: pointer; }
 
         /* BURBUJAS DE CHAT */
@@ -133,26 +130,17 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 5px;}
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 5px;}
 
-        /* ✨ ESTILO GEMINI CELULAR: BOTONES AFUERA DEL TEXTAREA */
+        /* ✨ PANEL INFERIOR TOTALMENTE INVISIBLE (SIN BURBUJA NI BORDES) */
         .bottom-section { 
-            padding: 0 15px calc(env(safe-area-inset-bottom, 10px) + 15px) 15px; 
-            display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box; 
+            padding: 10px 15px calc(env(safe-area-inset-bottom, 10px) + 15px) 15px; 
+            display: flex; flex-direction: column; gap: 12px; width: 100%; box-sizing: border-box; 
             background: transparent; 
-        }
-        
-        .chat-box-gemini { 
-            width: 100%; max-width: 100%; 
-            background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(0, 242, 255, 0.25); 
-            border-radius: 25px; 
-            padding: 12px 18px; display: flex; flex-direction: column; 
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4); 
         }
         
         #chat-terminal { 
             width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; 
-            font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 0; box-sizing: border-box; 
-            resize: none; overflow-y: hidden; min-height: 24px; max-height: 120px; line-height: 1.4;
+            font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 5px 10px; box-sizing: border-box; 
+            resize: none; overflow-y: hidden; min-height: 28px; max-height: 120px; line-height: 1.4;
         }
         #chat-terminal::placeholder { color: rgba(255,255,255,0.6); }
 
@@ -160,15 +148,15 @@
         .tools-left { display: flex; align-items: center; gap: 15px; }
         .tools-right { display: flex; align-items: center; gap: 15px; }
 
-        .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 5px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
-        .btn-mini-icon svg { width: 24px; height: 24px; stroke: currentColor; transition: 0.3s; }
+        .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 2px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
+        .btn-mini-icon svg { width: 24px; height: 24px; stroke: currentColor; }
         .btn-mini-icon:hover { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); }
 
         .btn-pill-model { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 20px; padding: 6px 14px; font-size: 0.85rem; font-family: 'Orbitron'; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.3s; }
         .btn-pill-model:hover { border-color: var(--accent); }
 
-        /* ✨ BOTÓN A LUMINOSO Y LIMPIO */
-        .btn-live-glow { background: transparent; border: none; width: 38px; height: 38px; color: #fff; font-family: 'Orbitron'; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s; }
+        /* ✨ BOTÓN A LUMINOSO (SIN BORDE, SÓLO LA LETRA) */
+        .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.9); transition: 0.3s; padding: 0; margin-right: 5px; }
         .btn-live-glow:hover { transform: scale(1.1); text-shadow: 0 0 25px rgba(255,255,255,1); }
         
     </style>
@@ -240,11 +228,12 @@
         <button class="btn-account" style="border-color:var(--accent); color:var(--accent);" onclick="cambiarCuenta()">CAMBIAR CUENTA</button>
         <button class="btn-account" onclick="cerrarSesionReal()">CERRAR SESIÓN</button>
         <button class="btn-account" style="margin-top:auto; color:var(--danger); border-color:var(--danger);" onclick="eliminarCuenta()">ELIMINAR CUENTA</button>
+        <div style="text-align:center; font-size:0.6rem; color:rgba(255,255,255,0.5); margin-top:15px; letter-spacing:1px; font-family:'Plus Jakarta Sans'; line-height: 1.5;">AURORA ES UNA IA Y PUEDE COMETER ERRORES. VERIFICA LA INFORMACIÓN.</div>
     </div>
 
     <div id="login-overlay">
         <div class="login-card">
-            <h2 id="titulo-login" style="font-family:'Orbitron'; line-height:1.4; margin-bottom:25px; text-shadow:0 0 15px var(--accent); letter-spacing: 2px;">Bienvenido a Aurora</h2>
+            <h2 id="titulo-login" style="font-family:'Orbitron'; line-height:1.4; margin-bottom:25px; text-shadow:0 0 15px var(--accent); letter-spacing: 2px;">BIENVENIDO A AURORA</h2>
             
             <input type="email" placeholder="Correo electrónico" class="login-input" id="emailInput">
             <input type="password" placeholder="Contraseña" class="login-input" id="passwordInput">
@@ -271,8 +260,8 @@
     <div id="app-container">
         <header>
             <button class="btn-menu-top" onclick="abrirSidebar()">☰</button>
-            <div class="titulo-app">AURORA</div>
-            <div class="header-spacer" id="avatar-container"><img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()"></div>
+            <div class="titulo-app" style="text-align: center; flex: 1;">AURORA</div>
+            <div id="avatar-container" style="width: 44px; display: flex; justify-content: flex-end;"><img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()"></div>
         </header>
 
         <div id="chat-window">
@@ -280,10 +269,8 @@
         </div>
 
         <div class="bottom-section">
-            <div class="chat-box-gemini">
-                <textarea id="chat-terminal" rows="1" placeholder="Preguntale a Aurora..." oninput="autoResize(this); toggleInputButtons()"></textarea>
-            </div>
-
+            <textarea id="chat-terminal" rows="1" placeholder="Preguntale a Aurora..." oninput="autoResize(this); toggleInputButtons()"></textarea>
+            
             <div class="chat-tools">
                 <div class="tools-left">
                     <button class="btn-mini-icon" onclick="abrirAdjuntos()">
@@ -359,11 +346,10 @@
             bindLongPress();
         }
 
-        // ✨ MAGIA GEMINI: TEXTAREA QUE CRECE SOLO
         function autoResize(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
-            if(textarea.value === '') textarea.style.height = '24px';
+            if(textarea.value === '') textarea.style.height = '28px';
         }
 
         function toggleInputButtons() {
@@ -387,7 +373,7 @@
             };
             rec.onend = () => { 
                 const mic = document.getElementById('btn-mic');
-                mic.style.color = "rgba(255,255,255,0.8)"; mic.style.filter = "none";
+                mic.style.color = "rgba(255,255,255,0.9)"; mic.style.filter = "drop-shadow(0 0 5px rgba(255,255,255,0.3))";
                 document.getElementById('chat-terminal').placeholder = "Preguntale a Aurora...";
                 if(document.getElementById('chat-terminal').value.trim() !== "") { enviar(); } else { toggleInputButtons(); }
             };
@@ -411,28 +397,22 @@
             modoRegistro = !modoRegistro;
             const titulo = document.getElementById('titulo-login'); const btnPrincipal = document.getElementById('btn-principal'); const linkRegistro = document.getElementById('link-registro');
             if(modoRegistro) { titulo.innerHTML = "CREAR CUENTA"; btnPrincipal.innerText = "REGISTRARSE"; linkRegistro.innerText = "Ya tengo cuenta";
-            } else { titulo.innerHTML = "Bienvenido a Aurora"; btnPrincipal.innerText = "INGRESAR"; linkRegistro.innerText = "Crear Cuenta"; }
+            } else { titulo.innerHTML = "BIENVENIDO A AURORA"; btnPrincipal.innerText = "INGRESAR"; linkRegistro.innerText = "Crear Cuenta"; }
         }
 
         function authCorreo() { const email = document.getElementById('emailInput').value; const password = document.getElementById('passwordInput').value; if(!email || !password) { alert("Por favor, ingresá email y contraseña."); return; } if(modoRegistro) { auth.createUserWithEmailAndPassword(email, password).catch(e => alert("Error: " + e.message)); } else { auth.signInWithEmailAndPassword(email, password).catch(e => alert("Error: Verificá tus datos.")); } }
         
-        // ✨ RADAR PWA Y SAFARI 
         function authGoogle() { 
             const p = new firebase.auth.GoogleAuthProvider(); 
             const esApp = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-            
-            if(esApp) {
-                auth.signInWithPopup(p).catch(e => alert("Safari bloqueó el popup. Ingresa por correo."));
-            } else {
-                auth.signInWithRedirect(p);
-            }
+            if(esApp) { auth.signInWithPopup(p).catch(e => alert("Usa Safari para iniciar sesión por primera vez.")); } 
+            else { auth.signInWithRedirect(p); }
         }
         
         function cambiarCuenta() { cerrarPaneles(); auth.signOut().then(() => { const provider = new firebase.auth.GoogleAuthProvider(); provider.setCustomParameters({ prompt: 'select_account' }); auth.signInWithPopup(provider).catch(e => {}); }); }
         function cerrarSesionReal() { auth.signOut().then(() => location.reload()); }
         function eliminarCuenta() { const user = firebase.auth().currentUser; if (user && confirm("⚠️ ¿Eliminar cuenta para siempre?")) { user.delete().then(() => { localStorage.removeItem('aurora_limite_celular'); location.reload(); }).catch(e => alert("Re-logueate e intenta de nuevo.")); } }
 
-        // ✨ VIGILANTE REFORZADO SAFARI + PWA
         auth.onAuthStateChanged((user) => { 
             const loginOverlay = document.getElementById('login-overlay');
             const appContainer = document.getElementById('app-container');
@@ -448,7 +428,6 @@
             } 
         });
 
-        // ✨ PROCESADOR DE RETORNO (VITAL PARA QUE SAFARI NO SE QUEDE EN BUCLE)
         auth.getRedirectResult().then((result) => {
             if (result && result.user) {
                 document.getElementById('login-overlay').style.display = 'none';
@@ -460,7 +439,6 @@
             }
         });
 
-        // ✨ V27: ENVIAR CON BARRA, VOZ Y VIBRACIÓN
         async function enviar() {
             const input = document.getElementById('chat-terminal'); 
             const win = document.getElementById('chat-window');
@@ -471,13 +449,12 @@
             const msj = input.value; 
             win.innerHTML += `<div class="msg user">${msj}</div>`;
             
-            // Limpia y resetea tamaño
             input.value = ""; 
             autoResize(input);
             toggleInputButtons(); 
             win.scrollTop = win.scrollHeight;
             
-            bar.style.width = "75%"; // GLOW START
+            bar.style.width = "75%"; 
             
             try { 
                 const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { 
@@ -488,12 +465,11 @@
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`; 
                 win.scrollTop = win.scrollHeight; 
                 
-                bar.style.width = "100%"; // GLOW END
+                bar.style.width = "100%"; 
                 setTimeout(() => bar.style.width = "0%", 400);
 
-                if (window.navigator.vibrate) window.navigator.vibrate(15); // VIBRACIÓN
+                if (window.navigator.vibrate) window.navigator.vibrate(15); 
                 
-                // VOZ DE AURORA
                 const leer = new SpeechSynthesisUtterance(data.respuesta);
                 leer.lang = 'es-AR';
                 window.speechSynthesis.speak(leer);
@@ -504,7 +480,6 @@
             }
         }
 
-        // Permite "Enter" para enviar, "Shift+Enter" para salto de línea
         document.getElementById('chat-terminal').addEventListener('keydown', e => { 
             if (e.key === 'Enter' && !e.shiftKey) { 
                 e.preventDefault(); 
