@@ -18,29 +18,31 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ TU RESET TOTAL */
+        /* ✨ RESET TOTAL */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* ✨ FIX GLOBAL SAFARI (TU CLAVE) */
-        html { background: #000 !important; }
-        body { 
-            width: 100%; height: 100%; min-height: 100vh; min-height: 100dvh;
-            overflow: hidden; background: transparent !important;
-            font-family: 'Plus Jakarta Sans', sans-serif; color: #fff;
+        /* ✨ FIX GLOBAL SAFARI: Transparencia total para que el video respire */
+        html, body {
+            width: 100%;
+            height: 100%;
+            height: 100svh;
+            overflow: hidden;
+            background-color: transparent !important; /* ← CLAVE: No más negro acá */
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #fff;
             overscroll-behavior-y: none;
-            padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* ✨ CONTENEDOR FULLSCREEN REAL (EL SECRETO) */
+        /* ✨ CONTENEDOR FULLSCREEN REAL (TU FIX) */
         #video-bg {
             position: fixed;
             inset: 0;
             width: 100vw;
             height: 100vh;
-            height: 100svh; /* ← LA MAGIA */
+            height: 100svh;
             overflow: hidden;
-            background: #000;
-            z-index: -999;
+            z-index: -1000; /* Fondo absoluto */
+            background: #000; /* Solo si el video falla */
         }
 
         /* ✨ VIDEO PERFECTAMENTE CENTRADO CON ESCALA 1.4 */
@@ -53,9 +55,6 @@
             object-fit: cover;
             pointer-events: none;
         }
-
-        /* CAPA PARA ESTABILIDAD */
-        body::before { content: ""; position: fixed; inset: 0; z-index: -998; background: transparent; }
 
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); z-index: 1000000; }
         #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
@@ -72,13 +71,13 @@
         #profile-panel { right: 0; transform: translateX(100%); }
         .panel-open { transform: translateX(0) !important; }
 
-        /* LOGIN */
+        /* LOGIN TOTALMENTE TRANSPARENTE */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; z-index: 9999; display: flex; align-items: center; justify-content: center; background: transparent; }
-        .login-card { text-align: center; max-width: 380px; width: 90%; }
-        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
+        .login-card { text-align: center; max-width: 380px; width: 90%; background: transparent !important; }
+        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.15); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
 
         /* INTERFAZ PRINCIPAL */
-        #app-container { display: none; flex-direction: column; height: 100%; width: 100%; position: relative; z-index: 10; }
+        #app-container { display: none; flex-direction: column; height: 100%; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; flex: 1; text-align: center; padding-left: 15px;}
         .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; width: 44px; }
@@ -88,7 +87,7 @@
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); }
 
-        /* ✨ DISEÑO GEMINI DESNUDO Y COMPACTO ABAJO */
+        /* ✨ DISEÑO GEMINI DESNUDO Y BRILLANTE ABAJO */
         .bottom-section { 
             padding: 5px 15px calc(env(safe-area-inset-bottom, 5px) + 8px) 15px; 
             display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; 
@@ -110,6 +109,7 @@
         .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 10px #fff); transform: scale(1.1); }
         .btn-plus-white svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 3; }
 
+        .btn-mini-icon { background: transparent; border: none; color: #fff; cursor: pointer; }
         .btn-pill-model { background: rgba(0, 242, 255, 0.05); border: 1px solid var(--accent); color: #fff; border-radius: 20px; padding: 6px 14px; font-family: 'Orbitron'; font-size: 0.8rem; backdrop-filter: blur(10px); }
 
         /* ✨ BOTÓN A BLANCA LUMINOSA */
@@ -132,18 +132,18 @@
     <div id="loading-bar"></div>
     <div id="panels-overlay" onclick="cerrarPaneles()"></div>
 
-    <div id="sidebar-menu" class="panel-side">
-        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px;">MIS CHATS</h3>
-        <div id="history-list" style="flex:1; overflow-y:auto;"></div>
-        <button onclick="nuevoEnlace()" style="background:rgba(0,242,255,0.1); border:1px dashed var(--accent); color:var(--accent); width:100%; padding:12px; border-radius:12px; font-family:'Orbitron'; font-size:0.7rem;">+ NUEVO CHAT</button>
-    </div>
-
     <div id="profile-panel" class="panel-side">
-        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px;">MI CUENTA</h3>
+        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px; margin-bottom:20px;">MI CUENTA</h3>
         <button onclick="cambiarCuenta()" style="width:100%; padding:15px; border-radius:15px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid var(--accent); font-family:'Orbitron';">CAMBIAR CUENTA</button>
         <button onclick="cerrarSesionReal()" style="width:100%; padding:15px; border-radius:15px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); margin-top:15px; font-family:'Orbitron';">CERRAR SESIÓN</button>
         <button onclick="eliminarCuenta()" style="margin-top:auto; width:100%; padding:15px; border-radius:15px; background:rgba(255,77,77,0.05); color:var(--danger); border:1px solid var(--danger); font-family:'Orbitron';">ELIMINAR CUENTA</button>
         <div style="text-align:center; font-size:0.65rem; color:#fff; text-shadow:0 0 10px #fff; margin-top:15px; font-family:'Orbitron'; opacity:0.9; line-height:1.4;">AURORA ES UNA IA Y PUEDE COMETER ERRORES.</div>
+    </div>
+
+    <div id="sidebar-menu" class="panel-side">
+        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px; margin-bottom:20px;">MIS CHATS</h3>
+        <div id="history-list" style="flex:1; overflow-y:auto;"></div>
+        <button onclick="nuevoEnlace()" style="background:rgba(0,242,255,0.1); border:1px dashed var(--accent); color:var(--accent); width:100%; padding:12px; border-radius:12px; font-family:'Orbitron'; font-size:0.7rem;">+ NUEVO CHAT</button>
     </div>
 
     <div id="login-overlay">
@@ -165,7 +165,7 @@
         </header>
 
         <div id="chat-window">
-            <div class="msg aurora" style="background:rgba(0,242,255,0.05); border:1px solid rgba(0,242,255,0.2);">Tu enlace neuronal está activo. ¿Qué deseas consultar?</div>
+            <div class="msg aurora" style="background:rgba(0,242,255,0.05); border:1px solid rgba(0,242,255,0.2);">Bienvenido al núcleo de Aurora. Tu enlace neuronal está activo.</div>
         </div>
 
         <div class="bottom-section">
@@ -189,7 +189,11 @@
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
-        let enlacesContador = parseInt(localStorage.getItem('aurora_limite_celular')) || 1;
+        
+        // ✨ AUTO-PLAY FIX PARA SAFARI
+        document.addEventListener('DOMContentLoaded', () => { 
+            const v = document.getElementById('bg-video'); v.play().catch(() => {});
+        });
 
         function autoResize(t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
         function toggleInputButtons() {
@@ -214,7 +218,7 @@
                 document.getElementById('app-container').style.display = 'none';
             }
         });
-
+        
         auth.getRedirectResult().catch(e => console.error(e));
         window.addEventListener('resize', () => { document.body.style.height = window.innerHeight + 'px'; });
     </script>
