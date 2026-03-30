@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aurora-cache-v4';
+const CACHE_NAME = 'aurora-cache-v5'; // Subimos a v5 para forzar limpieza
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
@@ -8,7 +8,8 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(keys.map(key => {
-        if (key !== CACHE_NAME) return caches.delete(key);
+        // Borramos absolutamente todas las cachés viejas
+        return caches.delete(key);
       }));
     })
   );
@@ -16,12 +17,7 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // 🚨 REGLA DE ORO: Si es un video, NO lo cachees. Dejalo pasar libre.
-  if (e.request.url.includes('.mp4')) {
-    return; 
-  }
-
-  e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
-  );
+  // No cacheamos nada por ahora para poder debuguear la barra negra
+  // Dejamos que todo pase directo al servidor
+  return; 
 });
