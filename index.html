@@ -17,31 +17,38 @@
     <style>
         :root { --accent: #00f2ff; }
         
-        /* ✨ 1. BASE NEGRA ABSOLUTA (MATA LA LÍNEA BLANCA) ✨ */
-        html, body {
-            margin: 0; padding: 0; 
-            width: 100%; height: 100%;
-            background-color: #000000 !important; /* Si hay un hueco, será negro, JAMÁS blanco */
-            overflow: hidden; 
-            position: fixed; 
-            inset: 0; /* Se ancla a los 4 bordes del cristal */
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-tap-highlight-color: transparent;
+        /* 🌌 LA CAPA DE TITANIO UNIVERSAL (Base 100% Vidrio) 🌌 */
+        html {
+            height: -webkit-fill-available; /* Llena el espacio del iPhone */
+            background-color: #000;
         }
 
-        /* ✨ 2. EL VIDEO: ZOOM INTELIGENTE ✨ */
+        body {
+            margin: 0; padding: 0;
+            width: 100vw; 
+            height: 100vh; /* Para Android y PC */
+            height: -webkit-fill-available; /* Para iOS */
+            overflow: hidden;
+            position: fixed; /* Anclado al vidrio */
+            inset: 0;
+            background-color: #000000 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            color: #fff;
+        }
+
+        /* 🎥 EL VIDEO: POSICIÓN ABSOLUTA AL FONDO (Sin hacks de zoom) 🎥 */
         #bg-video {
             position: absolute;
             top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover; /* Mantiene la proporción y cubre todo */
             z-index: 0; 
-            /* Un zoom del 5% que se come cualquier raya o borde que intente poner Apple */
-            transform: scale(1.05); 
             pointer-events: none;
         }
 
-        /* ✨ 3. INTERFAZ: DISEÑO DE CRISTAL ✨ */
+        /* 📱 INTERFAZ: DISEÑO DE CRISTAL FLOTANTE 📱 */
         #app-container { 
             display: none; flex-direction: column; 
             position: absolute; inset: 0; z-index: 10; 
@@ -61,8 +68,9 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border-left: 2px solid var(--accent); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.08); }
 
-        /* ✨ 4. BARRA DE TEXTO (Respeta la zona segura de abajo) ✨ */
+        /* ✨ BARRA DE TEXTO: FLOTA SOBRE LA BARRA DE CUALQUIER SISTEMA ✨ */
         .bottom-section { 
+            /* env(safe-area-inset-bottom) es universal, si no hay barra, mide 0 */
             padding: 10px 20px calc(env(safe-area-inset-bottom, 20px) + 15px); 
         }
         .input-box { 
@@ -73,7 +81,7 @@
         #chat-terminal { flex: 1; background: transparent; border: none; color: #fff; padding: 12px; outline: none; font-size: 1.05rem; }
 
         /* LOGIN */
-        #login-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(20px); }
+        #login-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(25px); }
         .login-card { width: 85%; max-width: 350px; text-align: center; }
         .login-input { width: 100%; box-sizing: border-box; padding: 16px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--accent); background: rgba(0,0,0,0.5); color: #fff; text-align: center; font-size: 1rem; outline: none;}
     </style>
@@ -87,20 +95,20 @@
     <div id="login-overlay">
         <div class="login-card">
             <h2 style="color:#fff; font-family:'Orbitron'; letter-spacing:10px; margin-bottom: 35px; text-shadow: 0 0 15px var(--accent);">AURORA</h2>
-            <input type="email" id="email" class="login-input" placeholder="Email">
-            <input type="password" id="pass" class="login-input" placeholder="Contraseña">
+            <input type="email" id="email" class="login-input" placeholder="Acceso">
+            <input type="password" id="pass" class="login-input" placeholder="Password">
             <button onclick="login()" style="width:100%; padding:16px; border-radius:12px; background:var(--accent); border:none; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">INGRESAR</button>
         </div>
     </div>
 
     <div id="app-container">
-        <header><h1 class="titulo-app">AURORA</h1></header>
+        <header><h1 class="titulo-app">AURORA MENDOZA</h1></header>
         <div id="chat-window">
-            <div class="msg aurora">Buen día, Gabriel. Núcleo estabilizado al 100%.</div>
+            <div class="msg aurora">Sistema universal estabilizado. Bienvenido al núcleo, Gabriel.</div>
         </div>
         <div class="bottom-section">
             <div class="input-box">
-                <input type="text" id="chat-terminal" placeholder="Iniciando enlace neuronal...">
+                <input type="text" id="chat-terminal" placeholder="Sintonía Neuronal...">
                 <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.5rem; cursor:pointer;">➤</button>
             </div>
         </div>
@@ -110,35 +118,9 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); 
         const auth = firebase.auth();
-        
-        function login() { 
-            const e=document.getElementById('email').value, p=document.getElementById('pass').value; 
-            auth.signInWithEmailAndPassword(e,p).catch(a=>alert("Error de acceso")); 
-        }
-        
-        auth.onAuthStateChanged(user => {
-            if(user) {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('app-container').style.display = 'flex';
-            }
-        });
-
-        async function enviar() {
-            const i=document.getElementById('chat-terminal'), m=i.value; if(!m)return;
-            const w=document.getElementById('chat-window'); 
-            w.innerHTML+=`<div class="msg user">${m}</div>`;
-            i.value=""; w.scrollTop=w.scrollHeight;
-            try {
-                const r=await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({msg:m})});
-                const d=await r.json(); 
-                w.innerHTML+=`<div class="msg aurora">${d.respuesta}</div>`;
-                w.scrollTop=w.scrollHeight;
-            } catch(e){
-                w.innerHTML+=`<div class="msg aurora">Enlace interrumpido. Reintentando...</div>`;
-            }
-        }
-        
-        // Bloqueo del rebote molesto en iOS
+        function login() { const e=document.getElementById('email').value, p=document.getElementById('pass').value; auth.signInWithEmailAndPassword(e,p).catch(a=>alert("Error")); }
+        auth.onAuthStateChanged(user => { if(user) { document.getElementById('login-overlay').style.display = 'none'; document.getElementById('app-container').style.display = 'flex'; } });
+        async function enviar() { const i=document.getElementById('chat-terminal'), m=i.value; if(!m)return; const w=document.getElementById('chat-window'); w.innerHTML+=`<div class="msg user">${m}</div>`; i.value=""; w.scrollTop=w.scrollHeight; try { const r=await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({msg:m})}); const d=await r.json(); w.innerHTML+=`<div class="msg aurora">${d.respuesta}</div>`; w.scrollTop=w.scrollHeight; } catch(e){} }
         document.addEventListener('touchmove', function(e){ if(!e.target.closest('#chat-window')) e.preventDefault(); }, {passive:false});
     </script>
 </body>
