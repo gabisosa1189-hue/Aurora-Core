@@ -24,19 +24,33 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* 🔥 PLAN B - DESBORDE EXTREMO (tapa la barra negra de abajo) */
-        #bg-video {
+        /* IMAGEN INMEDIATA (tu aurora) */
+        #bg-poster {
             position: fixed !important;
-            top: -120px !important;
-            left: -120px !important;
-            width: calc(100% + 240px) !important;
-            height: calc(100dvh + 240px) !important;
-            z-index: -1 !important;
+            top: -150px !important;
+            left: -150px !important;
+            width: calc(100% + 300px) !important;
+            height: calc(100dvh + 300px) !important;
+            z-index: -2 !important;
             object-fit: cover !important;
             pointer-events: none !important;
         }
 
-        /* EL RESTO DE TU INTERFAZ (sin cambios) */
+        /* VIDEO QUE REEMPLAZA SUAVEMENTE */
+        #bg-video {
+            position: fixed !important;
+            top: -150px !important;
+            left: -150px !important;
+            width: calc(100% + 300px) !important;
+            height: calc(100dvh + 300px) !important;
+            z-index: -1 !important;
+            object-fit: cover !important;
+            pointer-events: none !important;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        /* EL RESTO DE TU CSS (igual que antes) */
         #login-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.18); }
         .login-card { text-align: center; max-width: 380px; width: 90%; }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.5); border: 1px solid rgba(0,242,255,0.3); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
@@ -63,39 +77,4 @@
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
         .panel-open { transform: translateX(0) !important; }
-        #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(8px); }
-    </style>
-</head>
-<body>
-    <video autoplay muted loop playsinline webkit-playsinline id="bg-video">
-        <source src="fondo.mp4" type="video/mp4">
-    </video>
-
-    <div id="loading-bar"></div>
-    <div id="panels-overlay" onclick="cerrarPaneles()"></div>
-
-    <div id="profile-panel" class="panel-side"> ... (tu panel igual) </div>
-    <div id="sidebar-menu" class="panel-side"> ... </div>
-
-    <div id="login-overlay">
-        <div class="login-card">
-            <h2 style="font-family:'Orbitron'; text-shadow: 0 0 15px var(--accent); color:#fff; margin-bottom: 40px; letter-spacing: 5px;">AURORA</h2>
-            <input type="email" placeholder="Email" class="login-input" id="emailInput">
-            <input type="password" placeholder="Contraseña" class="login-input" id="passwordInput">
-            <button style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:15px; width:100%; border-radius:18px; font-weight:bold; font-family:'Orbitron';" onclick="authCorreo()">INGRESAR</button>
-            <div style="margin-top:20px;"><a onclick="toggleRegistro()" id="link-registro" style="color:#fff; font-size:0.85rem; cursor:pointer; opacity:0.7;">Crear Cuenta</a></div>
-            <button style="background:#fff; color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; width:100%; margin-top:40px;" onclick="authGoogle()">Ingresar con Google</button>
-        </div>
-    </div>
-
-    <div id="app-container"> ... (tu app container igual que antes) </div>
-
-    <script>
-        /* TU SCRIPT ORIGINAL (no lo cambié) */
-        const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
-        firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
-        /* ... todo tu código de funciones ... */
-        window.addEventListener('load', () => { document.getElementById('bg-video').play(); });
-    </script>
-</body>
-</html>
+        #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index:
