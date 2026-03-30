@@ -15,42 +15,38 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
        
-        /* 🔥 FIX TOTAL PARA IPHONE: SIN BARRA NEGRA DE ABAJO */
+        /* 🔥 FIX DEFINITIVO PARA LA BARRA NEGRA DE ABAJO EN IPHONE */
         html, body {
             margin: 0; padding: 0;
-            width: 100%; height: 100dvh;          /* ← dvh es clave para iPhone */
+            width: 100%; height: 100dvh;           /* ← dvh es lo que cubre TODO el iPhone */
             overflow: hidden;
             position: fixed;
-            background: transparent !important;   /* ← sin negro */
+            background: transparent !important;    /* ← sin negro sólido */
             font-family: 'Plus Jakarta Sans', sans-serif;
             overscroll-behavior: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* 🔥 VIDEO FULL SCREEN REAL (cubre hasta debajo de la home indicator) */
+        /* 🔥 VIDEO QUE CUBRE HASTA EL FONDO TOTAL (incluyendo debajo de la home indicator) */
         #bg-video {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             width: 100% !important;
-            height: 100dvh !important;            /* ← cubre TODO el iPhone */
+            height: 100dvh !important;
             z-index: -1 !important;
             object-fit: cover !important;
             pointer-events: none !important;
         }
 
-        /* INTERFAZ FLOTANTE (todo encima del video) */
+        /* EL RESTO DE LA INTERFAZ (no lo toqué) */
         #app-container {
             display: none; flex-direction: column;
             position: absolute; inset: 0;
             z-index: 10;
             background: transparent;
         }
-        header { 
-            padding-top: calc(env(safe-area-inset-top, 44px) + 5px); 
-            padding-left: 20px; padding-right: 20px; 
-            display: flex; justify-content: space-between; align-items: center; 
-        }
+        header { padding-top: calc(env(safe-area-inset-top, 44px) + 5px); padding-left: 20px; padding-right: 20px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 12px; font-size: 1.6rem; text-shadow: 0 0 15px var(--accent); flex: 1; text-align: center; color: #fff; margin: 0; }
         .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; width: 44px; text-align: left; }
         #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); display: none; object-fit: cover; }
@@ -58,13 +54,10 @@
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; color: #fff; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); border-bottom-left-radius: 5px;}
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-bottom-right-radius: 5px;}
-
-        /* BARRA DE ABAJO: solo el input sube un poquito para no tapar la home indicator */
         .bottom-section {
             padding: 5px 15px calc(env(safe-area-inset-bottom, 10px) + 10px) 15px;
             display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box;
         }
-       
         #chat-terminal {
             width: 100%; background: transparent; border: none; color: white; font-size: 1.1rem;
             font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 10px;
@@ -77,17 +70,10 @@
         .btn-mini-icon { background: transparent; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .btn-pill-model { background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent); color: #fff; border-radius: 20px; padding: 6px 14px; font-family: 'Orbitron'; font-size: 0.75rem; }
         .btn-a-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 2rem; cursor: pointer; text-shadow: 0 0 20px #fff, 0 0 30px var(--accent); }
-
-        /* LOGIN TRANSPARENTE */
-        #login-overlay { 
-            position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; 
-            background: rgba(0, 0, 0, 0.2); 
-        }
+        #login-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(15px); }
         .login-card { text-align: center; max-width: 380px; width: 90%; }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
         .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
-
-        /* PANELES LATERALES */
         .panel-side { position: fixed; top: 0; width: 280px; height: 100dvh; background: rgba(0, 10, 20, 0.8); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
@@ -96,7 +82,7 @@
     </style>
 </head>
 <body>
-    <!-- VIDEO PRIMERO Y FULL (esto es lo que tapa la barra de abajo) -->
+    <!-- 🔥 VIDEO PRIMERO Y CON 100dvh (esto tapa la barra negra de abajo) -->
     <video autoplay muted loop playsinline webkit-playsinline id="bg-video">
         <source src="fondo.mp4" type="video/mp4">
     </video>
