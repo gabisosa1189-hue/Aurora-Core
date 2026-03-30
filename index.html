@@ -18,18 +18,18 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background-color: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overscroll-behavior-y: none; }
+        /* ✨ FIX CELULAR: 100dvh ELIMINA LA BARRA NEGRA INFERIOR */
+        html, body { margin: 0; padding: 0; width: 100%; height: 100dvh; overflow: hidden; background-color: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; overscroll-behavior-y: none; }
         
-        /* ✨ V27: BARRA GLOW SUPERIOR */
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); z-index: 1000000; transition: 0.3s; }
         
-        /* 📹 EL FONDO DE AURORAS (Z-INDEX 0) */
-        #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; object-fit: cover !important; pointer-events: none; }
+        /* 📹 VIDEO A PANTALLA COMPLETA ABSOLUTA */
+        #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: -1; object-fit: cover !important; pointer-events: none; }
         
-        #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
+        #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
         /* PANELES LATERALES */
-        .panel-side { position: fixed; top: 0; width: 280px; height: 100%; background: rgba(0, 10, 20, 0.85); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; }
+        .panel-side { position: fixed; top: 0; width: 280px; height: 100dvh; background: rgba(0, 10, 20, 0.85); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
         .panel-open { transform: translateX(0) !important; }
@@ -38,17 +38,16 @@
         .chat-item { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; margin-bottom: 10px; transition: 0.3s; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
         .chat-item.active { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); }
         
-        /* BOTTOM SHEETS */
-        #context-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 100005; opacity: 0; pointer-events: none; transition: 0.3s; }
+        #context-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 100005; opacity: 0; pointer-events: none; transition: 0.3s; }
         #context-overlay.show { opacity: 1; pointer-events: all; }
         .bottom-sheet { position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(0, 15, 25, 0.85); backdrop-filter: blur(40px); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 30px 30px 0 0; padding: 25px 25px 40px 25px; z-index: 100006; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 -10px 40px rgba(0, 242, 255, 0.15); }
         .bottom-sheet.show { bottom: 0; }
         .context-btn { background: transparent; color: #fff; border: none; padding: 16px 15px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; text-align: left; width: 100%; border-radius: 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; }
 
         /* MODO LIVE OVERLAY */
-        #live-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 5, 10, 0.6); backdrop-filter: blur(10px); z-index: 100010; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        #live-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0, 5, 10, 0.6); backdrop-filter: blur(10px); z-index: 100010; display: none; flex-direction: column; align-items: center; justify-content: center; }
         #live-overlay.show { display: flex; opacity: 1; }
-        #camera-stream { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s; z-index: 0; }
+        #camera-stream { position: absolute; top: 0; left: 0; width: 100%; height: 100dvh; object-fit: cover; opacity: 0; transition: opacity 0.5s; z-index: 0; }
         .live-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
         .live-a { font-family: 'Orbitron'; font-size: 6rem; color: #fff; animation: pulseAWhite 2s infinite ease-in-out; text-shadow: 0 0 30px #fff; }
         @keyframes pulseAWhite { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
@@ -57,14 +56,14 @@
         .live-btn svg { width: 32px; height: 32px; stroke: rgba(255,255,255,0.8); stroke-width: 1.5; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); transition: 0.3s; }
         .live-btn-end svg { width: 40px; height: 40px; stroke: var(--danger); stroke-width: 2; filter: drop-shadow(0 0 12px var(--danger)); }
 
-        /* LOGIN (CRISTAL TRANSPARENTE PARA VER VIDEO) */
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        /* LOGIN (CRISTAL TRANSPARENTE) */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
         .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
 
         /* APP CONTAINER Y HEADER */
-        #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
+        #app-container { display: none; flex-direction: column; height: 100dvh; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; }
         .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; text-shadow: 0 0 15px var(--accent); padding: 0; }
@@ -76,16 +75,15 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 5px; }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 5px;}
 
-        /* ✨ ESTILO GEMINI: PANEL INFERIOR Y BURBUJA DE TEXTO */
+        /* ✨ PANEL GEMINI MAESTRO (LA FOTO DE LAS 14:46) */
         .bottom-section { 
-            width: 100%; padding: 10px 20px calc(env(safe-area-inset-bottom, 10px) + 20px) 20px; 
-            display: flex; justify-content: center; align-items: flex-end; gap: 15px; box-sizing: border-box;
-            background: linear-gradient(to top, rgba(0,10,20,0.9) 0%, rgba(0,10,20,0) 100%);
+            width: 100%; padding: 10px 15px calc(env(safe-area-inset-bottom, 15px) + 15px) 15px; 
+            display: flex; align-items: flex-end; gap: 12px; box-sizing: border-box; background: transparent;
         }
         
-        .chat-box-container { 
-            flex: 1; background: rgba(0, 15, 25, 0.5); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 25px; padding: 15px 20px; 
+        .chat-box-gemini { 
+            flex: 1; background: rgba(0, 15, 25, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 25px; padding: 15px 18px; 
             display: flex; flex-direction: column; gap: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.5);
         }
 
@@ -94,21 +92,22 @@
             font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 0; box-sizing: border-box;
             resize: none; overflow-y: auto; min-height: 24px; max-height: 120px; line-height: 1.4;
         }
-        #chat-terminal::placeholder { color: rgba(255,255,255,0.5); }
+        #chat-terminal::placeholder { color: rgba(255,255,255,0.6); }
 
-        .chat-box-tools { display: flex; justify-content: space-between; align-items: center; }
-        .action-group-left { display: flex; align-items: center; gap: 10px; }
+        .chat-tools { display: flex; justify-content: space-between; align-items: center; }
+        .tools-left { display: flex; align-items: center; gap: 12px; }
+        .tools-right { display: flex; align-items: center; gap: 12px; }
         
-        .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 5px; transition: 0.3s; }
-        .btn-mini-icon svg { width: 22px; height: 22px; stroke: currentColor; }
+        .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 2px; transition: 0.3s; }
+        .btn-mini-icon svg { width: 24px; height: 24px; stroke: currentColor; }
         .btn-mini-icon:hover { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); }
         
-        .btn-pill-model { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 20px; padding: 6px 14px; font-size: 0.8rem; font-family: 'Orbitron'; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.3s; }
+        .btn-pill-model { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 20px; padding: 6px 14px; font-size: 0.85rem; font-family: 'Orbitron'; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.3s; }
         .btn-pill-model:hover { border-color: var(--accent); }
         
-        .btn-live-glow { background: transparent; border: 1px solid var(--accent); border-radius: 50%; width: 36px; height: 36px; color: var(--accent); font-family: 'Orbitron'; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 15px rgba(0,242,255,0.2); transition: 0.3s; }
+        .btn-live-glow { background: transparent; border: 1px solid var(--accent); border-radius: 50%; width: 38px; height: 38px; color: var(--accent); font-family: 'Orbitron'; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 15px rgba(0,242,255,0.2); transition: 0.3s; }
         
-        .disclaimer-text { font-size: 0.55rem; color: rgba(255,255,255,0.4); text-align: left; line-height: 1.3; font-family: 'Plus Jakarta Sans'; letter-spacing: 1px; width: 80px; flex-shrink: 0; }
+        .disclaimer-text { font-size: 0.55rem; color: rgba(255,255,255,0.4); text-align: right; line-height: 1.3; font-family: 'Plus Jakarta Sans'; letter-spacing: 1px; padding-bottom: 5px; flex-shrink: 0; }
 
         /* MODAL PREMIUM */
         #premium-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 320px; background: rgba(0, 15, 25, 0.9); backdrop-filter: blur(30px); border: 1px solid var(--accent); border-radius: 30px; padding: 30px; z-index: 100005; text-align: center; display: none; }
@@ -161,13 +160,6 @@
         <button class="context-btn" onclick="seleccionarMotor('quantum')"><span style="font-size:1.2rem;">🧠</span> Núcleo Quántum (Profundo)</button>
     </div>
 
-    <div id="premium-modal">
-        <h2 style="font-family:'Orbitron'; color:var(--accent); font-size: 1.1rem; margin-bottom: 15px;">NÚCLEO SATURADO</h2>
-        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.5; margin-bottom: 25px;">Aurora necesita 24hs para recalibrar sus enlaces.<br><br><b>¿Deseas saltar la espera?</b></p>
-        <button class="btn-account" style="border-color:var(--accent); color:var(--accent); background:rgba(0,242,255,0.1);" onclick="invitarAmigo()">EXPANDIR SISTEMA</button>
-        <button style="background:none; border:none; color:rgba(255,255,255,0.3); cursor:pointer; font-family:'Orbitron'; font-size:0.6rem; margin-top:15px;" onclick="cerrarModal()">ESPERAR RECALIBRACIÓN</button>
-    </div>
-
     <div id="sidebar-menu" class="panel-side">
         <h3 class="panel-title">MIS CHATS</h3>
         <div id="history-list" style="flex:1; overflow-y:auto; scrollbar-width:none;"></div>
@@ -183,7 +175,7 @@
         <button class="btn-account" style="border-color:var(--accent); color:var(--accent);" onclick="cambiarCuenta()">CAMBIAR CUENTA</button>
         <button class="btn-account" onclick="cerrarSesionReal()">CERRAR SESIÓN</button>
         <button class="btn-account" style="margin-top:auto; color:var(--danger); border-color:var(--danger);" onclick="eliminarCuenta()">ELIMINAR CUENTA</button>
-        </div>
+    </div>
 
     <div id="login-overlay">
         <div class="login-card">
@@ -211,11 +203,11 @@
         </div>
 
         <div class="bottom-section">
-            <div class="chat-box-container">
+            <div class="chat-box-gemini">
                 <textarea id="chat-terminal" rows="1" placeholder="Preguntale a Aurora..." oninput="autoResize(this); toggleInputButtons()"></textarea>
                 
-                <div class="chat-box-tools">
-                    <div class="action-group-left">
+                <div class="chat-tools">
+                    <div class="tools-left">
                         <button class="btn-mini-icon" onclick="abrirAdjuntos()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         </button>
@@ -225,11 +217,14 @@
                         <button id="btn-mic" class="btn-mini-icon" onclick="iniciarDictado()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"></path></svg>
                         </button>
+                    </div>
+                    
+                    <div class="tools-right">
                         <button id="btn-enviar" class="btn-mini-icon" onclick="enviar()" style="display:none; color:var(--accent);">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                         </button>
+                        <button class="btn-live-glow" onclick="abrirLiveMode()">A</button>
                     </div>
-                    <button class="btn-live-glow" onclick="abrirLiveMode()">A</button>
                 </div>
             </div>
             
@@ -250,11 +245,11 @@
 
         function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
         function abrirPerfil() { document.getElementById('profile-panel').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
-        function cerrarPaneles() { document.getElementById('sidebar-menu').classList.remove('panel-open'); document.getElementById('profile-panel').classList.remove('panel-open'); document.getElementById('panels-overlay').style.display = 'none'; cerrarModal(); }
-        function cerrarModal() { document.getElementById('premium-modal').style.display = 'none'; }
+        function cerrarPaneles() { document.getElementById('sidebar-menu').classList.remove('panel-open'); document.getElementById('profile-panel').classList.remove('panel-open'); document.getElementById('panels-overlay').style.display = 'none'; }
         function cerrarBottomSheets() { document.querySelectorAll('.bottom-sheet').forEach(sheet => sheet.classList.remove('show')); document.getElementById('context-overlay').classList.remove('show'); }
         function abrirMenu(id) { document.getElementById('context-overlay').classList.add('show'); document.getElementById(id).classList.add('show'); }
-        function abrirAdjuntos() { abrirMenu('attachment-menu'); } function abrirMotores() { abrirMenu('model-menu'); }
+        function abrirMotores() { abrirMenu('model-menu'); }
+        function abrirAdjuntos() { alert("Función de cámara/galería en desarrollo."); }
 
         function seleccionarMotor(tipo) {
             motorActual = tipo;
@@ -276,7 +271,7 @@
         function compartirChatActual() { const c = chats.find(c => c.id === chatSeleccionado); if (navigator.share) { navigator.share({ title: 'AURORA AI', text: `Revisá mi chat: ${c.nombre}`, url: window.location.href }); } cerrarBottomSheets(); }
 
         function nuevoEnlace() {
-            if (enlacesContador >= 5) { document.getElementById('premium-modal').style.display = 'block'; document.getElementById('panels-overlay').style.display = 'block'; return; }
+            if (enlacesContador >= 5) { alert("Núcleo saturado. Requiere recalibración."); return; }
             enlacesContador++; localStorage.setItem('aurora_limite_celular', enlacesContador); chats.push({ id: enlacesContador, nombre: `Chat ${enlacesContador}`, pinned: false });
             actualizarUI(); document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Nuevo chat establecido. ¿En qué te ayudo?</div>`; cerrarPaneles();
         }
@@ -288,8 +283,6 @@
             ordenados.forEach(c => { list.innerHTML += `<div class="chat-item ${c.id === enlacesContador ? 'active' : ''} ${c.pinned ? 'pinned' : ''}" data-id="${c.id}"><span>${c.nombre}</span><span style="opacity: ${c.pinned ? '1' : '0.3'}; font-size: 0.8rem;">${c.pinned ? '📌' : ''}</span></div>`; });
             bindLongPress();
         }
-
-        function invitarAmigo() { if (navigator.share) { navigator.share({ title: 'AURORA AI', text: '¡Sincronizá tu mente con Aurora!', url: window.location.href }); } }
 
         // ✨ MAGIA GEMINI: TEXTAREA QUE CRECE SOLO
         function autoResize(textarea) {
@@ -348,16 +341,12 @@
 
         function authCorreo() { const email = document.getElementById('emailInput').value; const password = document.getElementById('passwordInput').value; if(!email || !password) { alert("Por favor, ingresá email y contraseña."); return; } if(modoRegistro) { auth.createUserWithEmailAndPassword(email, password).catch(e => alert("Error: " + e.message)); } else { auth.signInWithEmailAndPassword(email, password).catch(e => alert("Error: Verificá tus datos.")); } }
         
-        // ✨ EL RADAR INTELIGENTE: PWA = Popup / Safari = Redirect
+        // ✨ RADAR PWA (PARA SAFARI Y APP INSTALADA)
         function authGoogle() { 
             const p = new firebase.auth.GoogleAuthProvider(); 
             const esApp = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-            
-            if(esApp) {
-                auth.signInWithPopup(p).catch(e => alert("Safari bloqueó el popup. Ingresa por correo."));
-            } else {
-                auth.signInWithRedirect(p);
-            }
+            if(esApp) { auth.signInWithPopup(p).catch(e => alert("Usa Safari para iniciar sesión por primera vez.")); } 
+            else { auth.signInWithRedirect(p); }
         }
         
         function cambiarCuenta() { cerrarPaneles(); auth.signOut().then(() => { const provider = new firebase.auth.GoogleAuthProvider(); provider.setCustomParameters({ prompt: 'select_account' }); auth.signInWithPopup(provider).catch(e => {}); }); }
