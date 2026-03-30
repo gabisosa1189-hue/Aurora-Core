@@ -18,21 +18,21 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ FIX DEFINITIVO PANTALLA NEGRA: FONDO TRANSPARENTE PARA QUE EL VIDEO RESPIRE */
+        /* ✨ FIX DEFINITIVO BLANCO/NEGRO: Fondo base negro, la app es transparente */
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100vh; height: 100dvh; 
-            overflow: hidden; background-color: transparent !important; 
+            overflow: hidden; background-color: #000000 !important; 
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-text-size-adjust: 100%;
         }
 
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: 0.3s; z-index: 1000000; }
 
-        /* ✨ EL TRUCO MAESTRO: VIDEO CENTRADO, ESCALADO Y EN EL FONDO ABSOLUTO */
+        /* ✨ VIDEO EN CAPA 0: Tapando el negro, pero debajo de la app */
         #bg-video { 
             position: fixed !important; top: 50%; left: 50%; 
             min-width: 100vw; min-height: 100vh; min-height: 100dvh; 
-            width: auto; height: auto; z-index: -999 !important; 
+            width: auto; height: auto; z-index: 0 !important; 
             transform: translate(-50%, -50%) scale(1.15); 
             object-fit: cover !important; pointer-events: none;
         }
@@ -137,11 +137,11 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 5px;}
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 5px;}
 
-        /* DISEÑO GEMINI "DESNUDO" */
+        /* ✨ PANEL GEMINI "DESNUDO" Y COMPACTO AL FONDO */
         .bottom-section { 
-            padding: 10px 15px calc(env(safe-area-inset-bottom, 10px) + 15px) 15px; 
-            display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; 
-            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%); 
+            padding: 5px 15px calc(env(safe-area-inset-bottom, 0px) + 8px) 15px; 
+            display: flex; flex-direction: column; gap: 6px; width: 100%; box-sizing: border-box; 
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%); 
         }
         
         #chat-terminal { 
@@ -153,10 +153,10 @@
 
         .chat-tools { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
         
+        /* ✨ BOTONES (CON EL + BLANCO Y BRILLANTE) */
         .tools-left { display: flex; align-items: center; gap: 8px; }
         .tools-right { display: flex; align-items: center; gap: 8px; }
 
-        /* ✨ BOTÓN + BLANCO, BRILLANTE Y UN POQUITO MÁS GRANDE COMO PEDISTE */
         .btn-plus-icon { background: transparent; border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 5px; transition: 0.3s; filter: drop-shadow(0 0 10px rgba(255,255,255,0.9)); transform: scale(1.1); }
         .btn-plus-icon svg { width: 24px; height: 24px; stroke: currentColor; transition: 0.3s; stroke-width: 2.5; }
         .btn-plus-icon:hover { color: var(--accent); filter: drop-shadow(0 0 15px var(--accent)); }
@@ -168,8 +168,8 @@
         .btn-pill-model { background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 20px; padding: 6px 14px; font-size: 0.85rem; font-family: 'Orbitron'; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.3s; backdrop-filter: blur(10px); }
         .btn-pill-model:hover { border-color: var(--accent); }
 
-        /* BOTÓN A LUMINOSO (SIN BORDE) */
-        .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s; padding: 0 10px; }
+        /* ✨ BOTÓN A LUMINOSO (SIN BORDE) */
+        .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s; padding: 0; margin-right: 5px; }
         .btn-live-glow:hover { transform: scale(1.1); text-shadow: 0 0 25px var(--accent); color: var(--accent); }
     </style>
 </head>
@@ -241,7 +241,7 @@
         <button class="btn-account" onclick="cerrarSesionReal()">CERRAR SESIÓN</button>
         <button class="btn-account" style="margin-top:auto; color:var(--danger); border-color:var(--danger);" onclick="eliminarCuenta()">ELIMINAR CUENTA</button>
         
-        <div style="text-align:center; font-size:0.6rem; color:#fff; text-shadow:0 0 10px #fff; margin-top:15px; letter-spacing:1px; font-family:'Orbitron'; line-height: 1.5;">AURORA ES UNA IA Y PUEDE COMETER ERRORES.</div>
+        <div style="text-align:center; font-size:0.65rem; color:#fff; text-shadow:0 0 10px #fff; margin-top:15px; letter-spacing:1px; font-family:'Orbitron'; line-height: 1.5;">AURORA ES UNA IA Y PUEDE COMETER ERRORES.</div>
     </div>
 
     <div id="login-overlay">
