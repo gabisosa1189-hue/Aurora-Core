@@ -18,17 +18,24 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
 
-        html, body { 
+        /* ✨ EL CHASIS: Usamos azul profundo Aurora para camuflar huecos de Safari */
+        html {
+            height: -webkit-fill-available;
+            background-color: #0c1425; /* Camuflaje Regla de Oro */
+        }
+
+        body { 
             margin: 0; padding: 0; width: 100vw; height: 100dvh;
-            background-color: #000; overflow: hidden; position: fixed; inset: 0;
+            background-color: #0c1425; /* Azul profundo Aurora */
+            overflow: hidden; position: fixed; inset: 0;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* FUERZA BRUTA: Video al 145% para matar barras negras */
+        /* ✨ FUERZA BRUTA: Video al 150% centrado absoluto */
         #bg-video {
             position: fixed !important; top: 50% !important; left: 50% !important;
-            width: 145vw !important; height: 145dvh !important;
+            width: 150vw !important; height: 150dvh !important;
             transform: translate(-50%, -50%) !important;
             object-fit: cover !important; z-index: -100 !important;
             pointer-events: none !important;
@@ -36,7 +43,7 @@
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* LOGIN CENTRADO */
+        /* ✨ LOGIN CENTRADO */
         #login-overlay { 
             position: fixed; inset: 0; width: 100vw; height: 100dvh;
             display: flex; align-items: center; justify-content: center;
@@ -49,7 +56,7 @@
         }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
 
-        /* ESTRUCTURA APP */
+        /* ✨ ESTRUCTURA APP */
         #app-container { display: none; flex-direction: column; width: 100vw; height: 100dvh; position: fixed; inset: 0; z-index: 10; }
         header { padding: calc(env(safe-area-inset-top, 40px) + 15px) 20px 10px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; }
@@ -68,7 +75,6 @@
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
         }
 
-        /* PANELES LATERALES (Los IDs que daban error) */
         .panel-side { position: fixed; top: 0; width: 280px; height: 100%; background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; display: flex; flex-direction: column; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
@@ -127,7 +133,6 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        // FUNCIONES DE CONTROL (CORREGIDAS)
         function abrirSidebar() { 
             const menu = document.getElementById('sidebar-menu');
             if(menu) { menu.classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
