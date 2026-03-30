@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AURORA - Acceso Neuronal</title>
     
     <link rel="manifest" href="manifest.json">
@@ -18,30 +18,36 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ 1. COMO ESTABA EN TU VIDEO ORIGINAL: Simple y directo */
+        /* ✨ 1. MATAMOS EL BLANCO PARA SIEMPRE */
         html, body {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            overflow: hidden; /* Evita que la página entera se mueva */
-            background-color: #000;
+            overflow: hidden; 
+            background-color: #000 !important; /* Si Safari falla, muestra negro, NUNCA blanco */
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: #fff;
+            overscroll-behavior-y: none;
         }
 
-        /* ✨ 2. EL VIDEO ORIGINAL: Fijo y cubriendo todo sin códigos raros */
+        /* ✨ 2. LA FUERZA BRUTA: EL VIDEO GIGANTE (150%) */
         #bg-video {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
-            z-index: 0; /* Capa base */
-            object-fit: cover;
-            pointer-events: none;
-            transform: scale(1.05); /* Un mínimo zoom por las dudas */
+            position: fixed !important;
+            top: 50% !important; 
+            left: 50% !important; 
+            width: 150vw !important;  /* 50% más ancho que el iPhone */
+            height: 150vh !important; /* 50% más alto que el iPhone */
+            z-index: 0 !important; 
+            transform: translate(-50%, -50%) !important; /* Lo centra perfecto */
+            object-fit: cover !important;
+            pointer-events: none !important;
         }
+
+        /* ========================================= */
+        /* ✨ INTERFAZ GEMINI (CAPAS SUPERIORES) */
+        /* ========================================= */
 
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: 0.3s; z-index: 1000000; }
-        #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 
         /* PANELES LATERALES */
         .panel-side {
@@ -56,39 +62,40 @@
         .panel-open { transform: translateX(0) !important; }
         .panel-title { font-family: 'Orbitron'; font-size: 0.9rem; color: var(--accent); letter-spacing: 3px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; text-transform: uppercase; }
 
-        /* ✨ 3. LOGIN DE CRISTAL (Como me pediste hoy) */
+        /* LOGIN CRISTALINO */
         #login-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            position: fixed; inset: 0; 
             z-index: 9999; display: flex; align-items: center; justify-content: center; 
-            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); 
+            background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(8px); 
         }
         .login-card { text-align: center; max-width: 380px; width: 90%; }
-        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
+        .login-input { 
+            width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); 
+            border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 18px 15px; 
+            border-radius: 15px; margin-bottom: 15px; outline: none; 
+            font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; 
+        }
         .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.15); box-shadow: 0 0 15px rgba(0,242,255,0.2); }
 
-        /* ✨ 4. APP CONTAINER ANCLADO A LA PANTALLA */
+        /* APP CONTAINER FIJO PARA EVITAR SCROLL DE PANTALLA */
         #app-container { 
             display: none; flex-direction: column; 
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+            position: fixed; inset: 0; /* Anclado a los 4 bordes */
             z-index: 10; 
         }
-        
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; flex: 1; text-align: center; padding-left: 15px;}
         .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; text-shadow: 0 0 15px var(--accent); padding: 0; width: 44px; text-align: left; }
         .header-spacer { width: 44px; display: flex; justify-content: flex-end; }
-        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); display: none; }
+        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); display: none; cursor: pointer; }
 
-        /* ✨ 5. CHAT CON SCROLL INDEPENDIENTE (Esto evita que el fondo se mueva) */
-        #chat-window { 
-            flex: 1; overflow-y: auto; padding: 20px; 
-            display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; 
-        }
+        /* CHAT WINDOW SCROLLEABLE */
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); border-bottom-left-radius: 5px;}
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 5px;}
 
-        /* ✨ 6. DISEÑO GEMINI DESNUDO ABAJO */
+        /* ✨ DISEÑO GEMINI DESNUDO ABAJO */
         .bottom-section { 
             padding: 5px 15px calc(env(safe-area-inset-bottom, 10px) + 8px) 15px; 
             display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; 
@@ -106,11 +113,11 @@
         .chat-tools { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
         .tools-left, .tools-right { display: flex; align-items: center; gap: 15px; }
 
-        /* ✨ BOTONES NUEVOS DE HOY */
+        /* ✨ BOTONES NUEVOS */
         .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 10px #fff); transform: scale(1.1); padding: 5px; }
         .btn-plus-white svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 3; }
 
-        .btn-mini-icon { background: transparent; border: none; color: #fff; cursor: pointer; padding: 5px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); transition: 0.3s; }
+        .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.9); cursor: pointer; padding: 5px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); transition: 0.3s; }
         .btn-pill-model { background: rgba(0, 242, 255, 0.05); border: 1px solid var(--accent); color: #fff; border-radius: 20px; padding: 6px 14px; font-family: 'Orbitron'; font-size: 0.8rem; backdrop-filter: blur(10px); }
 
         .btn-a-glow { 
@@ -188,12 +195,10 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        // FORZAMOS LA REPRODUCCIÓN DEL VIDEO POR LAS DUDAS EN IOS
+        // FORZAR PLAY
         document.addEventListener('DOMContentLoaded', () => { 
             const v = document.getElementById('bg-video'); 
-            v.play().catch(() => {
-                document.body.addEventListener('touchstart', () => v.play(), {once:true});
-            });
+            v.play().catch(() => document.body.addEventListener('touchstart', () => v.play(), {once:true}));
         });
 
         function autoResize(t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
