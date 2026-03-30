@@ -18,32 +18,32 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ 1. MATAMOS EL BLANCO PARA SIEMPRE */
+        /* ✨ 1. FONDO BASE */
         html, body {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
             overflow: hidden; 
-            background-color: #000 !important; /* Si Safari falla, muestra negro, NUNCA blanco */
+            background-color: #000 !important; 
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: #fff;
             overscroll-behavior-y: none;
         }
 
-        /* ✨ 2. LA FUERZA BRUTA: EL VIDEO GIGANTE (150%) */
+        /* ✨ 2. EL GOLPE FINAL: EL VIDEO ARRANCANDO DESDE "AFUERA" DE LA PANTALLA ARRIBA */
         #bg-video {
             position: fixed !important;
-            top: 50% !important; 
-            left: 50% !important; 
-            width: 150vw !important;  /* 50% más ancho que el iPhone */
-            height: 150vh !important; /* 50% más alto que el iPhone */
+            /* 👇 ESTA ES LA CLAVE: Lo empujamos hacia el techo del iPhone */
+            top: -10vh !important; 
+            left: -10vw !important; 
+            width: 120vw !important; 
+            height: 120vh !important; 
             z-index: 0 !important; 
-            transform: translate(-50%, -50%) !important; /* Lo centra perfecto */
             object-fit: cover !important;
             pointer-events: none !important;
         }
 
         /* ========================================= */
-        /* ✨ INTERFAZ GEMINI (CAPAS SUPERIORES) */
+        /* ✨ INTERFAZ GEMINI (TODO INTACTO) */
         /* ========================================= */
 
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: 0.3s; z-index: 1000000; }
@@ -80,7 +80,7 @@
         /* APP CONTAINER FIJO PARA EVITAR SCROLL DE PANTALLA */
         #app-container { 
             display: none; flex-direction: column; 
-            position: fixed; inset: 0; /* Anclado a los 4 bordes */
+            position: fixed; inset: 0; 
             z-index: 10; 
         }
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
