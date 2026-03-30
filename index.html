@@ -18,7 +18,6 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ FIX 1: 100dvh para eliminar barra negra en celulares */
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100dvh; 
             overflow: hidden; background-color: #000;
@@ -28,11 +27,11 @@
 
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: 0.3s; z-index: 1000000; }
 
-        /* ✨ FIX 2: Z-INDEX 0 para que el video no se oculte */
         #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 0; object-fit: cover !important; pointer-events: none; }
         
         #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
+        /* PANELES LATERALES */
         .panel-side {
             position: fixed; top: 0; width: 280px; height: 100dvh;
             background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px);
@@ -55,6 +54,7 @@
         .chat-item.active { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); }
         .chat-item.pinned { border-left: 4px solid var(--accent); }
 
+        /* BOTTOM SHEETS */
         #context-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 100005; opacity: 0; pointer-events: none; transition: 0.3s; }
         #context-overlay.show { opacity: 1; pointer-events: all; }
         
@@ -73,13 +73,13 @@
         .context-btn {
             background: transparent; color: #fff; border: none; padding: 16px 15px;
             font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem;
-            text-align: left; border-radius: 15px; display: flex; align-items: center; gap: 15px;
-            cursor: pointer; transition: 0.2s;
+            text-align: left; width: 100%; border-radius: 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s;
         }
         .context-btn:hover { background: rgba(0, 242, 255, 0.1); color: var(--accent); }
         .context-btn svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.8); transition: 0.2s; }
         .context-btn:hover svg { stroke: var(--accent); }
 
+        /* MODO LIVE OVERLAY */
         #live-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background: rgba(0, 5, 10, 0.4); z-index: 100010; display: none; flex-direction: column;
@@ -98,7 +98,6 @@
         .live-a { font-family: 'Orbitron'; font-size: 6rem; color: #fff; display: flex; align-items: center; justify-content: center; animation: pulseAWhite 2s infinite ease-in-out; text-shadow: 0 0 30px rgba(255,255,255,0.9); }
 
         .live-controls { position: absolute; bottom: 60px; z-index: 2; display: flex; align-items: center; gap: 45px; }
-        
         .live-btn { background: transparent; border: none; padding: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
         .live-btn svg { width: 32px; height: 32px; stroke: rgba(255,255,255,0.8); stroke-width: 1.5; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); transition: 0.3s; }
         .live-btn:hover svg { stroke: #fff; filter: drop-shadow(0 0 15px #fff); transform: scale(1.1); }
@@ -113,22 +112,41 @@
         .btn-account { width: 100%; padding: 15px; border-radius: 15px; font-family: 'Orbitron'; font-size: 0.75rem; cursor: pointer; margin-bottom: 12px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
         .btn-accent-opt { border-color: var(--accent); color: var(--accent); background: rgba(0, 242, 255, 0.1); }
 
-        #app-container { display: none; flex-direction: column; height: 100dvh; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
+        /* ✨ LOGIN OLED LIMPIO (SIN TEXTOS MOLESTOS) */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); }
+        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
+        .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
 
+        /* APP CONTAINER Y HEADER */
+        #app-container { display: none; flex-direction: column; height: 100dvh; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; }
         .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; text-shadow: 0 0 15px var(--accent); padding: 0; }
         #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); object-fit: cover; display: none; cursor: pointer; }
 
+        /* BURBUJAS DE CHAT */
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; }
-        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
-        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
+        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 5px; }
+        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 5px;}
 
-        .bottom-section { padding: 0; display: flex; justify-content: center; width: 100%; box-sizing: border-box; }
-        .unified-panel { width: 100%; max-width: 100%; background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); border: none; border-radius: 35px 35px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4); }
+        /* ✨ ESTILO GEMINI CELULAR: PÍLDORA FLOTANTE Y TRANSPARENTE */
+        .bottom-section { 
+            padding: 0 15px calc(env(safe-area-inset-bottom, 10px) + 15px) 15px; 
+            display: flex; justify-content: center; width: 100%; box-sizing: border-box; 
+            background: transparent; 
+        }
         
-        /* ✨ FIX 3: TEXTAREA QUE CRECE SOLO (ESTILO GEMINI) */
+        .unified-panel { 
+            width: 100%; max-width: 100%; 
+            background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(0, 242, 255, 0.25); 
+            border-radius: 25px; /* BORDES DE PÍLDORA */
+            padding: 15px 18px; display: flex; flex-direction: column; gap: 12px; 
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4); 
+        }
+        
         #chat-terminal { 
             width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; 
             font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 0; box-sizing: border-box; 
@@ -147,12 +165,6 @@
 
         .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; padding: 0 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s; }
         .btn-live-glow:hover { transform: scale(1.1); text-shadow: 0 0 25px rgba(255,255,255,1); }
-
-        /* ✨ LOGIN TRANSPARENTE */
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); }
-        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
-        .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
     </style>
 </head>
 <body>
@@ -173,7 +185,7 @@
             <p style="color:rgba(255,255,255,0.9); font-family:'Plus Jakarta Sans'; font-size:1.2rem; margin-top:30px; letter-spacing:1px; text-shadow: 0 0 10px rgba(0,0,0,0.8);">Aurora te escucha...</p>
         </div>
         <div class="live-controls">
-            <button class="live-btn" onclick="cerrarLiveMode()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><circle cx="8" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="16" cy="14" r="1"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="10" r="1"/><circle cx="16" cy="10" r="1"/></svg></button>
+            <button class="live-btn" onclick="cerrarLiveMode()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><circle cx="8" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></svg></button>
             <button class="live-btn-end" onclick="cerrarLiveMode()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             <button id="btn-live-cam" class="live-btn" onclick="toggleCamaraLive()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
         </div>
@@ -226,12 +238,14 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <h2 id="titulo-login" style="font-family:'Orbitron'; line-height:1.4;">BIENVENIDO A AURORA<br><span style="font-size:0.8rem; font-family:'Plus Jakarta Sans', sans-serif; letter-spacing:1px; color:rgba(255,255,255,0.7); text-shadow:none;">¿CÓMO DESEA REGISTRARSE?</span></h2>
+            <h2 id="titulo-login" style="font-family:'Orbitron'; line-height:1.4; margin-bottom:25px;">BIENVENIDO A AURORA</h2>
             <input type="email" placeholder="Email" class="login-input" id="emailInput">
             <input type="password" placeholder="Contraseña" class="login-input" id="passwordInput">
             <button id="btn-principal" style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:15px; width:100%; border-radius:18px; font-weight:bold; cursor:pointer; font-family:'Orbitron'; letter-spacing:2px; margin-bottom:15px;" onclick="authCorreo()">INGRESAR</button>
-            <div style="display:flex; justify-content:space-between; font-size:0.8rem; opacity:0.8; margin-bottom:20px;"><a onclick="toggleRegistro()" id="link-registro" style="color:#fff; cursor:pointer; text-decoration:none;">Crear Cuenta</a></div>
-            <div style="margin:15px 0; color:rgba(255,255,255,0.4); font-size:0.8rem;">──────── ó ────────</div>
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; opacity:0.8; margin-bottom:20px;">
+                <a onclick="alert('Sistema de recuperación en desarrollo...')" style="color:#fff; cursor:pointer; text-decoration:none;">Olvidé mi contraseña</a>
+                <a onclick="toggleRegistro()" id="link-registro" style="color:#fff; cursor:pointer; text-decoration:none;">Crear Cuenta</a>
+            </div>
             <button style="background:rgba(255,255,255,0.9); color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:12px; width:100%;" onclick="authGoogle()">
                 <svg width="20" height="20" viewBox="0 0 488 512" fill="#000"><path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/></svg> Ingresar con Google
             </button>
@@ -280,11 +294,11 @@
 
         function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
         function abrirPerfil() { document.getElementById('profile-panel').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
-        function cerrarPaneles() { document.getElementById('sidebar-menu').classList.remove('panel-open'); document.getElementById('profile-panel').classList.remove('panel-open'); document.getElementById('panels-overlay').style.display = 'none'; cerrarModal(); }
-        function cerrarModal() { document.getElementById('premium-modal').style.display = 'none'; }
+        function cerrarPaneles() { document.getElementById('sidebar-menu').classList.remove('panel-open'); document.getElementById('profile-panel').classList.remove('panel-open'); document.getElementById('panels-overlay').style.display = 'none'; }
         function cerrarBottomSheets() { document.querySelectorAll('.bottom-sheet').forEach(sheet => sheet.classList.remove('show')); document.getElementById('context-overlay').classList.remove('show'); }
         function abrirMenu(id) { document.getElementById('context-overlay').classList.add('show'); document.getElementById(id).classList.add('show'); }
-        function abrirAdjuntos() { abrirMenu('attachment-menu'); } function abrirMotores() { abrirMenu('model-menu'); }
+        function abrirMotores() { abrirMenu('model-menu'); }
+        function abrirAdjuntos() { alert("Función de cámara/galería en desarrollo."); }
 
         function seleccionarMotor(tipo) {
             motorActual = tipo;
@@ -319,8 +333,7 @@
             bindLongPress();
         }
 
-        function invitarAmigo() { if (navigator.share) { navigator.share({ title: 'AURORA AI', text: '¡Sincronizá tu mente con Aurora!', url: window.location.href }); } }
-
+        // ✨ MAGIA GEMINI: TEXTAREA QUE CRECE SOLO
         function autoResize(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
@@ -348,7 +361,7 @@
             };
             rec.onend = () => { 
                 const mic = document.getElementById('btn-mic');
-                mic.style.color = "rgba(255,255,255,0.9)"; mic.style.filter = "drop-shadow(0 0 5px rgba(255,255,255,0.3))";
+                mic.style.color = "rgba(255,255,255,0.9)"; mic.style.filter = "none";
                 document.getElementById('chat-terminal').placeholder = "Preguntale a Aurora...";
                 if(document.getElementById('chat-terminal').value.trim() !== "") { enviar(); } else { toggleInputButtons(); }
             };
@@ -359,7 +372,7 @@
         function abrirLiveMode() { document.getElementById('live-overlay').classList.add('show'); document.getElementById('app-container').style.opacity = '0'; }
         function cerrarLiveMode() { 
             document.getElementById('live-overlay').classList.remove('show'); document.getElementById('app-container').style.opacity = '1'; 
-            if(cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; document.getElementById('camera-stream').style.opacity = '0'; }
+            if(cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; document.getElementById('camera-stream').style.opacity = '0'; document.getElementById('btn-live-cam').classList.remove('active'); }
         }
         async function toggleCamaraLive() {
             const vid = document.getElementById('camera-stream'); const btnCam = document.getElementById('btn-live-cam');
@@ -371,26 +384,33 @@
         function toggleRegistro() {
             modoRegistro = !modoRegistro;
             const titulo = document.getElementById('titulo-login'); const btnPrincipal = document.getElementById('btn-principal'); const linkRegistro = document.getElementById('link-registro');
-            if(modoRegistro) { titulo.innerHTML = "CREAR CUENTA<br><span style='font-size:0.8rem; font-family:\"Plus Jakarta Sans\"; color:rgba(255,255,255,0.7); text-shadow:none;'>INGRESE SUS DATOS</span>"; btnPrincipal.innerText = "REGISTRARSE"; linkRegistro.innerText = "Ya tengo cuenta";
-            } else { titulo.innerHTML = "BIENVENIDO A AURORA<br><span style='font-size:0.8rem; font-family:\"Plus Jakarta Sans\"; color:rgba(255,255,255,0.7); text-shadow:none;'>¿CÓMO DESEA REGISTRARSE?</span>"; btnPrincipal.innerText = "INGRESAR"; linkRegistro.innerText = "Crear Cuenta"; }
+            if(modoRegistro) { titulo.innerHTML = "CREAR CUENTA"; btnPrincipal.innerText = "REGISTRARSE"; linkRegistro.innerText = "Ya tengo cuenta";
+            } else { titulo.innerHTML = "BIENVENIDO A AURORA"; btnPrincipal.innerText = "INGRESAR"; linkRegistro.innerText = "Crear Cuenta"; }
         }
 
         function authCorreo() { const email = document.getElementById('emailInput').value; const password = document.getElementById('passwordInput').value; if(!email || !password) { alert("Por favor, ingresá email y contraseña."); return; } if(modoRegistro) { auth.createUserWithEmailAndPassword(email, password).catch(e => alert("Error: " + e.message)); } else { auth.signInWithEmailAndPassword(email, password).catch(e => alert("Error: Verificá tus datos.")); } }
         
+        // ✨ RADAR PWA (SOLUCIÓN DEFINITIVA PARA QUE SAFARI NO TE HAGA BUCLE)
         function authGoogle() { 
             const p = new firebase.auth.GoogleAuthProvider(); 
             const esApp = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-            if(esApp) { auth.signInWithPopup(p).catch(e => alert("Usa Safari para iniciar sesión por primera vez.")); } 
-            else { auth.signInWithRedirect(p); }
+            
+            if(esApp) {
+                auth.signInWithPopup(p).catch(e => alert("Safari bloqueó el popup. Ingresa por correo."));
+            } else {
+                auth.signInWithRedirect(p);
+            }
         }
         
         function cambiarCuenta() { cerrarPaneles(); auth.signOut().then(() => { const provider = new firebase.auth.GoogleAuthProvider(); provider.setCustomParameters({ prompt: 'select_account' }); auth.signInWithPopup(provider).catch(e => {}); }); }
         function cerrarSesionReal() { auth.signOut().then(() => location.reload()); }
         function eliminarCuenta() { const user = firebase.auth().currentUser; if (user && confirm("⚠️ ¿Eliminar cuenta para siempre?")) { user.delete().then(() => { localStorage.removeItem('aurora_limite_celular'); location.reload(); }).catch(e => alert("Re-logueate e intenta de nuevo.")); } }
 
+        // ✨ VIGILANTE REFORZADO SAFARI + PWA
         auth.onAuthStateChanged((user) => { 
             const loginOverlay = document.getElementById('login-overlay');
             const appContainer = document.getElementById('app-container');
+
             if (user) { 
                 loginOverlay.style.setProperty('display', 'none', 'important');
                 appContainer.style.setProperty('display', 'flex', 'important');
@@ -402,15 +422,19 @@
             } 
         });
 
+        // ✨ PROCESADOR DE RETORNO (VITAL PARA QUE SAFARI NO SE QUEDE EN BUCLE)
         auth.getRedirectResult().then((result) => {
             if (result && result.user) {
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('app-container').style.display = 'flex';
             }
         }).catch((error) => {
-            if(error.code === 'auth/unauthorized-domain') { alert("ERROR: El dominio no está autorizado en Firebase."); }
+            if(error.code === 'auth/unauthorized-domain') {
+                alert("ERROR: El dominio no está autorizado en Firebase.");
+            }
         });
 
+        // ✨ V27: ENVIAR CON BARRA, VOZ Y VIBRACIÓN
         async function enviar() {
             const input = document.getElementById('chat-terminal'); 
             const win = document.getElementById('chat-window');
@@ -420,9 +444,14 @@
             
             const msj = input.value; 
             win.innerHTML += `<div class="msg user">${msj}</div>`;
-            input.value = ""; autoResize(input); toggleInputButtons(); win.scrollTop = win.scrollHeight;
             
-            bar.style.width = "75%";
+            // Limpia y resetea tamaño
+            input.value = ""; 
+            autoResize(input);
+            toggleInputButtons(); 
+            win.scrollTop = win.scrollHeight;
+            
+            bar.style.width = "75%"; // GLOW START
             
             try { 
                 const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { 
@@ -433,11 +462,12 @@
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`; 
                 win.scrollTop = win.scrollHeight; 
                 
-                bar.style.width = "100%"; 
+                bar.style.width = "100%"; // GLOW END
                 setTimeout(() => bar.style.width = "0%", 400);
 
-                if (window.navigator.vibrate) window.navigator.vibrate(15);
+                if (window.navigator.vibrate) window.navigator.vibrate(15); // VIBRACIÓN
                 
+                // VOZ DE AURORA
                 const leer = new SpeechSynthesisUtterance(data.respuesta);
                 leer.lang = 'es-AR';
                 window.speechSynthesis.speak(leer);
@@ -448,6 +478,7 @@
             }
         }
 
+        // Permite "Enter" para enviar, "Shift+Enter" para salto de línea
         document.getElementById('chat-terminal').addEventListener('keydown', e => { 
             if (e.key === 'Enter' && !e.shiftKey) { 
                 e.preventDefault(); 
