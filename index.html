@@ -18,37 +18,25 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
 
-        /* ✨ EL CHASIS: Forzamos al iPhone a usar el 100% dinámico real */
-        html {
-            height: -webkit-fill-available; /* El fix secreto de Apple para Safari */
-        }
-
-        body { 
-            margin: 0; padding: 0; width: 100vw; 
-            height: 100vh;
-            height: -webkit-fill-available; 
-            overflow: hidden; position: fixed; inset: 0;
+        html, body { 
+            margin: 0; padding: 0; width: 100vw; height: 100dvh;
+            background-color: #000; overflow: hidden; position: fixed; inset: 0;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
-            background-color: #000;
         }
 
-        /* ✨ EL FONDO: Exceso del 145% para que el video "sobre" y tape cualquier rastro negro */
+        /* FUERZA BRUTA: Video al 145% para matar barras negras */
         #bg-video {
-            position: fixed !important; 
-            top: 50% !important; 
-            left: 50% !important;
-            width: 145vw !important; 
-            height: 145dvh !important; 
-            transform: translate(-50%, -50%) !important; 
-            object-fit: cover !important; 
-            z-index: -100 !important; 
+            position: fixed !important; top: 50% !important; left: 50% !important;
+            width: 145vw !important; height: 145dvh !important;
+            transform: translate(-50%, -50%) !important;
+            object-fit: cover !important; z-index: -100 !important;
             pointer-events: none !important;
         }
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* ✨ LOGIN CENTRADO: Clavamos el cuadro de acceso justo en el medio de la pantalla */
+        /* LOGIN CENTRADO */
         #login-overlay { 
             position: fixed; inset: 0; width: 100vw; height: 100dvh;
             display: flex; align-items: center; justify-content: center;
@@ -61,24 +49,17 @@
         }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
 
-        /* ✨ ESTRUCTURA APP: Blindada contra el "desparramo" */
-        #app-container { 
-            display: none; flex-direction: column; width: 100vw; height: 100dvh; 
-            position: fixed; inset: 0; z-index: 10; 
-        }
-
-        header { 
-            padding: calc(env(safe-area-inset-top, 40px) + 15px) 20px 10px;
-            display: flex; justify-content: space-between; align-items: center; 
-        }
+        /* ESTRUCTURA APP */
+        #app-container { display: none; flex-direction: column; width: 100vw; height: 100dvh; position: fixed; inset: 0; z-index: 10; }
+        header { padding: calc(env(safe-area-inset-top, 40px) + 15px) 20px 10px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; }
+        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); object-fit: cover; display: none; cursor: pointer; }
 
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* PANEL INFERIOR: Ajuste Safe Area para que la barra flote sobre el video */
         .unified-panel {
             background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-radius: 35px 35px 0 0;
@@ -87,12 +68,7 @@
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
         }
 
-        #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; outline: none; }
-        .panel-actions { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.9); cursor: pointer; padding: 5px; }
-        .btn-pill-model { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 20px; padding: 8px 16px; font-size: 0.85rem; font-family: 'Orbitron'; }
-        .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; text-shadow: 0 0 15px rgba(255,255,255,0.8); }
-
+        /* PANELES LATERALES (Los IDs que daban error) */
         .panel-side { position: fixed; top: 0; width: 280px; height: 100%; background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; display: flex; flex-direction: column; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
@@ -109,15 +85,11 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <h2 id="titulo-login" style="font-family:'Orbitron'; line-height:1.4;">BIENVENIDO A AURORA</h2>
+            <h2 style="font-family:'Orbitron';">AURORA</h2>
             <input type="email" placeholder="Email" class="login-input" id="emailInput">
             <input type="password" placeholder="Contraseña" class="login-input" id="passwordInput">
-            <button id="btn-principal" style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:15px; width:100%; border-radius:18px; font-weight:bold; cursor:pointer; font-family:'Orbitron'; letter-spacing:2px; margin-bottom:15px;" onclick="authCorreo()">INGRESAR</button>
-            <div style="display:flex; justify-content:space-between; font-size:0.8rem; opacity:0.8; margin-bottom:20px;"><a onclick="toggleRegistro()" id="link-registro" style="color:#fff; cursor:pointer; text-decoration:none;">Crear Cuenta</a></div>
-            <div style="margin:15px 0; color:rgba(255,255,255,0.4); font-size:0.8rem;">──────── ó ────────</div>
-            <button style="background:rgba(255,255,255,0.9); color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:12px; width:100%;" onclick="authGoogle()">
-                <svg width="20" height="20" viewBox="0 0 488 512" fill="#000"><path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/></svg> Ingresar con Google
-            </button>
+            <button style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:15px; width:100%; border-radius:18px; font-weight:bold; cursor:pointer; font-family:'Orbitron'; margin-bottom:15px;" onclick="authCorreo()">INGRESAR</button>
+            <button style="background:rgba(255,255,255,0.9); color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; cursor:pointer; width:100%;" onclick="authGoogle()">Google Login</button>
         </div>
     </div>
 
@@ -127,40 +99,47 @@
             <div class="titulo-app">AURORA</div>
             <img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()">
         </header>
-
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado. Regla de Oro activa. ¿Cómo puedo ayudarte?</div>
+            <div class="msg aurora">Sistema corregido. Enlace estable. ¿En qué puedo ayudarte?</div>
         </div>
-
         <div class="bottom-section">
             <div class="unified-panel">
                 <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off" oninput="toggleInputButtons()">
-                <div class="panel-actions">
-                    <div class="action-group">
-                        <button class="btn-mini-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor" width="24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
-                        <button class="btn-pill-model">⚡ Flash</button>
-                    </div>
-                    <div class="action-group">
-                        <button id="btn-mic" class="btn-mini-icon" onclick="iniciarDictado()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" width="24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"></path></svg>
-                        </button>
-                        <button id="btn-enviar" class="btn-mini-icon" onclick="enviar()" style="display:none; color:var(--accent);">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                        </button>
-                        <button class="btn-live-glow">A</button>
-                    </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <button class="btn-pill-model">⚡ Flash</button>
+                    <button id="btn-enviar" style="background:transparent; border:none; color:var(--accent); display:none;" onclick="enviar()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="sidebar-menu" class="panel-side">
+        <h3 style="font-family:'Orbitron'; color:var(--accent);">MIS CHATS</h3>
+    </div>
+    <div id="profile-panel" class="panel-side">
+        <h3 style="font-family:'Orbitron'; color:var(--accent);">CUENTA</h3>
+        <button class="msg user" style="margin-top:auto; cursor:pointer;" onclick="auth.signOut().then(() => location.reload())">Cerrar Sesión</button>
     </div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
-        function abrirPerfil() { document.getElementById('profile-panel').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
-        function cerrarPaneles() { document.querySelectorAll('.panel-side').forEach(p => p.classList.remove('panel-open')); document.getElementById('panels-overlay').style.display = 'none'; }
+        // FUNCIONES DE CONTROL (CORREGIDAS)
+        function abrirSidebar() { 
+            const menu = document.getElementById('sidebar-menu');
+            if(menu) { menu.classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
+        }
+        function abrirPerfil() { 
+            const prof = document.getElementById('profile-panel');
+            if(prof) { prof.classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
+        }
+        function cerrarPaneles() { 
+            document.querySelectorAll('.panel-side').forEach(p => p.classList.remove('panel-open')); 
+            document.getElementById('panels-overlay').style.display = 'none'; 
+        }
 
         auth.onAuthStateChanged((user) => {
             if (user) {
