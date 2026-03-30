@@ -18,7 +18,7 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ 1. FONDO BASE Y RESET */
+        /* ✨ 1. FONDO BASE Y RESET NORMAL */
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; 
@@ -30,30 +30,19 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ✨ 2. LA SOLUCIÓN FINAL: EL WRAPPER EXTREMO */
-        #video-wrapper {
-            position: fixed !important;
-            /* Tiramos el contenedor BRUTALMENTE por fuera de la pantalla física */
-            top: -150px !important;    /* Arregla la raya de arriba con sobra */
-            bottom: -300px !important; /* Arregla la raya de abajo HASTA EL SUBSUELO */
-            left: -100px !important;
-            right: -100px !important;
-            z-index: 0 !important; 
-            overflow: hidden;
-            background-color: #000;
-        }
-
-        /* ✨ 3. EL VIDEO ADENTRO DEL WRAPPER */
+        /* ✨ 2. EL VIDEO VUELVE A SER NORMAL Y ELEGANTE */
         #bg-video {
-            width: 100% !important;
-            height: 100% !important;
+            position: fixed !important;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%;
+            z-index: 0; 
             object-fit: cover !important;
             pointer-events: none !important;
-            /* Le sacamos el scale(1.05) para que no deforme tanto, ya que el wrapper es gigante */
+            transform: scale(1.05); /* Zoom sutil para evitar bordes blancos */
         }
 
         /* ========================================= */
-        /* ✨ INTERFAZ GEMINI (REGLA DE ORO INTACTA) */
+        /* ✨ INTERFAZ GEMINI */
         /* ========================================= */
 
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: 0.3s; z-index: 1000000; }
@@ -149,34 +138,42 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 5px;}
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 5px;}
 
-        /* DISEÑO GEMINI DESNUDO ABAJO */
+        /* ✨ EL CAMBIO MAGISTRAL: EL PANEL INFERIOR ANCLADO ✨ */
         .bottom-section { 
-            padding: 5px 15px calc(env(safe-area-inset-bottom, 10px) + 8px) 15px; 
+            /* Relleno inferior masivo que se come el área segura del iPhone */
+            padding: 10px 15px calc(env(safe-area-inset-bottom, 20px) + 15px) 15px; 
             display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; 
-            background: transparent; 
+            
+            /* LE DAMOS FONDO: Un cristal oscuro súper elegante que tapa la franja negra de abajo */
+            background: rgba(0, 5, 12, 0.85); 
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid rgba(0, 242, 255, 0.15);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
         }
         
         #chat-terminal { 
-            width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; 
-            font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 10px; box-sizing: border-box; 
-            resize: none; overflow-y: hidden; min-height: 40px; max-height: 120px; line-height: 1.4;
-            text-shadow: 0 0 10px rgba(255,255,255,0.8); 
+            width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); 
+            color: white; font-size: 1.05rem; border-radius: 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 12px 15px; box-sizing: border-box; 
+            resize: none; overflow-y: hidden; min-height: 45px; max-height: 120px; line-height: 1.4;
+            transition: 0.3s;
         }
-        #chat-terminal::placeholder { color: #fff; opacity: 0.8; text-shadow: 0 0 15px #fff; font-family: 'Orbitron'; }
+        #chat-terminal:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.05); }
+        #chat-terminal::placeholder { color: rgba(255,255,255,0.5); font-family: 'Orbitron'; font-size: 0.9rem; }
 
-        .chat-tools { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
+        .chat-tools { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-top: 5px; }
         .tools-left, .tools-right { display: flex; align-items: center; gap: 15px; }
 
         /* BOTONES NUEVOS */
-        .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 10px #fff); transform: scale(1.1); padding: 5px; }
+        .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); transform: scale(1.1); padding: 5px; }
         .btn-plus-white svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 3; }
 
-        .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 5px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
+        .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 5px; transition: 0.3s; }
         .btn-mini-icon svg { width: 24px; height: 24px; stroke: currentColor; transition: 0.3s; }
         .btn-mini-icon:hover { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); }
 
-        .btn-pill-model { background: rgba(0, 242, 255, 0.05); border: 1px solid var(--accent); color: #fff; border-radius: 20px; padding: 6px 14px; font-family: 'Orbitron'; font-size: 0.8rem; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.3s; }
-        .btn-pill-model:hover { border-color: #fff; box-shadow: 0 0 12px rgba(0,242,255,0.2); }
+        .btn-pill-model { background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent); color: #fff; border-radius: 20px; padding: 6px 14px; font-family: 'Orbitron'; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.3s; }
+        .btn-pill-model:hover { box-shadow: 0 0 12px rgba(0,242,255,0.3); }
 
         /* BOTÓN A LUMINOSO */
         .btn-a-glow { 
@@ -196,11 +193,9 @@
 </head>
 <body>
 
-    <div id="video-wrapper">
-        <video autoplay muted loop playsinline webkit-playsinline id="bg-video">
-            <source src="fondo.mp4" type="video/mp4">
-        </video>
-    </div>
+    <video autoplay muted loop playsinline webkit-playsinline id="bg-video">
+        <source src="fondo.mp4" type="video/mp4">
+    </video>
 
     <div id="panels-overlay" onclick="cerrarPaneles()"></div>
     <div id="context-overlay" onclick="cerrarBottomSheets()"></div>
@@ -385,7 +380,7 @@
         function autoResize(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
-            if(textarea.value === '') textarea.style.height = '40px';
+            if(textarea.value === '') textarea.style.height = '45px';
         }
 
         function iniciarDictado() {
@@ -403,7 +398,7 @@
             };
             rec.onend = () => { 
                 const mic = document.getElementById('btn-mic');
-                mic.style.color = "rgba(255,255,255,0.9)"; mic.style.filter = "drop-shadow(0 0 5px rgba(255,255,255,0.3))";
+                mic.style.color = "rgba(255,255,255,0.8)"; mic.style.filter = "drop-shadow(0 0 5px rgba(0,0,0,0.5))";
                 document.getElementById('chat-terminal').placeholder = "Preguntale a Aurora...";
                 if(document.getElementById('chat-terminal').value.trim() !== "") { enviar(); } else { toggleInputButtons(); }
             };
