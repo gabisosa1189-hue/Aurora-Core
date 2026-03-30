@@ -112,13 +112,14 @@
     <div id="sidebar-menu" class="panel-side">
         <h3 class="panel-title">MIS CHATS</h3>
         <div id="history-list" style="flex:1; overflow-y:auto;"></div>
-        <div style="margin-top:20px;">
+        <div style="margin-top:25px;">
             <p style="color:var(--accent); font-size:0.7rem; font-family:'Orbitron';">CHATS: 1 / 5</p>
             <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:10px;"><div style="width:20%; height:100%; background:var(--accent); border-radius:10px; box-shadow:0 0 10px var(--accent);"></div></div>
         </div>
     </div>
 
     <div id="model-menu" class="bottom-sheet">
+        <div class="context-pill"></div>
         <button class="context-btn" onclick="seleccionarMotor('flash')">⚡ Flash (Velocidad)</button>
         <button class="context-btn" onclick="seleccionarMotor('quantum')">🧠 Quantum (Deep)</button>
     </div>
@@ -128,23 +129,27 @@
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
         let motorActual = 'flash';
 
-        // 🛡️ EL VIGILANTE (REGLA DE ORO)
+        // 🛡️ REFUERZO VIGILANTE (SOPORTE REDIRECT)
         auth.onAuthStateChanged(user => {
             const login = document.getElementById('login-overlay');
             const app = document.getElementById('app-container');
             if (user) {
-                login.style.display = 'none'; app.style.display = 'flex';
+                login.style.setProperty('display', 'none', 'important');
+                app.style.setProperty('display', 'flex', 'important');
                 if (user.photoURL) document.getElementById('user-avatar').src = user.photoURL;
+                actualizarUI();
             } else { login.style.display = 'flex'; app.style.display = 'none'; }
         });
 
-        // ✨ PROCESADOR DE RETORNO (SOLUCIÓN GOOGLE IPHONE)
+        // ✨ PROCESADOR RETORNO IPHONE
         auth.getRedirectResult().then((result) => {
-            if (result.user) {
+            if (result && result.user) {
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('app-container').style.display = 'flex';
             }
-        }).catch(e => console.error("Error redirect:", e));
+        }).catch(err => {
+            if(err.code === "auth/unauthorized-domain") alert("ERROR: Dominio no autorizado en Firebase.");
+        });
 
         function authGoogle() { const p = new firebase.auth.GoogleAuthProvider(); auth.signInWithRedirect(p); }
 
@@ -178,9 +183,10 @@
 
         function seleccionarMotor(m) { motorActual = m; document.getElementById('engine-pill').innerHTML = m === 'flash' ? '⚡ Flash' : '🧠 Quantum'; cerrarBottomSheets(); }
         function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
-        function abrirMotores() { document.getElementById('model-menu').classList.add('show'); }
+        function abrirMotores() { document.getElementById('model-menu').classList.add('show'); document.getElementById('context-overlay').classList.add('show'); }
         function cerrarPaneles() { document.getElementById('sidebar-menu').classList.remove('panel-open'); document.getElementById('panels-overlay').style.display = 'none'; }
-        function cerrarBottomSheets() { document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('show')); }
+        function cerrarBottomSheets() { document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('show')); document.getElementById('context-overlay').classList.remove('show'); }
+        function actualizarUI() { } function abrirPerfil() { } function iniciarDictado() { } function abrirLiveMode() { }
     </script>
 </body>
 </html>
