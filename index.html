@@ -18,15 +18,15 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
 
-        /* ✨ EL CHASIS: Usamos azul profundo Aurora para camuflar huecos de Safari */
+        /* ✨ EL CHASIS: Camuflaje azul profundo para Safari */
         html {
             height: -webkit-fill-available;
-            background-color: #0c1425; /* Camuflaje Regla de Oro */
+            background-color: #0c1425; 
         }
 
         body { 
             margin: 0; padding: 0; width: 100vw; height: 100dvh;
-            background-color: #0c1425; /* Azul profundo Aurora */
+            background-color: #0c1425; /* Camuflaje Regla de Oro */
             overflow: hidden; position: fixed; inset: 0;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
@@ -43,7 +43,7 @@
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* ✨ LOGIN CENTRADO */
+        /* ✨ LOGIN CENTRADO ABSOLUTO */
         #login-overlay { 
             position: fixed; inset: 0; width: 100vw; height: 100dvh;
             display: flex; align-items: center; justify-content: center;
@@ -67,6 +67,7 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
+        /* PANEL INFERIOR UNIFICADO */
         .unified-panel {
             background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-radius: 35px 35px 0 0;
@@ -74,7 +75,9 @@
             display: flex; flex-direction: column; gap: 15px;
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
         }
+        #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; outline: none; }
 
+        /* PANELES LATERALES */
         .panel-side { position: fixed; top: 0; width: 280px; height: 100%; background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; display: flex; flex-direction: column; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
@@ -106,7 +109,7 @@
             <img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()">
         </header>
         <div id="chat-window">
-            <div class="msg aurora">Sistema corregido. Enlace estable. ¿En qué puedo ayudarte?</div>
+            <div class="msg aurora">Sistema sincronizado. Regla de Oro activa. ¿Cómo puedo ayudarte, Gabriel?</div>
         </div>
         <div class="bottom-section">
             <div class="unified-panel">
@@ -125,7 +128,7 @@
         <h3 style="font-family:'Orbitron'; color:var(--accent);">MIS CHATS</h3>
     </div>
     <div id="profile-panel" class="panel-side">
-        <h3 style="font-family:'Orbitron'; color:var(--accent);">CUENTA</h3>
+        <h3 style="font-family:'Orbitron'; color:var(--accent);">MI CUENTA</h3>
         <button class="msg user" style="margin-top:auto; cursor:pointer;" onclick="auth.signOut().then(() => location.reload())">Cerrar Sesión</button>
     </div>
 
@@ -164,8 +167,18 @@
 
         async function enviar() {
             const input = document.getElementById('chat-terminal'); if(!input.value.trim()) return;
-            document.getElementById('chat-window').innerHTML += `<div class="msg user">${input.value}</div>`;
+            const msj = input.value;
+            document.getElementById('chat-window').innerHTML += `<div class="msg user">${msj}</div>`;
             input.value = ""; toggleInputButtons();
+            
+            try { 
+                const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { 
+                    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:msj}) 
+                }); 
+                const data = await res.json(); 
+                document.getElementById('chat-window').innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
+                document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
+            } catch(e) { console.log(e); }
         }
 
         function authGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
