@@ -1,8 +1,8 @@
 {
-  "id": "aurora-core-ia",
+  "id": "aurora-core-ia-mendoza-v2",
   "name": "Aurora Core IA",
-  "short_name": "Aurora",
-  "description": "Asistente de Inteligencia Artificial neuronal para Mendoza.",
+  "short_name": "A-Core-V2",
+  "description": "Asistente neuronal universal para Mendoza.",
   "lang": "es-AR",
   "start_url": "index.html",
   "display": "standalone",
@@ -12,7 +12,7 @@
   "categories": ["productivity", "utilities"],
   "icons": [
     {
-      "src": "icon-512.png",
+      "src": "apple-touch-icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
