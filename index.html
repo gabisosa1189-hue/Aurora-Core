@@ -19,27 +19,28 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ 1. BASE ABSOLUTA: Anclada a las 4 esquinas con tu imagen de respaldo (poster.jpg) */
+        /* ✨ 1. BASE ABSOLUTA: Con póster de respaldo */
         html { height: -webkit-fill-available; background-color: #001a2c; }
         body { 
             margin: 0; padding: 0; width: 100vw; 
             height: 100dvh; overflow: hidden; position: fixed; inset: 0; 
             background-color: #001a2c !important;
-            background-image: url('poster.jpg') !important; /* CORREGIDO A POSTER.JPG */
+            background-image: url('poster.jpg') !important; 
             background-size: cover !important;
             background-position: bottom center !important;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* ✨ 2. VIDEO GIGANTE: Desborda la pantalla por todos lados */
+        /* ✨ 2. VIDEO CON ZOOM EXTREMO: Escala al 115% para matar márgenes */
         #bg-video { 
             position: fixed !important; 
-            top: -2%; left: -2%; 
-            width: 104vw !important; 
-            height: 104dvh !important; 
-            object-fit: cover !important; z-index: 0; 
-            pointer-events: none; 
+            top: 50%; left: 50%; 
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            transform: translateX(-50%) translateY(-50%) scale(1.15) !important; 
+            object-fit: cover !important; 
+            z-index: 0; pointer-events: none; 
         }
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
@@ -147,7 +148,7 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* ✨ 4. PANEL INFERIOR "DERRAMADO" HACIA EL VACÍO */
+        /* ✨ 4. PANEL INFERIOR ANCLADO AL PISO */
         .bottom-section { padding: 0; display: flex; justify-content: center; width: 100%; box-sizing: border-box; }
         
         .unified-panel {
@@ -155,13 +156,11 @@
             background: rgba(0, 10, 20, 0.45); 
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: none; border-radius: 35px 35px 0 0;
-            /* 80px bestiales extras abajo para empujar y tapar el margen */
-            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 80px) 20px !important; 
+            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px !important; 
             display: flex; flex-direction: column; gap: 15px;
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
             box-sizing: border-box;
-            /* Margen negativo para anclarlo por debajo del nivel de la pantalla */
-            margin-bottom: -50px !important; 
+            position: absolute; bottom: 0; left: 0; right: 0;
         }
 
         #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 0; box-sizing: border-box; }
@@ -183,8 +182,8 @@
         /* ✨ 5. LOGIN TÁCTICO: Desborda para abajo */
         #login-overlay { 
             position: fixed; top: 0; left: 0; right: 0; 
-            bottom: -100px !important; /* Lo mandamos al abismo abajo */
-            padding-bottom: 100px; /* Centra el contenido compensando el abismo */
+            bottom: -100px !important; 
+            padding-bottom: 100px; 
             background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); 
             z-index: 9999; display: flex; align-items: center; justify-content: center; 
         }
