@@ -23,8 +23,8 @@
         /* ✨ V27: BARRA GLOW SUPERIOR */
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); z-index: 1000000; transition: 0.3s; }
         
-        /* 📹 TUS AURORAS BOREALES */
-        #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; object-fit: cover !important; pointer-events: none; }
+        /* 📹 TUS AURORAS BOREALES (Fondo Maestro) */
+        #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; object-fit: cover !important; pointer-events: none; }
         
         /* ✨ PANELES INVISIBLES Y BOTTOM SHEETS */
         #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
@@ -44,15 +44,8 @@
         .bottom-sheet.show { bottom: 0; }
         .context-btn { background: transparent; color: #fff; border: none; padding: 16px 15px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; text-align: left; width: 100%; border-radius: 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; }
 
-        /* ✨ MODO LIVE */
-        #live-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 5, 10, 0.4); z-index: 100010; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        #live-overlay.show { display: flex; opacity: 1; }
-        #camera-stream { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s; }
-        .live-a { font-family: 'Orbitron'; font-size: 6rem; color: #fff; animation: pulseAWhite 2s infinite ease-in-out; text-shadow: 0 0 30px #fff; }
-        @keyframes pulseAWhite { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-        /* ✨ LOGIN OLED PURE */
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        /* ✨ LOGIN CON VIDEO VISIBLE */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
 
@@ -74,7 +67,10 @@
 </head>
 <body>
     <div id="loading-bar"></div>
-    <video autoplay muted loop playsinline id="bg-video"><source src="fondo.mp4" type="video/mp4"></video>
+    
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="fondo.mp4" type="video/mp4">
+    </video>
     
     <div id="panels-overlay" onclick="cerrarPaneles()"></div>
     <div id="context-overlay" onclick="cerrarBottomSheets()"></div>
@@ -101,27 +97,10 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
                 <button class="btn-pill-model" id="engine-pill" onclick="abrirMotores()">⚡ Flash</button>
                 <div style="display:flex; gap:15px;">
-                    <button style="background:none; border:none; color:white; font-size:1.5rem;" onclick="iniciarDictado()">🎤</button>
-                    <button style="background:var(--accent); color:#000; border:none; padding:10px 20px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="enviar()">IR</button>
-                    <button style="background:none; border:none; color:white; font-family:'Orbitron'; font-size:1.5rem;" onclick="abrirLiveMode()">A</button>
+                    <button style="background:none; border:none; color:white; font-size:1.5rem;" onclick="enviar()">IR</button>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div id="sidebar-menu" class="panel-side">
-        <h3 class="panel-title">MIS CHATS</h3>
-        <div id="history-list" style="flex:1; overflow-y:auto;"></div>
-        <div style="margin-top:25px;">
-            <p style="color:var(--accent); font-size:0.7rem; font-family:'Orbitron';">CHATS: 1 / 5</p>
-            <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:10px;"><div style="width:20%; height:100%; background:var(--accent); border-radius:10px; box-shadow:0 0 10px var(--accent);"></div></div>
-        </div>
-    </div>
-
-    <div id="model-menu" class="bottom-sheet">
-        <div class="context-pill"></div>
-        <button class="context-btn" onclick="seleccionarMotor('flash')">⚡ Flash (Velocidad)</button>
-        <button class="context-btn" onclick="seleccionarMotor('quantum')">🧠 Quantum (Deep)</button>
     </div>
 
     <script>
@@ -137,8 +116,10 @@
                 login.style.setProperty('display', 'none', 'important');
                 app.style.setProperty('display', 'flex', 'important');
                 if (user.photoURL) document.getElementById('user-avatar').src = user.photoURL;
-                actualizarUI();
-            } else { login.style.display = 'flex'; app.style.display = 'none'; }
+            } else { 
+                login.style.display = 'flex'; 
+                app.style.display = 'none'; 
+            }
         });
 
         // ✨ PROCESADOR RETORNO IPHONE
@@ -181,12 +162,8 @@
             win.scrollTop = win.scrollHeight;
         }
 
-        function seleccionarMotor(m) { motorActual = m; document.getElementById('engine-pill').innerHTML = m === 'flash' ? '⚡ Flash' : '🧠 Quantum'; cerrarBottomSheets(); }
         function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
-        function abrirMotores() { document.getElementById('model-menu').classList.add('show'); document.getElementById('context-overlay').classList.add('show'); }
-        function cerrarPaneles() { document.getElementById('sidebar-menu').classList.remove('panel-open'); document.getElementById('panels-overlay').style.display = 'none'; }
-        function cerrarBottomSheets() { document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('show')); document.getElementById('context-overlay').classList.remove('show'); }
-        function actualizarUI() { } function abrirPerfil() { } function iniciarDictado() { } function abrirLiveMode() { }
+        function cerrarPaneles() { document.querySelectorAll('.panel-side').forEach(s => s.classList.remove('panel-open')); document.getElementById('panels-overlay').style.display = 'none'; }
     </script>
 </body>
 </html>
