@@ -28,7 +28,8 @@
         /* ✨ INYECCIÓN V27: BARRA DE CARGA GLOW */
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: 0.3s; z-index: 1000000; }
 
-        #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; object-fit: cover !important; pointer-events: none; }
+        /* ✨ FIX VIDEO: SE MUESTRA DETRÁS DEL LOGIN */
+        #bg-video { position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; object-fit: cover !important; pointer-events: none; }
         
         #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
@@ -147,7 +148,7 @@
         .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; padding: 0 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s; }
         .btn-live-glow:hover { transform: scale(1.1); text-shadow: 0 0 25px rgba(255,255,255,1); }
 
-        /* LOGIN (TRANSPARENTE PARA QUE SE VEA EL VIDEO) */
+        /* ✨ FIX LOGIN: TRANSLÚCIDO PARA VER EL VIDEO */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
@@ -167,29 +168,48 @@
 
     <div id="live-overlay">
         <video id="camera-stream" autoplay playsinline muted></video>
+        
         <div class="live-content">
             <div class="live-a">A</div>
             <p style="color:rgba(255,255,255,0.9); font-family:'Plus Jakarta Sans'; font-size:1.2rem; margin-top:30px; letter-spacing:1px; text-shadow: 0 0 10px rgba(0,0,0,0.8);">Aurora te escucha...</p>
         </div>
+
         <div class="live-controls">
-            <button class="live-btn" onclick="cerrarLiveMode()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><circle cx="8" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="16" cy="14" r="1"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="10" r="1"/><circle cx="16" cy="10" r="1"/></svg></button>
-            <button class="live-btn-end" onclick="cerrarLiveMode()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            <button id="btn-live-cam" class="live-btn" onclick="toggleCamaraLive()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
+            <button class="live-btn" onclick="cerrarLiveMode()">
+                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><circle cx="8" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="16" cy="14" r="1"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="10" r="1"/><circle cx="16" cy="10" r="1"/></svg>
+            </button>
+            
+            <button class="live-btn-end" onclick="cerrarLiveMode()">
+                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            
+            <button id="btn-live-cam" class="live-btn" onclick="toggleCamaraLive()">
+                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </button>
         </div>
     </div>
 
     <div id="context-menu" class="bottom-sheet">
         <div class="context-pill"></div>
-        <button class="context-btn" onclick="fijarChatActual()"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg> Fijar Chat</button>
-        <button class="context-btn" onclick="renombrarChatActual()"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Cambiar Nombre</button>
-        <button class="context-btn" onclick="compartirChatActual()"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> Compartir Conversación</button>
+        <button class="context-btn" onclick="fijarChatActual()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg> Fijar Chat</button>
+        <button class="context-btn" onclick="renombrarChatActual()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Cambiar Nombre</button>
+        <button class="context-btn" onclick="compartirChatActual()"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> Compartir Conversación</button>
     </div>
 
     <div id="attachment-menu" class="bottom-sheet">
         <div class="context-pill"></div>
-        <button class="context-btn" onclick="cerrarBottomSheets()"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Cámara</button>
-        <button class="context-btn" onclick="cerrarBottomSheets()"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Galería</button>
-        <button class="context-btn" onclick="cerrarBottomSheets()"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Documento</button>
+        <button class="context-btn" onclick="cerrarBottomSheets()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> 
+            Cámara
+        </button>
+        <button class="context-btn" onclick="cerrarBottomSheets()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Galería
+        </button>
+        <button class="context-btn" onclick="cerrarBottomSheets()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Documento
+        </button>
     </div>
 
     <div id="model-menu" class="bottom-sheet">
@@ -201,7 +221,7 @@
 
     <div id="premium-modal">
         <h2 style="font-family:'Orbitron'; color:var(--accent); font-size: 1.1rem; margin-bottom: 15px;">NÚCLEO SATURADO</h2>
-        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.5; margin-bottom: 25px;">Aurora necesita 24hs para recalibrar sus enlaces.<br><br><b>¿Deseas saltar la espera?</b></p>
+        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.5; margin-bottom: 25px;">Aurora necesita 24hs para recalibrar sus enlaces.<br><br><b>¿Deseas saltar la espera?</b><br>Sincronizá una mente para ganar 2 ranuras extra.</p>
         <button class="btn-account btn-accent-opt" onclick="invitarAmigo()">EXPANDIR SISTEMA</button>
         <button style="background:none; border:none; color:rgba(255,255,255,0.3); cursor:pointer; font-family:'Orbitron'; font-size:0.6rem; margin-top:15px;" onclick="cerrarModal()">ESPERAR RECALIBRACIÓN</button>
     </div>
@@ -252,14 +272,24 @@
         <div class="bottom-section">
             <div class="unified-panel">
                 <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off" oninput="toggleInputButtons()">
+                
                 <div class="panel-actions">
                     <div class="action-group">
-                        <button class="btn-mini-icon" onclick="abrirAdjuntos()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
-                        <button class="btn-pill-model" id="engine-pill" onclick="abrirMotores()"><span style="color:var(--accent);">⚡</span> Flash</button>
+                        <button class="btn-mini-icon" onclick="abrirAdjuntos()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </button>
+                        <button class="btn-pill-model" onclick="abrirMotores()">
+                            <span style="color:var(--accent);">⚡</span> Flash
+                        </button>
                     </div>
+
                     <div class="action-group">
-                        <button id="btn-mic" class="btn-mini-icon" onclick="iniciarDictado()"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"></path></svg></button>
-                        <button id="btn-enviar" class="btn-mini-icon" onclick="enviar()" style="display:none; color:var(--accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+                        <button id="btn-mic" class="btn-mini-icon" onclick="iniciarDictado()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"></path></svg>
+                        </button>
+                        <button id="btn-enviar" class="btn-mini-icon" onclick="enviar()" style="display:none; color:var(--accent);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
                         <button class="btn-live-glow" onclick="abrirLiveMode()">A</button>
                     </div>
                 </div>
@@ -271,7 +301,7 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        let motorActual = 'flash'; // ✨ V27
+        let motorActual = 'flash';
         let enlacesContador = parseInt(localStorage.getItem('aurora_limite_celular')) || 1;
         let chats = []; for(let i=1; i<=enlacesContador; i++) { chats.push({ id: i, nombre: `Chat ${i}`, pinned: false }); }
         let chatSeleccionado = null; let timerLongPress;
@@ -286,7 +316,6 @@
         function abrirMenu(id) { document.getElementById('context-overlay').classList.add('show'); document.getElementById(id).classList.add('show'); }
         function abrirAdjuntos() { abrirMenu('attachment-menu'); } function abrirMotores() { abrirMenu('model-menu'); }
 
-        // ✨ INYECCIÓN V27: SELECTOR MOTOR
         function seleccionarMotor(tipo) {
             motorActual = tipo;
             document.getElementById('engine-pill').innerHTML = tipo === 'flash' ? '<span style="color:var(--accent);">⚡</span> Flash' : '🧠 Quantum';
@@ -368,29 +397,43 @@
 
         function authCorreo() { const email = document.getElementById('emailInput').value; const password = document.getElementById('passwordInput').value; if(!email || !password) { alert("Por favor, ingresá email y contraseña."); return; } if(modoRegistro) { auth.createUserWithEmailAndPassword(email, password).catch(e => alert("Error: " + e.message)); } else { auth.signInWithEmailAndPassword(email, password).catch(e => alert("Error: Verificá tus datos.")); } }
         
-        // ✨ FIX SAFARI: VOLVEMOS A POPUP (ES LO ÚNICO QUE SAFARI PERMITE SIN BUCLE)
+        // ✨ FIX SAFARI REDIRECT: ABRE LA PUERTA SIN BUCLE
         function authGoogle() { 
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(e => {
-                console.error(e);
-                alert("SAFARI BLOQUEÓ EL ACCESO: Por favor, permite las ventanas emergentes (popups) para ingresar con Google.");
-            });
+            auth.signInWithRedirect(provider);
         }
         
         function cambiarCuenta() { cerrarPaneles(); auth.signOut().then(() => { const provider = new firebase.auth.GoogleAuthProvider(); provider.setCustomParameters({ prompt: 'select_account' }); auth.signInWithPopup(provider).catch(e => {}); }); }
         function cerrarSesionReal() { auth.signOut().then(() => location.reload()); }
         function eliminarCuenta() { const user = firebase.auth().currentUser; if (user && confirm("⚠️ ¿Eliminar cuenta para siempre?")) { user.delete().then(() => { localStorage.removeItem('aurora_limite_celular'); location.reload(); }).catch(e => alert("Re-logueate e intenta de nuevo.")); } }
 
+        // ✨ VIGILANTE REFORZADO PARA SAFARI
         auth.onAuthStateChanged((user) => { 
+            const loginOverlay = document.getElementById('login-overlay');
+            const appContainer = document.getElementById('app-container');
+
             if (user) { 
-                document.getElementById('login-overlay').style.display = 'none'; 
-                document.getElementById('app-container').style.display = 'flex'; 
+                loginOverlay.style.setProperty('display', 'none', 'important');
+                appContainer.style.setProperty('display', 'flex', 'important');
                 if (user.photoURL) { const avatar = document.getElementById('user-avatar'); avatar.src = user.photoURL; avatar.style.display = 'block'; } 
                 actualizarUI(); 
             } else { 
-                document.getElementById('login-overlay').style.display = 'flex'; 
-                document.getElementById('app-container').style.display = 'none'; 
+                loginOverlay.style.display = 'flex'; 
+                appContainer.style.display = 'none'; 
             } 
+        });
+
+        // ✨ PROCESADOR DE RETORNO (VITAL PARA IPHONE)
+        auth.getRedirectResult().then((result) => {
+            if (result && result.user) {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+            }
+        }).catch((error) => {
+            console.error("Error de retorno:", error.code);
+            if(error.code === 'auth/unauthorized-domain') {
+                alert("ERROR: El dominio gabisosa1189-hue.github.io no está autorizado en Firebase.");
+            }
         });
 
         // ✨ V27: ENVIAR CON BARRA, VOZ Y VIBRACIÓN
