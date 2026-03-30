@@ -50,13 +50,47 @@
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
 
         #app-container { display: none; flex-direction: column; width: 100vw; height: 100dvh; position: fixed; inset: 0; z-index: 10; }
-        header { padding: calc(env(safe-area-inset-top, 40px) + 15px) 20px 10px; display: flex; justify-content: space-between; align-items: center; }
-        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; }
-        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); object-fit: cover; display: none; cursor: pointer; }
+        
+        /* ✨ HEADER REDISEÑADO PARA CENTRADO PERFECTO */
+        header { 
+            padding: calc(env(safe-area-inset-top, 40px) + 15px) 20px 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: relative; /* Clave para el centrado del título */
+        }
+
+        .titulo-app { 
+            font-family: 'Orbitron'; 
+            letter-spacing: 12px; 
+            font-size: 1.6rem; 
+            text-shadow: 0 0 20px var(--accent); 
+            margin: 0;
+            position: absolute; /* Centrado absoluto respecto al header */
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        #user-avatar { 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50%; 
+            border: 2px solid var(--accent); 
+            box-shadow: 0 0 15px rgba(0,242,255,0.5); 
+            object-fit: cover; 
+            display: none; 
+            cursor: pointer; 
+            z-index: 20;
+        }
+
+        .btn-menu-lateral {
+            background: transparent; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; z-index: 20;
+        }
 
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
         
-        /* ✨ EFECTO CRISTAL (Glassmorphism) */
         .msg { 
             max-width: 85%; padding: 14px 22px; border-radius: 22px; 
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -75,18 +109,10 @@
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
         }
 
-        /* ✨ GLOW EN EL TERMINAL */
-        #chat-terminal { 
-            width: 100%; background: transparent; border: none; color: white; 
-            font-size: 1.05rem; outline: none; transition: 0.3s;
-        }
+        #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; outline: none; transition: 0.3s; }
         #chat-terminal:focus { filter: drop-shadow(0 0 8px var(--accent)); }
 
-        .btn-pill-model { 
-            background: rgba(0, 242, 255, 0.1); border: 1px solid rgba(0, 242, 255, 0.3); 
-            color: #fff; border-radius: 20px; padding: 8px 16px; font-size: 0.85rem; 
-            font-family: 'Orbitron'; cursor: pointer; transition: 0.3s;
-        }
+        .btn-pill-model { background: rgba(0, 242, 255, 0.1); border: 1px solid rgba(0, 242, 255, 0.3); color: #fff; border-radius: 20px; padding: 8px 16px; font-size: 0.85rem; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; }
         .btn-pill-model:hover { background: rgba(0, 242, 255, 0.2); box-shadow: 0 0 15px var(--accent); }
 
         .panel-side { position: fixed; top: 0; width: 280px; height: 100%; background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; display: flex; flex-direction: column; }
@@ -115,13 +141,15 @@
 
     <div id="app-container">
         <header>
-            <button style="background:transparent; border:none; color:#fff; font-size:2rem; cursor:pointer;" onclick="abrirSidebar()">☰</button>
+            <button class="btn-menu-lateral" onclick="abrirSidebar()">☰</button>
             <div class="titulo-app">AURORA</div>
             <img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()">
         </header>
+        
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado. Regla de Oro activa. ¿Cómo puedo ayudarte, Gabriel?</div>
+            <div class="msg aurora">Bienvenido, Gabriel. Sistema Aurora centrado y listo para operar. ¿Qué misión tenemos hoy?</div>
         </div>
+
         <div class="bottom-section">
             <div class="unified-panel">
                 <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off" oninput="toggleInputButtons()">
@@ -138,8 +166,9 @@
     <div id="sidebar-menu" class="panel-side">
         <h3 style="font-family:'Orbitron'; color:var(--accent);">MIS CHATS</h3>
     </div>
+    
     <div id="profile-panel" class="panel-side">
-        <h3 style="font-family:'Orbitron'; color:var(--accent);">CUENTA</h3>
+        <h3 style="font-family:'Orbitron'; color:var(--accent);">MI CUENTA</h3>
         <button class="msg user" style="margin-top:auto; cursor:pointer; background:rgba(255, 77, 77, 0.1); border:1px solid var(--danger);" onclick="auth.signOut().then(() => location.reload())">Cerrar Sesión</button>
     </div>
 
@@ -155,7 +184,12 @@
             if (user) {
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('app-container').style.display = 'flex';
-                if (user.photoURL) { const av = document.getElementById('user-avatar'); av.src = user.photoURL; av.style.display = 'block'; }
+                // REGLA DE ORO: Capturamos tu foto de Google y la mostramos a la derecha
+                if (user.photoURL) { 
+                    const av = document.getElementById('user-avatar'); 
+                    av.src = user.photoURL; 
+                    av.style.display = 'block'; 
+                }
             } else {
                 document.getElementById('login-overlay').style.display = 'flex';
                 document.getElementById('app-container').style.display = 'none';
