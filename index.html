@@ -7,7 +7,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#001a2c">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -19,18 +19,20 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ 1. BASE UNIVERSAL MEJORADA (100dvh para vencer al iPhone) */
-        html { height: -webkit-fill-available; background-color: #000; }
+        /* ✨ 1. BASE ABSOLUTA: Anclada a las 4 esquinas con tu imagen de respaldo (poster.jpg) */
+        html { height: -webkit-fill-available; background-color: #001a2c; }
         body { 
             margin: 0; padding: 0; width: 100vw; 
-            height: 100dvh; /* MAGIA: Dynamic Viewport Height */
-            overflow: hidden; position: fixed; inset: 0; 
-            background-color: #000 !important;
+            height: 100dvh; overflow: hidden; position: fixed; inset: 0; 
+            background-color: #001a2c !important;
+            background-image: url('poster.jpg') !important; /* CORREGIDO A POSTER.JPG */
+            background-size: cover !important;
+            background-position: bottom center !important;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* ✨ 2. VIDEO CON DESBORDE TÁCTICO (Sangrado del 4%) */
+        /* ✨ 2. VIDEO GIGANTE: Desborda la pantalla por todos lados */
         #bg-video { 
             position: fixed !important; 
             top: -2%; left: -2%; 
@@ -42,12 +44,10 @@
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* ✨ 3. CONTENEDOR PRINCIPAL CLAVADO AL PISO */
+        /* ✨ 3. CONTENEDOR PRINCIPAL ESTIRADO */
         #app-container { 
             display: none; flex-direction: column; 
-            position: fixed; /* Cambiado de absolute a fixed */
-            inset: 0; 
-            height: 100dvh; /* Forzamos a que toque el piso sí o sí */
+            position: fixed; inset: 0; height: 100dvh; 
             z-index: 10; transition: opacity 0.4s ease; 
         }
 
@@ -147,7 +147,7 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* PANEL UNIFICADO INFERIOR */
+        /* ✨ 4. PANEL INFERIOR "DERRAMADO" HACIA EL VACÍO */
         .bottom-section { padding: 0; display: flex; justify-content: center; width: 100%; box-sizing: border-box; }
         
         .unified-panel {
@@ -155,10 +155,13 @@
             background: rgba(0, 10, 20, 0.45); 
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: none; border-radius: 35px 35px 0 0;
-            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px; 
+            /* 80px bestiales extras abajo para empujar y tapar el margen */
+            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 80px) 20px !important; 
             display: flex; flex-direction: column; gap: 15px;
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
             box-sizing: border-box;
+            /* Margen negativo para anclarlo por debajo del nivel de la pantalla */
+            margin-bottom: -50px !important; 
         }
 
         #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 0; box-sizing: border-box; }
@@ -177,8 +180,14 @@
         .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; padding: 0 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s; }
         .btn-live-glow:hover { transform: scale(1.1); text-shadow: 0 0 25px rgba(255,255,255,1); }
 
-        /* LOGIN FLOTANTE SEGURO */
-        #login-overlay { position: fixed; inset: 0; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        /* ✨ 5. LOGIN TÁCTICO: Desborda para abajo */
+        #login-overlay { 
+            position: fixed; top: 0; left: 0; right: 0; 
+            bottom: -100px !important; /* Lo mandamos al abismo abajo */
+            padding-bottom: 100px; /* Centra el contenido compensando el abismo */
+            background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); 
+            z-index: 9999; display: flex; align-items: center; justify-content: center; 
+        }
         .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); box-sizing: border-box;}
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
         .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
