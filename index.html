@@ -18,7 +18,7 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* 🔥 FIX GLOBAL SAFARI: TRANSPARENCIA TOTAL PARA QUE EL VIDEO MANDE */
+        /* 🔥 FIX DEFINITIVO IPHONE: Todo transparente para el video */
         html, body {
             margin: 0; padding: 0; width: 100%;
             height: 100vh; height: 100dvh;
@@ -30,22 +30,21 @@
             overscroll-behavior-y: none;
         }
 
-        /* 🔥 VIDEO FIX DEFINITIVO (TU CÓDIGO) */
+        /* 🔥 EL "CIERRE DE HIERRO" PARA EL VIDEO (ENTIERRA EL NEGRO) */
         #bg-video {
             position: fixed !important;
-            top: 50%; left: 50%;
-            min-width: 130vw !important; 
-            min-height: 130vh !important; 
-            min-height: 130dvh !important;
-            width: auto; height: auto;
-            z-index: -999 !important;
+            top: 0; left: 0;
+            width: 100vw; 
+            /* 👇 Obliga al video a medir más que la pantalla para tapar la barra de Apple */
+            height: calc(100vh + env(safe-area-inset-bottom) + 30px) !important;
+            height: calc(100dvh + env(safe-area-inset-bottom) + 30px) !important;
+            object-fit: cover !important;
+            z-index: -9999 !important;
             pointer-events: none;
-            transform: translate(-50%, -50%); /* Centrado con escala masiva */
-            object-fit: cover !important; 
-            filter: brightness(1.05);
+            transform: scale(1.1); /* Zoom extra de seguridad */
         }
 
-        /* CAPA EXTRA DE ESTABILIDAD */
+        /* CAPA EXTRA DE ESTABILIDAD SAFARI */
         body::after { content: ""; position: fixed; inset: 0; background: transparent; z-index: -998; }
 
         #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: 0.3s; z-index: 1000000; }
@@ -55,61 +54,54 @@
         .panel-side {
             position: fixed; top: 0; width: 280px; height: 100dvh;
             background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            z-index: 100001; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100001; transition: 0.3s;
             display: flex; flex-direction: column; padding: 25px; 
             padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box;
         }
-        #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
-        #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
+        #sidebar-menu { left: 0; transform: translateX(-100%); }
+        #profile-panel { right: 0; transform: translateX(100%); }
         .panel-open { transform: translateX(0) !important; }
-        .panel-title { font-family: 'Orbitron'; font-size: 0.9rem; color: var(--accent); letter-spacing: 3px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; text-transform: uppercase; }
 
-        /* LOGIN LIMPIO Y TRANSPARENTE */
+        /* LOGIN LIMPIO */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; z-index: 9999; display: flex; align-items: center; justify-content: center; background: transparent; }
         .login-card { text-align: center; max-width: 380px; width: 90%; background: transparent !important; }
-        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.45) !important; border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; transition: 0.3s; }
-        .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.18) !important; box-shadow: 0 0 15px rgba(0,242,255,0.2); }
+        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.45) !important; border: 1px solid rgba(255,255,255,0.15); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
 
-        /* INTERFAZ PRINCIPAL */
-        #app-container { display: none; flex-direction: column; height: 100dvh; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
-        header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        /* INTERFAZ */
+        #app-container { display: none; flex-direction: column; height: 100dvh; width: 100%; position: relative; z-index: 10; }
+        header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; flex: 1; text-align: center; padding-left: 15px; }
-        .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; text-shadow: 0 0 15px var(--accent); padding: 0; width: 44px; text-align: left; }
-        .header-spacer { width: 44px; display: flex; justify-content: flex-end; }
-        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); object-fit: cover; display: none; cursor: pointer; }
+        .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; width: 44px; }
+        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); display: none; }
 
-        /* BURBUJAS DE CHAT */
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
-        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; }
-        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); border-bottom-left-radius: 5px;}
-        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-bottom-right-radius: 5px;}
+        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; }
 
-        /* ✨ DISEÑO GEMINI "DESNUDO": SÓLO TEXTO FLOTANTE */
+        /* ✨ DISEÑO GEMINI "DESNUDO": BAJO Y BRILLANTE */
         .bottom-section { 
-            padding: 5px 15px calc(env(safe-area-inset-bottom, 5px) + 8px) 15px; 
-            display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; 
+            padding: 5px 15px calc(env(safe-area-inset-bottom, 5px) + 5px) 15px; 
+            display: flex; flex-direction: column; gap: 6px; width: 100%; box-sizing: border-box; 
             background: transparent; 
         }
         
         #chat-terminal { 
-            width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; 
+            width: 100%; background: transparent; border: none; color: #fff; font-size: 1.1rem; 
             font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 10px; box-sizing: border-box; 
-            resize: none; overflow-y: hidden; min-height: 40px; max-height: 120px; line-height: 1.4;
-            text-shadow: 0 0 10px #fff; /* Letras brillosas */
+            resize: none; overflow-y: hidden; min-height: 40px; 
+            text-shadow: 0 0 10px #fff; 
         }
         #chat-terminal::placeholder { color: #fff; opacity: 0.8; text-shadow: 0 0 15px #fff; font-family: 'Orbitron'; }
 
         .chat-tools { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
         .tools-left, .tools-right { display: flex; align-items: center; gap: 15px; }
 
-        /* BOTÓN + BLANCO Y BRILLANTE */
-        .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 10px #fff); transform: scale(1.1); }
+        /* ✨ BOTÓN + BLANCO Y BRILLANTE */
+        .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 12px #fff); transform: scale(1.1); }
         .btn-plus-white svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 3; }
 
-        .btn-mini-icon { background: transparent; border: none; color: #fff; cursor: pointer; padding: 5px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
         .btn-pill-model { background: rgba(0, 242, 255, 0.05); border: 1px solid var(--accent); color: #fff; border-radius: 20px; padding: 6px 14px; font-family: 'Orbitron'; font-size: 0.8rem; backdrop-filter: blur(10px); }
 
-        /* BOTÓN A BLANCA LUMINOSA SIN FONDO */
+        /* ✨ BOTÓN A BLANCA LUMINOSA */
         .btn-a-glow { 
             background: transparent; border: none; color: #fff; 
             font-family: 'Orbitron'; font-size: 1.8rem; cursor: pointer; 
@@ -128,42 +120,29 @@
     <div id="panels-overlay" onclick="cerrarPaneles()"></div>
 
     <div id="sidebar-menu" class="panel-side">
-        <h3 class="panel-title">MIS CHATS</h3>
+        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px;">MIS CHATS</h3>
         <div id="history-list" style="flex:1; overflow-y:auto;"></div>
         <button onclick="nuevoEnlace()" style="background:rgba(0,242,255,0.1); border:1px dashed var(--accent); color:var(--accent); width:100%; padding:12px; border-radius:12px; font-family:'Orbitron'; font-size:0.7rem;">+ NUEVO CHAT</button>
     </div>
 
     <div id="profile-panel" class="panel-side">
-        <h3 class="panel-title">MI CUENTA</h3>
+        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px;">MI CUENTA</h3>
         <button onclick="cambiarCuenta()" style="width:100%; padding:15px; border-radius:15px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid var(--accent); font-family:'Orbitron';">CAMBIAR CUENTA</button>
         <button onclick="cerrarSesionReal()" style="width:100%; padding:15px; border-radius:15px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); margin-top:15px; font-family:'Orbitron';">CERRAR SESIÓN</button>
         <button onclick="eliminarCuenta()" style="margin-top:auto; width:100%; padding:15px; border-radius:15px; background:rgba(255,77,77,0.05); color:var(--danger); border:1px solid var(--danger); font-family:'Orbitron';">ELIMINAR CUENTA</button>
-        
         <div style="text-align:center; font-size:0.65rem; color:#fff; text-shadow:0 0 10px #fff; margin-top:15px; font-family:'Orbitron'; opacity:0.9; line-height:1.4;">AURORA ES UNA IA Y PUEDE COMETER ERRORES.</div>
     </div>
 
     <div id="login-overlay">
         <div class="login-card">
             <h2 id="titulo-login" style="font-family:'Orbitron'; text-shadow: 0 0 15px var(--accent); margin-bottom: 30px; letter-spacing: 3px;">BIENVENIDO A AURORA</h2>
-            
             <input type="email" placeholder="Correo electrónico" class="login-input" id="emailInput">
             <input type="password" placeholder="Contraseña" class="login-input" id="passwordInput">
-            
             <button id="btn-principal" style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:15px; width:100%; border-radius:18px; font-weight:bold; font-family:'Orbitron';" onclick="authCorreo()">INGRESAR</button>
-            
             <div style="display:flex; justify-content:center; margin-top:20px;">
                 <a onclick="toggleRegistro()" id="link-registro" style="color:#fff; font-size:0.85rem; cursor:pointer;">Crear Cuenta</a>
             </div>
-            
-            <div style="margin:15px 0; color:rgba(255,255,255,0.3); font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:10px;">
-                <span style="flex:1; height:1px; background:rgba(255,255,255,0.2);"></span>
-                ó
-                <span style="flex:1; height:1px; background:rgba(255,255,255,0.2);"></span>
-            </div>
-            
-            <button style="background:#fff; color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; width:100%; margin-top:15px; display:flex; align-items:center; justify-content:center; gap:10px;" onclick="authGoogle()">
-                Ingresar con Google
-            </button>
+            <button style="background:#fff; color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; width:100%; margin-top:35px;" onclick="authGoogle()">Ingresar con Google</button>
         </div>
     </div>
 
@@ -171,28 +150,26 @@
         <header>
             <button class="btn-menu-top" onclick="abrirSidebar()">☰</button>
             <div class="titulo-app">AURORA</div>
-            <div class="header-spacer"><img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()"></div>
+            <div style="width:44px;"><img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()"></div>
         </header>
 
         <div id="chat-window">
-            <div class="msg aurora">Enlace neuronal activo. ¿Qué deseas consultar?</div>
+            <div class="msg aurora" style="background:rgba(0,242,255,0.05); border:1px solid rgba(0,242,255,0.2);">Bienvenido al núcleo de Aurora. Tu enlace neuronal está activo.</div>
         </div>
 
         <div class="bottom-section">
             <textarea id="chat-terminal" rows="1" placeholder="Preguntale a Aurora..." oninput="autoResize(this); toggleInputButtons()"></textarea>
-            
             <div class="chat-tools">
                 <div class="tools-left">
-                    <button class="btn-plus-white" onclick="alert('Carga de archivos...')">
+                    <button class="btn-plus-white" onclick="alert('Carga...')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
                     <button class="btn-pill-model">⚡ Flash</button>
                     <button class="btn-mini-icon" onclick="iniciarDictado()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"></path></svg></button>
                 </div>
-                
                 <div class="tools-right">
                     <button id="btn-enviar" class="btn-mini-icon" onclick="enviar()" style="display:none; color:var(--accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
-                    <button class="btn-a-glow" onclick="alert('Iniciando enlace Live...')">A</button>
+                    <button class="btn-a-glow">A</button>
                 </div>
             </div>
         </div>
