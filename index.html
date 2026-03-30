@@ -19,27 +19,37 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ 1. BASE UNIVERSAL (Cero barras negras) */
+        /* ✨ 1. BASE UNIVERSAL MEJORADA (100dvh para vencer al iPhone) */
         html { height: -webkit-fill-available; background-color: #000; }
         body { 
             margin: 0; padding: 0; width: 100vw; 
-            height: 100vh; height: -webkit-fill-available; 
+            height: 100dvh; /* MAGIA: Dynamic Viewport Height */
             overflow: hidden; position: fixed; inset: 0; 
             background-color: #000 !important;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* ✨ 2. VIDEO CON ZOOM ANTI-BORDES */
+        /* ✨ 2. VIDEO CON DESBORDE TÁCTICO (Sangrado del 4%) */
         #bg-video { 
-            position: absolute; top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            object-fit: cover; z-index: 0; 
+            position: fixed !important; 
+            top: -2%; left: -2%; 
+            width: 104vw !important; 
+            height: 104dvh !important; 
+            object-fit: cover !important; z-index: 0; 
             pointer-events: none; 
-            transform: scale(1.05); /* Se come cualquier raya blanca o negra */
         }
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
+
+        /* ✨ 3. CONTENEDOR PRINCIPAL CLAVADO AL PISO */
+        #app-container { 
+            display: none; flex-direction: column; 
+            position: fixed; /* Cambiado de absolute a fixed */
+            inset: 0; 
+            height: 100dvh; /* Forzamos a que toque el piso sí o sí */
+            z-index: 10; transition: opacity 0.4s ease; 
+        }
 
         /* ✨ PANELES LATERALES */
         .panel-side {
@@ -124,15 +134,15 @@
         .btn-accent-opt { border-color: var(--accent); color: var(--accent); background: rgba(0, 242, 255, 0.1); }
         .btn-danger-opt { border-color: var(--danger); color: var(--danger); margin-top: auto; }
 
-        /* CONTENEDOR PRINCIPAL - ARREGLADO PARA OCUPAR 100% SIN DESBORDAR */
-        #app-container { display: none; flex-direction: column; position: absolute; inset: 0; z-index: 10; transition: opacity 0.4s ease; }
-
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; color: #fff; }
         .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; text-shadow: 0 0 15px var(--accent); padding: 0; }
         #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); object-fit: cover; display: none; cursor: pointer; }
 
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        #chat-window { 
+            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; 
+            scrollbar-width: none; -webkit-overflow-scrolling: touch; margin-bottom: auto; 
+        }
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
