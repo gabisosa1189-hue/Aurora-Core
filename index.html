@@ -20,7 +20,7 @@
 
         /* ✨ EL CHASIS: Forzamos al iPhone a usar el 100% dinámico real */
         html {
-            height: -webkit-fill-available; /* El fix secreto de Apple */
+            height: -webkit-fill-available; /* El fix secreto de Apple para Safari */
         }
 
         body { 
@@ -33,12 +33,12 @@
             background-color: #000;
         }
 
-        /* ✨ EL FONDO: Exceso de 40% para que el video "sobre" y no haya forma de ver negro */
+        /* ✨ EL FONDO: Exceso del 145% para que el video "sobre" y tape cualquier rastro negro */
         #bg-video {
             position: fixed !important; 
             top: 50% !important; 
             left: 50% !important;
-            width: 145vw !important; /* Un poco más por seguridad */
+            width: 145vw !important; 
             height: 145dvh !important; 
             transform: translate(-50%, -50%) !important; 
             object-fit: cover !important; 
@@ -48,7 +48,7 @@
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* ✨ LOGIN CENTRADO: Clavamos el cuadro de acceso justo en el medio del pecho */
+        /* ✨ LOGIN CENTRADO: Clavamos el cuadro de acceso justo en el medio de la pantalla */
         #login-overlay { 
             position: fixed; inset: 0; width: 100vw; height: 100dvh;
             display: flex; align-items: center; justify-content: center;
@@ -58,7 +58,6 @@
             background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; 
             border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; 
             max-width: 380px; width: 85%; box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-            margin-bottom: 20px; /* Ajuste sutil para el ojo humano */
         }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
 
@@ -79,7 +78,7 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* PANEL INFERIOR: Ajuste Safe Area para que la barra de Apple flote sobre el video */
+        /* PANEL INFERIOR: Ajuste Safe Area para que la barra flote sobre el video */
         .unified-panel {
             background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-radius: 35px 35px 0 0;
@@ -110,11 +109,15 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <h2 style="font-family:'Orbitron';">AURORA</h2>
+            <h2 id="titulo-login" style="font-family:'Orbitron'; line-height:1.4;">BIENVENIDO A AURORA</h2>
             <input type="email" placeholder="Email" class="login-input" id="emailInput">
             <input type="password" placeholder="Contraseña" class="login-input" id="passwordInput">
-            <button style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:15px; width:100%; border-radius:18px; font-weight:bold; font-family:'Orbitron'; margin-bottom:15px;" onclick="authCorreo()">INGRESAR</button>
-            <button style="background:rgba(255,255,255,0.9); color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; width:100%;" onclick="authGoogle()">Ingresar con Google</button>
+            <button id="btn-principal" style="background:transparent; border:2px solid var(--accent); color:var(--accent); padding:15px; width:100%; border-radius:18px; font-weight:bold; cursor:pointer; font-family:'Orbitron'; letter-spacing:2px; margin-bottom:15px;" onclick="authCorreo()">INGRESAR</button>
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; opacity:0.8; margin-bottom:20px;"><a onclick="toggleRegistro()" id="link-registro" style="color:#fff; cursor:pointer; text-decoration:none;">Crear Cuenta</a></div>
+            <div style="margin:15px 0; color:rgba(255,255,255,0.4); font-size:0.8rem;">──────── ó ────────</div>
+            <button style="background:rgba(255,255,255,0.9); color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:12px; width:100%;" onclick="authGoogle()">
+                <svg width="20" height="20" viewBox="0 0 488 512" fill="#000"><path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/></svg> Ingresar con Google
+            </button>
         </div>
     </div>
 
@@ -126,7 +129,7 @@
         </header>
 
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado. Regla de Oro activa. ¿Cómo puedo ayudarte, Gabriel?</div>
+            <div class="msg aurora">Sistema sincronizado. Regla de Oro activa. ¿Cómo puedo ayudarte?</div>
         </div>
 
         <div class="bottom-section">
@@ -138,8 +141,12 @@
                         <button class="btn-pill-model">⚡ Flash</button>
                     </div>
                     <div class="action-group">
-                        <button class="btn-mini-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" width="24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"></path></svg></button>
-                        <button id="btn-enviar" class="btn-mini-icon" onclick="enviar()" style="display:none; color:var(--accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+                        <button id="btn-mic" class="btn-mini-icon" onclick="iniciarDictado()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" width="24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"></path></svg>
+                        </button>
+                        <button id="btn-enviar" class="btn-mini-icon" onclick="enviar()" style="display:none; color:var(--accent);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
                         <button class="btn-live-glow">A</button>
                     </div>
                 </div>
