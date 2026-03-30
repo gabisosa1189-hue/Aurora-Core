@@ -19,20 +19,27 @@
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
 
         /* ✨ EL CHASIS: Forzamos al iPhone a usar el 100% dinámico real */
-        html, body { 
-            margin: 0; padding: 0; width: 100vw; height: 100dvh;
-            background-color: #000; overflow: hidden; position: fixed; inset: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
-            overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
+        html {
+            height: -webkit-fill-available; /* El fix secreto de Apple */
         }
 
-        /* ✨ EL FONDO: Exceso de 40% (140) para que "sobre" video y tape todo rastro negro */
+        body { 
+            margin: 0; padding: 0; width: 100vw; 
+            height: 100vh;
+            height: -webkit-fill-available; 
+            overflow: hidden; position: fixed; inset: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
+            overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
+            background-color: #000;
+        }
+
+        /* ✨ EL FONDO: Exceso de 40% para que el video "sobre" y no haya forma de ver negro */
         #bg-video {
             position: fixed !important; 
             top: 50% !important; 
             left: 50% !important;
-            width: 140vw !important; 
-            height: 140dvh !important; 
+            width: 145vw !important; /* Un poco más por seguridad */
+            height: 145dvh !important; 
             transform: translate(-50%, -50%) !important; 
             object-fit: cover !important; 
             z-index: -100 !important; 
@@ -51,6 +58,7 @@
             background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; 
             border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; 
             max-width: 380px; width: 85%; box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px; /* Ajuste sutil para el ojo humano */
         }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
 
@@ -71,7 +79,7 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* PANEL INFERIOR: Ajuste Safe Area para el iPhone de punta a punta */
+        /* PANEL INFERIOR: Ajuste Safe Area para que la barra de Apple flote sobre el video */
         .unified-panel {
             background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-radius: 35px 35px 0 0;
@@ -118,7 +126,7 @@
         </header>
 
         <div id="chat-window">
-            <div class="msg aurora">Bienvenido al núcleo de <b>Aurora</b>. Tu enlace neuronal está activo.</div>
+            <div class="msg aurora">Sistema sincronizado. Regla de Oro activa. ¿Cómo puedo ayudarte, Gabriel?</div>
         </div>
 
         <div class="bottom-section">
@@ -137,16 +145,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div id="sidebar-menu" class="panel-side">
-        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px;">MIS CHATS</h3>
-        <div id="history-list" style="flex:1; overflow-y:auto;"></div>
-    </div>
-
-    <div id="profile-panel" class="panel-side">
-        <h3 style="font-family:'Orbitron'; color:var(--accent); letter-spacing:3px;">MI CUENTA</h3>
-        <button class="msg user" style="margin-top:auto; cursor:pointer;" onclick="auth.signOut().then(() => location.reload())">Cerrar Sesión</button>
     </div>
 
     <script>
