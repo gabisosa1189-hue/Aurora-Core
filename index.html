@@ -19,37 +19,36 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ 1. BASE: Anclada a las 4 esquinas de forma absoluta */
+        /* ✨ 1. BASE PURA: Sin restricciones que corten el video */
         html, body { 
-            margin: 0; padding: 0; width: 100vw; height: 100vh;
-            min-height: -webkit-fill-available;
-            overflow: hidden; position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0; /* Clavado a los 4 bordes */
-            background-color: #000 !important;
+            margin: 0; padding: 0; 
+            width: 100vw; height: 100vh; height: 100dvh;
+            background-color: #000;
+            overflow: hidden; position: fixed; inset: 0; 
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* ✨ 2. VIDEO INVENCIBLE: 120vh garantiza que baje hasta el subsuelo */
+        /* ✨ 2. EL VIDEO LIBERADO: Igual que en tu versión vieja (cubre TODO) 👇 */
         #bg-video { 
             position: fixed !important; 
-            top: 0 !important; left: 0 !important; 
-            width: 100vw !important; 
-            height: 120vh !important; /* 20% más alto que la pantalla para matar la barra negra */
-            object-fit: cover !important; z-index: 0; 
+            top: 50% !important; 
+            left: 50% !important; 
+            min-width: 100vw !important; 
+            min-height: 100vh !important;
+            width: 120vw !important; /* Lo hacemos 20% más grande para que desborde los bordes */
+            height: 120vh !important; /* Lo hacemos 20% más grande hacia abajo para matar la barra negra */
+            object-fit: cover !important; 
+            transform: translate(-50%, -50%) !important; /* Lo centramos perfecto */
+            z-index: -100 !important; /* Lo mandamos bien al fondo */
             pointer-events: none; 
         }
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* ✨ 3. CONTENEDOR PRINCIPAL: Anclado de punta a punta */
-        #app-container { 
-            display: none; flex-direction: column; 
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0; /* Asegura que llegue al ras del piso */
-            height: auto;
-            z-index: 10; transition: opacity 0.4s ease; 
-        }
+        /* ✨ 3. CONTENEDORES PRINCIPALES CLAVADOS AL PANTALLAZO TOTAL */
+        #app-container { display: none; flex-direction: column; position: fixed; inset: 0; z-index: 10; transition: opacity 0.4s ease; }
+        #login-overlay { position: fixed; inset: 0; background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
 
         /* PANELES LATERALES */
         .panel-side {
@@ -111,14 +110,14 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* ✨ 4. PANEL INFERIOR: Limpio y apoyado en el piso */
-        .bottom-section { padding: 0; display: flex; justify-content: center; width: 100%; box-sizing: border-box; }
+        /* ✨ 4. PANEL INFERIOR: Limpio y flotando sobre el video */
+        .bottom-section { margin-top: auto; display: flex; justify-content: center; width: 100%; box-sizing: border-box; }
         .unified-panel {
             width: 100%; max-width: 100%;
             background: rgba(0, 10, 20, 0.45); 
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: none; border-radius: 35px 35px 0 0;
-            padding: 25px 20px calc(env(safe-area-inset-bottom, 30px) + 20px) 20px !important; 
+            border-radius: 35px 35px 0 0;
+            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px; 
             display: flex; flex-direction: column; gap: 15px;
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
             box-sizing: border-box;
@@ -137,13 +136,7 @@
         .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; padding: 0 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s; }
         .btn-live-glow:hover { transform: scale(1.1); text-shadow: 0 0 25px rgba(255,255,255,1); }
 
-        /* ✨ 5. LOGIN: Anclado de punta a punta */
-        #login-overlay { 
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0; /* Clavado arriba y abajo */
-            background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); 
-            z-index: 9999; display: flex; align-items: center; justify-content: center; 
-        }
+        /* ✨ 5. LOGIN: Vidrio esmerilado limpio */
         .login-card { background: rgba(255, 255, 255, 0.03); padding: 40px; border-radius: 40px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; max-width: 380px; width: 90%; box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); box-sizing: border-box;}
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 242, 255, 0.3); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
         .login-input:focus { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
