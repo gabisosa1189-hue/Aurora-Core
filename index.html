@@ -7,7 +7,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <meta name="theme-color" content="#001a2c">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -19,38 +19,39 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ 1. BASE ABSOLUTA: Con póster de respaldo (poster.jpg) */
-        html { height: -webkit-fill-available; background-color: #001a2c; }
-        body { 
-            margin: 0; padding: 0; width: 100vw; 
-            height: 100dvh; overflow: hidden; position: fixed; inset: 0; 
-            background-color: #001a2c !important;
-            /* 👇 ACÁ ESTÁ EL TRUCO 1: Fondo de estrellas de respaldo 👇 */
-            background-image: url('poster.jpg') !important; 
-            background-size: cover !important;
-            background-position: bottom center !important;
+        /* ✨ 1. BASE: Anclada a las 4 esquinas de forma absoluta */
+        html, body { 
+            margin: 0; padding: 0; width: 100vw; height: 100vh;
+            min-height: -webkit-fill-available;
+            overflow: hidden; position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0; /* Clavado a los 4 bordes */
+            background-color: #000 !important;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* ✨ 2. VIDEO CON INVASIÓN TOTAL: Desborda físicamente hacia el subsuelo del teléfono */
+        /* ✨ 2. VIDEO INVENCIBLE: 120vh garantiza que baje hasta el subsuelo */
         #bg-video { 
-            position: absolute !important; 
-            top: 0% !important; 
-            left: 50% !important; 
-            min-width: 100% !important; 
-            height: calc(100dvh + 50px) !important; /* 👇 ACÁ ESTÁ EL TRUCO 2: Forzamos la invasión 👇 */
+            position: fixed !important; 
+            top: 0 !important; left: 0 !important; 
+            width: 100vw !important; 
+            height: 120vh !important; /* 20% más alto que la pantalla para matar la barra negra */
             object-fit: cover !important; z-index: 0; 
             pointer-events: none; 
-            transform: translateX(-50%) !important; /* Mantenemos el video centrado */
         }
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* ✨ 3. CONTENEDOR PRINCIPAL CLAVADO AL PISO */
-        #app-container { display: none; flex-direction: column; position: fixed; inset: 0; height: 100dvh; z-index: 10; transition: opacity 0.4s ease; }
+        /* ✨ 3. CONTENEDOR PRINCIPAL: Anclado de punta a punta */
+        #app-container { 
+            display: none; flex-direction: column; 
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0; /* Asegura que llegue al ras del piso */
+            height: auto;
+            z-index: 10; transition: opacity 0.4s ease; 
+        }
 
-        /* ✨ PANELES LATERALES */
+        /* PANELES LATERALES */
         .panel-side {
             position: fixed; top: 0; width: 280px; height: 100%;
             background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px);
@@ -61,67 +62,34 @@
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
         .panel-open { transform: translateX(0) !important; }
-
         .panel-title { font-family: 'Orbitron'; font-size: 0.9rem; color: var(--accent); letter-spacing: 3px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-        
-        .chat-item { 
-            background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; 
-            border: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; margin-bottom: 10px; 
-            transition: 0.3s; user-select: none; -webkit-user-select: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: space-between;
-        }
+        .chat-item { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; margin-bottom: 10px; transition: 0.3s; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
         .chat-item.active { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); }
         .chat-item.pinned { border-left: 4px solid var(--accent); }
 
-        /* ✨ BOTTOM SHEETS */
+        /* BOTTOM SHEETS */
         #context-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 100005; opacity: 0; pointer-events: none; transition: 0.3s; }
         #context-overlay.show { opacity: 1; pointer-events: all; }
-        
-        .bottom-sheet {
-            position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 400px; background: rgba(0, 15, 25, 0.85);
-            backdrop-filter: blur(40px); border: 1px solid rgba(0, 242, 255, 0.3);
-            border-radius: 30px 30px 0 0; padding: 25px 25px calc(env(safe-area-inset-bottom, 20px) + 20px) 25px;
-            z-index: 100006; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; flex-direction: column; gap: 5px;
-            box-shadow: 0 -10px 40px rgba(0, 242, 255, 0.15); box-sizing: border-box;
-        }
+        .bottom-sheet { position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(0, 15, 25, 0.85); backdrop-filter: blur(40px); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 30px 30px 0 0; padding: 25px 25px calc(env(safe-area-inset-bottom, 20px) + 20px) 25px; z-index: 100006; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 5px; box-shadow: 0 -10px 40px rgba(0, 242, 255, 0.15); box-sizing: border-box; }
         .bottom-sheet.show { bottom: 0; }
         .context-pill { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: 0 auto 15px auto; }
-        
-        .context-btn {
-            background: transparent; color: #fff; border: none; padding: 16px 15px;
-            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem;
-            text-align: left; border-radius: 15px; display: flex; align-items: center; gap: 15px;
-            cursor: pointer; transition: 0.2s;
-        }
+        .context-btn { background: transparent; color: #fff; border: none; padding: 16px 15px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; text-align: left; border-radius: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; }
         .context-btn:hover { background: rgba(0, 242, 255, 0.1); color: var(--accent); }
         .context-btn svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.8); transition: 0.2s; }
         .context-btn:hover svg { stroke: var(--accent); }
 
-        /* ✨ MODO LIVE OVERLAY */
-        #live-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0, 5, 10, 0.4); z-index: 100010; display: none; flex-direction: column;
-            align-items: center; justify-content: center; opacity: 0; transition: 0.4s;
-        }
+        /* MODO LIVE OVERLAY */
+        #live-overlay { position: fixed; inset: 0; background: rgba(0, 5, 10, 0.4); z-index: 100010; display: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: 0.4s; }
         #live-overlay.show { opacity: 1; display: flex; }
-        
-        #camera-stream {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: 0; opacity: 0; transition: opacity 0.8s ease;
-        }
+        #camera-stream { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0; transition: opacity 0.8s ease; }
         .live-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
-
         @keyframes pulseAWhite { 0% { transform: scale(1); text-shadow: 0 0 20px rgba(255,255,255,0.8); } 50% { transform: scale(1.15); text-shadow: 0 0 60px rgba(255,255,255,1); } 100% { transform: scale(1); text-shadow: 0 0 20px rgba(255,255,255,0.8); } }
         .live-a { font-family: 'Orbitron'; font-size: 6rem; color: #fff; display: flex; align-items: center; justify-content: center; animation: pulseAWhite 2s infinite ease-in-out; text-shadow: 0 0 30px rgba(255,255,255,0.9); }
-
         .live-controls { position: absolute; bottom: calc(env(safe-area-inset-bottom, 20px) + 40px); z-index: 2; display: flex; align-items: center; gap: 45px; }
         .live-btn { background: transparent; border: none; padding: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
         .live-btn svg { width: 32px; height: 32px; stroke: rgba(255,255,255,0.8); stroke-width: 1.5; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); transition: 0.3s; }
         .live-btn:hover svg { stroke: #fff; filter: drop-shadow(0 0 15px #fff); transform: scale(1.1); }
         .live-btn.active svg { stroke: var(--accent); filter: drop-shadow(0 0 15px var(--accent)); }
-        
         .live-btn-end { background: transparent; border: none; padding: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
         .live-btn-end svg { width: 40px; height: 40px; stroke: var(--danger); stroke-width: 2; filter: drop-shadow(0 0 12px var(--danger)); transition: 0.3s; }
         .live-btn-end:hover svg { filter: drop-shadow(0 0 25px var(--danger)); transform: scale(1.15); }
@@ -138,27 +106,22 @@
         .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; text-shadow: 0 0 15px var(--accent); padding: 0; }
         #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,242,255,0.4); object-fit: cover; display: none; cursor: pointer; }
 
-        #chat-window { 
-            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; 
-            scrollbar-width: none; -webkit-overflow-scrolling: touch; margin-bottom: auto; 
-        }
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin-bottom: auto; }
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.3); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* ✨ 4. PANEL UNIFICADO CLAVADO AL PISO CON RESPETO AL MARGEN 👇 */
+        /* ✨ 4. PANEL INFERIOR: Limpio y apoyado en el piso */
         .bottom-section { padding: 0; display: flex; justify-content: center; width: 100%; box-sizing: border-box; }
-        
         .unified-panel {
             width: 100%; max-width: 100%;
             background: rgba(0, 10, 20, 0.45); 
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: none; border-radius: 35px 35px 0 0;
-            padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px !important; 
+            padding: 25px 20px calc(env(safe-area-inset-bottom, 30px) + 20px) 20px !important; 
             display: flex; flex-direction: column; gap: 15px;
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
             box-sizing: border-box;
-            position: absolute; bottom: 0; left: 0; right: 0;
         }
 
         #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 0; box-sizing: border-box; }
@@ -166,22 +129,18 @@
 
         .panel-actions { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .action-group { display: flex; align-items: center; gap: 12px; }
-
         .btn-mini-icon { background: transparent; border: none; color: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 5px; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
         .btn-mini-icon svg { width: 24px; height: 24px; stroke: currentColor; transition: 0.3s; }
         .btn-mini-icon:hover { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); }
-
         .btn-pill-model { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 20px; padding: 8px 16px; font-size: 0.85rem; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
         .btn-pill-model:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px rgba(0,242,255,0.2); }
-
         .btn-live-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 1.8rem; padding: 0 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-shadow: 0 0 15px rgba(255,255,255,0.8); transition: 0.3s; }
         .btn-live-glow:hover { transform: scale(1.1); text-shadow: 0 0 25px rgba(255,255,255,1); }
 
-        /* ✨ 5. LOGIN TÁCTICO: Desborda para abajo */
+        /* ✨ 5. LOGIN: Anclado de punta a punta */
         #login-overlay { 
-            position: fixed; top: 0; left: 0; right: 0; 
-            bottom: -100px !important; 
-            padding-bottom: 100px; 
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0; /* Clavado arriba y abajo */
             background: rgba(0, 10, 20, 0.4); backdrop-filter: blur(15px); 
             z-index: 9999; display: flex; align-items: center; justify-content: center; 
         }
