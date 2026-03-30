@@ -18,48 +18,63 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ RESET TOTAL */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        /* ✨ FIX GLOBAL SAFARI: Transparencia total para que el video respire */
-        html, body {
-            width: 100%;
-            height: 100%;
-            height: 100svh;
-            overflow: hidden;
-            background-color: transparent !important; /* ← CLAVE: No más negro acá */
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #fff;
-            overscroll-behavior-y: none;
+        /* 🔥 TU RESET TOTAL MAESTRO */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* ✨ CONTENEDOR FULLSCREEN REAL (TU FIX) */
+        /* 🔥 PANTALLA REAL COMPLETA */
+        html {
+            background: #000; /* Seguridad de fondo */
+        }
+        
+        body {
+            width: 100%;
+            height: 100%;
+            /* 👇 CLAVE: Transparente para que el video de fondo se vea */
+            background: transparent !important; 
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: #fff;
+            padding-bottom: env(safe-area-inset-bottom); /* Tu Fix de iPhone */
+        }
+
+        /* 🔥 TU CONTENEDOR FULLSCREEN REAL */
         #video-bg {
             position: fixed;
             inset: 0;
             width: 100vw;
             height: 100vh;
-            height: 100svh;
+            height: 100svh; /* 👇 TU SECRETO MÁGICO */
             overflow: hidden;
-            z-index: -1000; /* Fondo absoluto */
-            background: #000; /* Solo si el video falla */
+            background: transparent;
+            z-index: -999;
         }
 
-        /* ✨ VIDEO PERFECTAMENTE CENTRADO CON ESCALA 1.4 */
+        /* 🔥 TU VIDEO PERFECTAMENTE CENTRADO */
         #bg-video {
             position: absolute;
-            top: 50%; left: 50%;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
-            transform: translate(-50%, -50%) scale(1.4); /* PISA TODO EL NEGRO */
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%) scale(1.4); /* Pisa todo el borde */
             object-fit: cover;
             pointer-events: none;
         }
 
-        #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); z-index: 1000000; }
+        /* ========================================= */
+        /* ✨ RESTO DE LA INTERFAZ (REGLA DE ORO) ✨ */
+        /* ========================================= */
+
+        #loading-bar { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); z-index: 1000000; transition: 0.3s; }
         #panels-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 
-        /* PANELES */
+        /* PANELES LATERALES */
         .panel-side {
             position: fixed; top: 0; width: 280px; height: 100dvh;
             background: rgba(0, 10, 20, 0.75); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
@@ -71,15 +86,15 @@
         #profile-panel { right: 0; transform: translateX(100%); }
         .panel-open { transform: translateX(0) !important; }
 
-        /* LOGIN TOTALMENTE TRANSPARENTE */
+        /* LOGIN 100% CRISTALINO */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; z-index: 9999; display: flex; align-items: center; justify-content: center; background: transparent; }
         .login-card { text-align: center; max-width: 380px; width: 90%; background: transparent !important; }
-        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.15); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; }
+        .login-input { width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.15); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         /* INTERFAZ PRINCIPAL */
-        #app-container { display: none; flex-direction: column; height: 100%; width: 100%; position: relative; z-index: 10; transition: opacity 0.4s ease; }
+        #app-container { display: none; flex-direction: column; height: 100%; width: 100%; position: relative; z-index: 10; }
         header { padding-top: calc(env(safe-area-inset-top, 40px) + 15px); padding-left: 20px; padding-right: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; flex: 1; text-align: center; padding-left: 15px;}
+        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); margin: 0; flex: 1; text-align: center; padding-left: 15px; }
         .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; width: 44px; }
         #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); display: none; }
 
@@ -87,7 +102,7 @@
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); }
 
-        /* ✨ DISEÑO GEMINI DESNUDO Y BRILLANTE ABAJO */
+        /* ✨ DISEÑO GEMINI DESNUDO ABAJO */
         .bottom-section { 
             padding: 5px 15px calc(env(safe-area-inset-bottom, 5px) + 8px) 15px; 
             display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; 
@@ -109,7 +124,8 @@
         .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 10px #fff); transform: scale(1.1); }
         .btn-plus-white svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 3; }
 
-        .btn-mini-icon { background: transparent; border: none; color: #fff; cursor: pointer; }
+        .btn-mini-icon { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 5px #fff); }
+        
         .btn-pill-model { background: rgba(0, 242, 255, 0.05); border: 1px solid var(--accent); color: #fff; border-radius: 20px; padding: 6px 14px; font-family: 'Orbitron'; font-size: 0.8rem; backdrop-filter: blur(10px); }
 
         /* ✨ BOTÓN A BLANCA LUMINOSA */
@@ -161,7 +177,7 @@
         <header>
             <button class="btn-menu-top" onclick="abrirSidebar()">☰</button>
             <div class="titulo-app">AURORA</div>
-            <div class="header-spacer"><img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()"></div>
+            <div style="width:44px;"><img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()"></div>
         </header>
 
         <div id="chat-window">
@@ -189,15 +205,12 @@
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
-        
-        // ✨ AUTO-PLAY FIX PARA SAFARI
-        document.addEventListener('DOMContentLoaded', () => { 
-            const v = document.getElementById('bg-video'); v.play().catch(() => {});
-        });
+        let motorActual = 'flash';
 
         function autoResize(t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
         function toggleInputButtons() {
             const val = document.getElementById('chat-terminal').value.trim();
+            document.getElementById('btn-mic').style.display = val ? 'none' : 'flex';
             document.getElementById('btn-enviar').style.display = val ? 'flex' : 'none';
         }
 
@@ -218,9 +231,8 @@
                 document.getElementById('app-container').style.display = 'none';
             }
         });
-        
+
         auth.getRedirectResult().catch(e => console.error(e));
-        window.addEventListener('resize', () => { document.body.style.height = window.innerHeight + 'px'; });
     </script>
 </body>
 </html>
