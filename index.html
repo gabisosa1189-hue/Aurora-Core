@@ -3,78 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AURORA - Acceso Neuronal</title>
-   
+    <title>AURORA CORE</title>
+    
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
     <style>
-        :root { --accent: #00f2ff; --danger: #ff4d4d; }
-       
+        :root { --accent: #00f2ff; }
+        
+        /* 🌌 EL PISO DE ESTRELLAS (fondo.jpg) */
         html, body {
-            margin: 0; padding: 0;
-            width: 100%; height: 100dvh;
-            overflow: hidden;
-            position: fixed;
-            background: transparent !important;
+            margin: 0; padding: 0; width: 100%; height: 100dvh;
+            overflow: hidden; position: fixed;
+            /* 👇 Si el video falla o hay barra, se ve la imagen, NO NEGRO 👇 */
+            background: url('fondo.jpg') no-repeat center center !important;
+            background-size: cover !important;
             font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #000;
         }
 
-        /* IMAGEN INMEDIATA (tu aurora) */
-        #bg-poster {
-            position: fixed !important;
-            top: -150px !important;
-            left: -150px !important;
-            width: calc(100% + 300px) !important;
-            height: calc(100dvh + 300px) !important;
-            z-index: -2 !important;
-            object-fit: cover !important;
-            pointer-events: none !important;
-        }
-
-        /* VIDEO QUE REEMPLAZA SUAVEMENTE */
+        /* 🎥 EL VIDEO DINÁMICO (Encima de la imagen) */
         #bg-video {
             position: fixed !important;
-            top: -150px !important;
-            left: -150px !important;
-            width: calc(100% + 300px) !important;
-            height: calc(100dvh + 300px) !important;
-            z-index: -1 !important;
+            /* Desborde agresivo para pisar los bordes del iPhone */
+            top: -100px !important; left: -100px !important;
+            width: calc(100% + 200px) !important;
+            height: calc(100dvh + 200px) !important;
+            z-index: 1; 
             object-fit: cover !important;
             pointer-events: none !important;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
         }
 
-        /* EL RESTO DE TU CSS (igual que antes) */
-        #login-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.18); }
-        .login-card { text-align: center; max-width: 380px; width: 90%; }
-        .login-input { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.5); border: 1px solid rgba(0,242,255,0.3); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
-        .login-input:focus { border-color: var(--accent); background: rgba(0,242,255,0.1); }
-        #app-container { display: none; flex-direction: column; position: absolute; inset: 0; z-index: 10; background: transparent; }
-        header { padding-top: calc(env(safe-area-inset-top, 44px) + 5px); padding-left: 20px; padding-right: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .titulo-app { font-family: 'Orbitron'; letter-spacing: 12px; font-size: 1.6rem; text-shadow: 0 0 15px var(--accent); flex: 1; text-align: center; color: #fff; margin: 0; }
-        .btn-menu-top { background: transparent; border: none; cursor: pointer; color: #fff; font-size: 2rem; width: 44px; text-align: left; }
-        #user-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); display: none; object-fit: cover; }
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; color: #fff; }
-        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); border-bottom-left-radius: 5px;}
-        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-bottom-right-radius: 5px;}
-        .bottom-section { padding: 5px 15px calc(env(safe-area-inset-bottom, 10px) + 10px) 15px; display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; }
-        #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.1rem; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; padding: 10px; resize: none; overflow-y: hidden; min-height: 40px; text-shadow: 0 0 10px #fff; }
-        #chat-terminal::placeholder { color: #fff; opacity: 0.6; font-family: 'Orbitron'; }
-        .chat-tools { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
-        .tools-left, .tools-right { display: flex; align-items: center; gap: 15px; }
-        .btn-plus-white { background: transparent; border: none; color: #fff; cursor: pointer; filter: drop-shadow(0 0 10px #fff); transform: scale(1.2); }
-        .btn-mini-icon { background: transparent; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .btn-pill-model { background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent); color: #fff; border-radius: 20px; padding: 6px 14px; font-family: 'Orbitron'; font-size: 0.75rem; }
-        .btn-a-glow { background: transparent; border: none; color: #fff; font-family: 'Orbitron'; font-size: 2rem; cursor: pointer; text-shadow: 0 0 20px #fff, 0 0 30px var(--accent); }
-        .panel-side { position: fixed; top: 0; width: 280px; height: 100dvh; background: rgba(0, 10, 20, 0.8); backdrop-filter: blur(25px); z-index: 100001; transition: 0.3s; padding: 25px; padding-top: calc(env(safe-area-inset-top, 40px) + 20px); box-sizing: border-box; }
-        #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(0, 242, 255, 0.2); }
-        #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(0, 242, 255, 0.2); }
-        .panel-open { transform: translateX(0) !important; }
-        #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index:
+        /* 🛠️ EL PARCHE DE SEGURIDAD (Por si las moscas) */
+        #parche-seguridad {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            height: env(safe-area-inset-bottom, 30px);
+            background: url('fondo.jpg') no-repeat bottom center;
+            background-size: cover;
+            z-index: 2; /* Entre el video y la app */
+            filter: blur(5px);
+            pointer-events: none;
+        }
+
+        /* 📱 INTERFAZ (Tu diseño de cristal) */
+        #app-container { 
+            display: none; flex-direction: column; 
+            position: absolute; inset: 0; z-index: 10; 
+            background: transparent; 
+        }
+
+        header { padding-top: calc(env(safe-area-inset-top, 44px) + 10px); text-align: center; }
+        .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); color: #fff; }
+
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; -webkit-overflow-scrolling: touch; }
+        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+        .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); }
+        .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); }
+
+        .bottom-section { padding: 10px 15px calc(env(safe-area-inset-bottom, 15px) + 15px) 15px; }
+        .input-box { display: flex; align-items: center; background: rgba(0,0,0,0.6); border: 1px solid var(--accent); border-radius: 30px; padding: 5px 15px; }
+        #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1.1rem; }
+
+        /* LOGIN */
+        #login-overlay { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); }
+        .login-card { text-align: center; width: 85%; max-width: 350px; }
+        .login-input { width: 100%; padding: 18px; margin-bottom: 15px; border-radius: 15px; border: 1px solid var(--accent); background: rgba(0,0,0,0.5); color: #fff; text-align: center; }
+    </style>
+</head>
+<body>
+    <video autoplay muted loop playsinline webkit-playsinline id="bg-video">
+        <source src="fondo.mp4" type="video/mp4">
+    </video>
+
+    <div id="parche-seguridad"></div>
+
+    <div id="login-overlay">
+        <div class="login-card">
+            <h2 style="font-family:'Orbitron'; color:var(--accent); letter-spacing: 5px; margin-bottom: 40px;">AURORA</h2>
+            <input type="email" id="email" class="login-input" placeholder="EMAIL">
+            <input type="password" id="pass" class="login-input" placeholder="PASSWORD">
+            <button onclick="login()" style="width:100%; padding:18px; border-radius:15px; background:var(--accent); border:none; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">ACCEDER</button>
+        </div>
+    </div>
+
+    <div id="app-container">
+        <header><div class="titulo-app">AURORA</div></header>
+        <div id="chat-window"><div class="msg aurora">Núcleo sincronizado. Pantalla completa 110%.</div></div>
+        <div class="bottom-section">
+            <div class="input-box">
+                <input type="text" id="chat-terminal" placeholder="Sintonizar...">
+                <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.5rem;">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* TU LÓGICA DE FIREBASE (igual que siempre) */
+        const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
+        firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
+        
+        auth.onAuthStateChanged(user => {
+            if(user) {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+            }
+        });
+
+        function login() { const e=document.getElementById('email').value, p=document.getElementById('pass').value; auth.signInWithEmailAndPassword(e,p).catch(a=>alert("Error")); }
+        
+        async function enviar() {
+            const i=document.getElementById('chat-terminal'), m=i.value; if(!m)return;
+            const w=document.getElementById('chat-window'); w.innerHTML+=`<div class="msg user">${m}</div>`;
+            i.value=""; w.scrollTop=w.scrollHeight;
+            try {
+                const r=await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({msg:m})});
+                const d=await r.json(); w.innerHTML+=`<div class="msg aurora">${d.respuesta}</div>`;
+                w.scrollTop=w.scrollHeight;
+            } catch(e){}
+        }
+        document.addEventListener('touchmove', function(e){ if(!e.target.closest('#chat-window')) e.preventDefault(); }, {passive:false});
+    </script>
+</body>
+</html>
