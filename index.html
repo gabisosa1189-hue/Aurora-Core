@@ -18,7 +18,7 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ 1. FONDO BASE */
+        /* ✨ FONDO BASE NEGRO */
         html, body {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
@@ -29,14 +29,13 @@
             overscroll-behavior-y: none;
         }
 
-        /* ✨ 2. EL GOLPE FINAL: EL VIDEO ARRANCANDO DESDE "AFUERA" DE LA PANTALLA ARRIBA */
+        /* ✨ LA FUSIÓN: Empujado hacia arriba (-15vh) y recontra estirado hacia abajo (130vh) */
         #bg-video {
             position: fixed !important;
-            /* 👇 ESTA ES LA CLAVE: Lo empujamos hacia el techo del iPhone */
-            top: -10vh !important; 
-            left: -10vw !important; 
-            width: 120vw !important; 
-            height: 120vh !important; 
+            top: -15vh !important; /* Tapa la cabeza (la hora/batería) */
+            left: -15vw !important; /* Tapa los costados */
+            width: 130vw !important; /* Súper ancho */
+            height: 130vh !important; /* Súper largo para tapar los pies (barra negra abajo) */
             z-index: 0 !important; 
             object-fit: cover !important;
             pointer-events: none !important;
