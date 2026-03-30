@@ -24,19 +24,19 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* 🔥 ESTE ES EL TRUCO DEFINITIVO PARA IPHONE - DESBORDE AGRESIVO */
+        /* 🔥 PLAN B - DESBORDE EXTREMO (tapa la barra negra de abajo) */
         #bg-video {
             position: fixed !important;
-            top: -80px !important;
-            left: -80px !important;
-            width: calc(100% + 160px) !important;
-            height: calc(100dvh + 160px) !important;
+            top: -120px !important;
+            left: -120px !important;
+            width: calc(100% + 240px) !important;
+            height: calc(100dvh + 240px) !important;
             z-index: -1 !important;
             object-fit: cover !important;
             pointer-events: none !important;
         }
 
-        /* EL RESTO DE TU INTERFAZ (sin tocar nada) */
+        /* EL RESTO DE TU INTERFAZ (sin cambios) */
         #login-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.18); }
         .login-card { text-align: center; max-width: 380px; width: 90%; }
         .login-input { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.5); border: 1px solid rgba(0,242,255,0.3); color: white; padding: 18px 15px; border-radius: 15px; margin-bottom: 15px; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
@@ -67,7 +67,6 @@
     </style>
 </head>
 <body>
-    <!-- VIDEO PRIMERO Y CON DESBORDE FUERTE -->
     <video autoplay muted loop playsinline webkit-playsinline id="bg-video">
         <source src="fondo.mp4" type="video/mp4">
     </video>
@@ -92,10 +91,10 @@
     <div id="app-container"> ... (tu app container igual que antes) </div>
 
     <script>
-        /* TU SCRIPT ORIGINAL (sin cambios) */
+        /* TU SCRIPT ORIGINAL (no lo cambié) */
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
-        /* ... tu código completo de funciones ... */
+        /* ... todo tu código de funciones ... */
         window.addEventListener('load', () => { document.getElementById('bg-video').play(); });
     </script>
 </body>
