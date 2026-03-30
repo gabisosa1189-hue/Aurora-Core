@@ -30,15 +30,14 @@
 
         #bg-video {
             position: fixed !important;
-            top: -5% !important;
-            left: -5% !important;
-            right: -5% !important;
-            bottom: -5% !important;
-            width: 110vw !important;
-            height: 110vh !important;
-            height: 110dvh !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important;
             object-fit: cover !important;
-            z-index: -1;
+            transform: scale(1.1);
+            transform-origin: center;
+            z-index: 0;
             pointer-events: none;
         }
         
