@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AURORA</title>
+    <title>AURORA CORE</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
@@ -15,86 +15,75 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        :root { --accent: #00f2ff; }
+        :root { --accent: #00f2ff; --danger: #ff4d4d; }
         
-        /* ✨ 1. RESET PURE & ANCLA TOTAL ✨ */
+        /* ✨ 1. ESTRUCTURA BASE: BLOQUEO DE REBOTE */
         html, body {
-            margin: 0; padding: 0;
-            width: 100vw; height: 100vh;
-            overflow: hidden;
-            position: fixed; top: 0; left: 0;
-            background-color: #000 !important;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #fff;
-            overscroll-behavior: none;
-            -webkit-tap-highlight-color: transparent;
+            margin: 0; padding: 0; width: 100%; height: 100dvh;
+            overflow: hidden; position: fixed;
+            background-color: #000; font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #fff; overscroll-behavior: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* ✨ 2. EL VIDEO GIGANTE: PPOSITION FIXED & INSET NEGATIVO ✨ */
+        /* ✨ 2. EL VIDEO: ESCUDO TOTAL */
         #bg-video {
-            position: fixed !important;
-            /* 👇 El pequeño zoom mágico que mata cualquier raya blanca o negra 👇 */
-            top: -50px !important;
-            left: -50px !important;
-            width: calc(100vw + 100px) !important;
-            height: calc(100vh + 100px) !important;
-            z-index: 1; /* Lowest layer */
-            object-fit: cover !important;
-            pointer-events: none !important;
+            position: fixed; inset: 0;
+            width: 100%; height: 100%;
+            z-index: 0; object-fit: cover;
+            transform: scale(1.1); /* Zoom de seguridad para tapar bordes */
+            pointer-events: none;
         }
 
-        /* ✨ 3. INTERFAZ FLOTANTE (GEMINI DESNUDO) ✨ */
-        #app {
-            position: absolute;
-            inset: 0;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            background: transparent;
+        /* ✨ 3. INTERFAZ GEMINI (POR ENCIMA) */
+        #app-container {
+            display: none; flex-direction: column;
+            position: absolute; inset: 0; z-index: 10;
         }
 
         header {
-            padding-top: calc(env(safe-area-inset-top, 20px) + 10px);
-            padding-left: 20px;
-            padding-right: 20px;
+            padding-top: calc(env(safe-area-inset-top, 44px) + 5px);
+            padding-left: 20px; padding-right: 20px;
             display: flex; justify-content: space-between; align-items: center;
         }
         .titulo-app { font-family: 'Orbitron'; letter-spacing: 15px; font-size: 1.8rem; text-shadow: 0 0 15px var(--accent); flex: 1; text-align: center; margin: 0; }
+        .btn-side { background: none; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; width: 44px; }
+        #user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); display: none; object-fit: cover; }
 
+        /* VENTANA DE CHAT */
         #chat-window {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex; flex-direction: column; gap: 15px;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
+            flex: 1; overflow-y: auto; padding: 20px;
+            display: flex; flex-direction: column; gap: 20px;
+            scrollbar-width: none; -webkit-overflow-scrolling: touch;
         }
-
-        .msg { max-width: 80%; padding: 12px 18px; border-radius: 20px; backdrop-filter: blur(10px); line-height: 1.5; font-size: 0.95rem; }
+        .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
 
-        /* ✨ 4. EL TRUCO PARA EL PISO DEL IPHONE (SAFE-AREA-BOTTOM) ✨ */
+        /* ✨ 4. SECCIÓN INFERIOR: BLINDAJE DE BARRA NEGRA */
         .bottom-section {
-            padding: 10px 15px calc(env(safe-area-inset-bottom, 10px) + 10px) 15px;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(10px);
+            padding: 10px 15px calc(env(safe-area-inset-bottom, 15px) + 10px) 15px;
+            background: rgba(0,0,0,0.2); backdrop-filter: blur(5px);
         }
-
-        .input-wrap {
-            display: flex; align-items: center; gap: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--accent);
-            border-radius: 30px; padding: 5px 15px;
+        .input-box {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(0, 0, 0, 0.6); border: 1px solid var(--accent);
+            border-radius: 30px; padding: 5px 18px;
         }
+        #chat-terminal { flex: 1; background: transparent; border: none; color: #fff; padding: 12px; outline: none; font-size: 1.05rem; }
+        
+        .btn-plus { color: #fff; background: none; border: none; font-size: 1.5rem; transform: scale(1.2); }
+        .btn-a-glow { font-family: 'Orbitron'; background: none; border: none; color: #fff; font-size: 1.8rem; text-shadow: 0 0 20px #fff, 0 0 30px var(--accent); }
 
-        #chat-terminal { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 1.1rem; text-shadow: 0 0 10px #fff;}
-        #chat-terminal::placeholder { color: #fff; opacity: 0.7; font-family: 'Orbitron'; }
+        /* PANELES */
+        .panel { position: fixed; top: 0; width: 280px; height: 100%; background: rgba(0, 5, 10, 0.85); backdrop-filter: blur(20px); z-index: 1000; transition: 0.3s; padding: 30px; box-sizing: border-box; }
+        #sidebar { left: 0; transform: translateX(-100%); border-right: 1px solid var(--accent); }
+        #profile { right: 0; transform: translateX(100%); border-left: 1px solid var(--accent); }
+        .panel-open { transform: translateX(0) !important; }
 
         /* LOGIN */
-        #login-overlay { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(20px); }
-        .login-card { text-align: center; width: 85%; }
-        .login-input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid rgba(0,242,255,0.3); background: #000; color: #fff; font-family: 'Plus Jakarta Sans'; font-size: 1rem;}
+        #login-overlay { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); }
+        .login-card { width: 85%; text-align: center; max-width: 400px; }
+        .login-input { width: 100%; padding: 18px; margin-bottom: 15px; border-radius: 15px; border: 1px solid rgba(0,242,255,0.3); background: rgba(0,0,0,0.5); color: #fff; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -103,58 +92,80 @@
         <source src="fondo.mp4" type="video/mp4">
     </video>
 
-    <div id="loading-bar"></div>
-
     <div id="login-overlay">
         <div class="login-card">
-            <h2 style="font-family:'Orbitron'; text-shadow: 0 0 15px var(--accent); color:#fff; margin-bottom: 40px; letter-spacing: 5px;">AURORA</h2>
+            <h2 style="font-family:'Orbitron'; letter-spacing:10px; color:var(--accent); margin-bottom:40px;">AURORA</h2>
             <input type="email" id="email" class="login-input" placeholder="Acceso Email">
-            <input type="password" id="pass" class="login-input" placeholder="Password">
-            <button onclick="login()" style="width:100%; padding:15px; border-radius:12px; background:var(--accent); border:none; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">SINCRONIZAR</button>
-            <button onclick="authGoogle()" style="width:100%; padding:15px; border-radius:12px; background:#fff; border:none; font-family:'Orbitron'; font-weight:bold; cursor:pointer; margin-top:20px;">GOOGLE</button>
+            <input type="password" id="pass" class="login-input" placeholder="Contraseña">
+            <button onclick="login()" style="width:100%; padding:18px; border-radius:15px; background:var(--accent); border:none; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">SINCRONIZAR</button>
+            <button onclick="authGoogle()" style="width:100%; padding:18px; border-radius:15px; background:#fff; color:#000; border:none; font-family:'Orbitron'; font-weight:bold; margin-top:20px;">GOOGLE</button>
         </div>
     </div>
 
-    <div id="app" style="display:none;">
-        <header><div class="titulo-app">AURORA</div></header>
+    <div id="app-container">
+        <header>
+            <button class="btn-side" onclick="togglePanel('sidebar')">☰</button>
+            <div class="titulo-app">AURORA</div>
+            <button class="btn-side" onclick="togglePanel('profile')" style="display:flex; justify-content:flex-end;">
+                <img id="user-avatar" src="" alt="P">
+            </button>
+        </header>
+
         <div id="chat-window">
-            <div class="msg aurora">Bienvenido al núcleo de Aurora. No hay más barras negras.</div>
+            <div class="msg aurora">Sistema 110% activo, Gabriel. ¿Cuál es el plan?</div>
         </div>
+
         <div class="bottom-section">
-            <div class="input-wrap">
-                <input type="text" id="chat-terminal" placeholder="Sintonía Neuronal...">
-                <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.5rem; cursor:pointer;">➤</button>
+            <div class="input-box">
+                <button class="btn-plus">➕</button>
+                <input type="text" id="chat-terminal" placeholder="Hablá con Aurora...">
+                <button onclick="enviar()" style="background:none; border:none; color:var(--accent); font-size:1.5rem;">➤</button>
+                <button class="btn-a-glow">A</button>
             </div>
         </div>
     </div>
 
+    <div id="sidebar" class="panel"><h3 style="font-family:'Orbitron'; color:var(--accent);">CHATS</h3></div>
+    <div id="profile" class="panel">
+        <h3 style="font-family:'Orbitron'; color:var(--accent);">CUENTA</h3>
+        <button onclick="auth.signOut().then(()=>location.reload())" style="width:100%; padding:15px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); border-radius:15px; margin-top:20px;">CERRAR SESIÓN</button>
+    </div>
+
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
-        firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
 
-        function login() { const e = document.getElementById('email').value; const p = document.getElementById('pass').value; auth.signInWithEmailAndPassword(e, p).catch(err => alert("Error")); }
-        function authGoogle() { const p = new firebase.auth.GoogleAuthProvider(); auth.signInWithRedirect(p); }
+        function togglePanel(id) { document.getElementById(id).classList.toggle('panel-open'); }
+        function login() { const e=document.getElementById('email').value, p=document.getElementById('pass').value; auth.signInWithEmailAndPassword(e,p).catch(err=>alert(err.message)); }
+        function authGoogle() { auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider()); }
 
         auth.onAuthStateChanged(user => {
             if(user) {
                 document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
+                document.getElementById('app-container').style.display = 'flex';
+                if(user.photoURL) { const img=document.getElementById('user-avatar'); img.src=user.photoURL; img.style.display='block'; }
             }
         });
 
         async function enviar() {
-            const input = document.getElementById('chat-terminal'); 
-            const msg = input.value; if(!msg) return;
+            const input = document.getElementById('chat-terminal'), msg = input.value; if(!msg) return;
             const win = document.getElementById('chat-window');
             win.innerHTML += `<div class="msg user">${msg}</div>`;
             input.value = ""; win.scrollTop = win.scrollHeight;
             try {
-                const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({msg: msg}) });
+                const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({msg: msg})
+                });
                 const data = await res.json();
                 win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
                 win.scrollTop = win.scrollHeight;
-            } catch(e) { win.innerHTML += `<div class="msg aurora">Fallo neuronal...</div>`; }
+            } catch(e) { win.innerHTML += `<div class="msg aurora">Error de enlace neuronal.</div>`; }
         }
+
+        // BLOQUEO DE REBOTE IPHONE
+        document.addEventListener('touchmove', function(e){ if(!e.target.closest('#chat-window')) e.preventDefault(); }, {passive:false});
     </script>
 </body>
 </html>
