@@ -151,7 +151,7 @@
         </header>
         
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado, Gabriel. La memoria neuronal está activa y el sistema Anti-Trampas configurado desde la base del dispositivo.</div>
+            <div class="msg aurora">Hola. Bienvenido a Aurora. ¿En qué puedo ayudarte hoy?</div>
         </div>
 
         <div class="bottom-section" id="bottom-bar-container">
@@ -221,13 +221,12 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        // CIRUGÍA LÁSER: EL LÍMITE DE MENSAJES YA EXISTE DEFINITIVO
         const LIMITE_MENSAJES = 100;
         
         let misChats = JSON.parse(localStorage.getItem('aurora_chats')) || [{ id: Date.now(), nombre: 'Chat 1', pinned: false, mensajes: 0, historial: [] }];
         let chatsCreadosHistoricos = parseInt(localStorage.getItem('aurora_historico')) || 0;
         let ilimitado = localStorage.getItem('aurora_ilimitado') === 'true';
-        let chatActivoId = misChats.length > 0 ? misChats[0].id : Date.now();
+        let chatActivoId = misChats[0].id;
         let currentModel = 'flash';
         let currentImageData = null;
 
