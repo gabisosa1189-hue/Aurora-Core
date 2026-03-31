@@ -37,7 +37,6 @@
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* ✨ MENÚ CONTEXTUAL SECRETO (LONG PRESS) */
         #context-menu-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             z-index: 100005; display: none; align-items: center; justify-content: center; 
@@ -99,7 +98,6 @@
         .unified-panel { background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 35px 35px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px !important; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4); }
         #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; outline: none; transition: 0.3s; }
 
-        /* ✨ PANEL LATERAL CRISTAL PURO */
         .panel-side { 
             position: fixed; top: 0; width: 290px; height: 100%; 
             background: rgba(0, 0, 0, 0.15); 
@@ -112,14 +110,12 @@
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(255, 255, 255, 0.15); }
         .panel-open { transform: translateX(0) !important; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
 
-        /* ✨ TEXTOS BRILLOSOS */
         .shiny-white-text {
             color: #fff; text-shadow: 0 0 15px #fff, 0 0 30px #fff;
             font-family: 'Orbitron'; font-size: 1.3rem; text-align: center;
             letter-spacing: 3px; margin-bottom: 20px;
         }
 
-        /* ✨ LISTA DE CHATS DINÁMICA */
         #lista-chats-container {
             display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1; margin-bottom: 15px;
         }
@@ -129,10 +125,10 @@
             font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;
             transition: 0.3s; user-select: none; -webkit-user-select: none;
         }
-        .chat-item:active { transform: scale(0.97); } /* Efecto de hundimiento al apretar */
+        .chat-item:active { transform: scale(0.97); }
         .chat-item.pinned { border-left: 3px solid #fff; box-shadow: -3px 0 10px rgba(255,255,255,0.5); }
+        .chat-item.active-chat { background: rgba(255, 255, 255, 0.15); border-color: #fff; }
 
-        /* ✨ BARRA DE ENERGÍA FINITA */
         .energy-container { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px 0; }
         .shiny-counter {
             color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff;
@@ -151,7 +147,6 @@
             border-top: 1px solid rgba(255, 255, 255, 0.2); margin-top: auto;
         }
 
-        /* ✨ BOTONES DE PANEL */
         .panel-btn {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px);
             color: #fff; padding: 16px; border-radius: 16px; cursor: pointer;
@@ -220,7 +215,7 @@
         </header>
         
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado, Gabriel. Mantené presionado un chat para ver sus opciones ocultas.</div>
+            <div class="msg aurora">Sistema sincronizado, Gabriel. Tenés un límite de 100 mensajes por chat. Podés ver tu capacidad en el menú izquierdo.</div>
         </div>
 
         <div class="bottom-section">
@@ -247,7 +242,7 @@
         </button>
 
         <div class="energy-container">
-            <div class="shiny-counter" id="chat-counter">CHATS: 0/5</div>
+            <div class="shiny-counter" id="chat-counter">CHATS: 1/5</div>
             <div class="energy-bar-bg">
                 <div class="energy-bar-fill" id="energy-bar"></div>
             </div>
@@ -286,9 +281,13 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        let misChats = [{ id: Date.now(), nombre: 'Conexión Alpha', pinned: false }];
+        // ✨ ESTRUCTURA MEJORADA DE CHATS (Contador de Mensajes por Chat)
+        let misChats = [{ id: Date.now(), nombre: 'Chat 1', pinned: false, mensajes: 0 }];
+        let chatActivoId = misChats[0].id;
         let chatActivoParaMenu = null;
         let timerToqueLargo;
+        const LIMITE_MENSAJES = 100;
+        let ilimitado = false;
 
         function renderizarChats() {
             const container = document.getElementById('lista-chats-container');
@@ -298,8 +297,9 @@
 
             chatsOrdenados.forEach(chat => {
                 const div = document.createElement('div');
-                div.className = `chat-item ${chat.pinned ? 'pinned' : ''}`;
-                div.innerHTML = `<span>${chat.nombre}</span> ${chat.pinned ? '📌' : ''}`;
+                // Si es el chat activo, se ilumina un poco más
+                div.className = `chat-item ${chat.pinned ? 'pinned' : ''} ${chat.id === chatActivoId ? 'active-chat' : ''}`;
+                div.innerHTML = `<span>${chat.nombre}</span> <span style="font-size:0.7rem; opacity:0.7;">${chat.mensajes}/${LIMITE_MENSAJES}</span>`;
                 
                 div.addEventListener('touchstart', (e) => iniciarToqueLargo(e, chat.id));
                 div.addEventListener('touchend', cancelarToqueLargo);
@@ -310,8 +310,10 @@
                 
                 div.addEventListener('click', () => {
                     if(!chatActivoParaMenu) {
+                        chatActivoId = chat.id; // Cambia el chat en uso
                         cerrarPaneles();
-                        document.getElementById('chat-window').innerHTML += `<div class="msg aurora">Cambiando al chat: ${chat.nombre}...</div>`;
+                        document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Cambiando al ${chat.nombre}...</div>`;
+                        renderizarChats();
                     }
                 });
                 container.appendChild(div);
@@ -319,12 +321,19 @@
         }
 
         function crearNuevoChat() {
-            if(misChats.length >= 5) {
-                alert("Límite máximo de 5 chats simultáneos alcanzado.");
+            if(!ilimitado && misChats.length >= 5) {
+                alert("Límite máximo de 5 chats alcanzado. Compartí la app para desbloquear espacio o eliminá un chat.");
                 return;
             }
-            misChats.push({ id: Date.now(), nombre: `Conexión ${misChats.length + 1}`, pinned: false });
+            
+            let nuevoChat = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, pinned: false, mensajes: 0 };
+            misChats.push(nuevoChat);
+            chatActivoId = nuevoChat.id; // Te manda directo al chat nuevo
+            
+            actualizarBarra();
             renderizarChats();
+            cerrarPaneles();
+            document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Nuevo canal neuronal abierto (${nuevoChat.nombre}). ¿De qué hablamos?</div>`;
         }
 
         function iniciarToqueLargo(e, id) {
@@ -360,6 +369,11 @@
                 alert("No podés eliminar tu única conexión activa.");
             } else if(confirm("¿Seguro que querés borrar este chat?")) {
                 misChats = misChats.filter(c => c.id !== chatActivoParaMenu);
+                // Si eliminó el chat que estaba usando, lo pasa a otro
+                if(chatActivoId === chatActivoParaMenu) {
+                    chatActivoId = misChats[0].id;
+                }
+                actualizarBarra();
                 renderizarChats();
             }
             cerrarMenuSecreto();
@@ -375,26 +389,34 @@
             cerrarMenuSecreto();
         }
 
-        let chatsUsados = 0;
-        let ilimitado = false;
-
+        // ✨ LA BARRA AHORA SE LLENA CON CHATS CREADOS (No con mensajes)
         function actualizarBarra() {
             const bar = document.getElementById('energy-bar');
             const counter = document.getElementById('chat-counter');
             const btnCompartir = document.getElementById('btn-compartir');
             
-            let porcentaje = (chatsUsados / 5) * 100;
-            bar.style.width = porcentaje + '%';
-            counter.innerText = `CHATS: ${chatsUsados}/5`;
-            
-            if(chatsUsados >= 5) {
-                bar.style.background = '#ff4d4d'; 
-                bar.style.boxShadow = '0 0 15px #ff4d4d';
-                btnCompartir.style.display = 'flex'; 
-            } else {
-                bar.style.background = '#fff';
-                bar.style.boxShadow = '0 0 10px #fff, 0 0 20px #fff';
+            let cantidadChats = misChats.length;
+
+            if (ilimitado) {
+                bar.style.width = '100%';
+                bar.style.background = 'var(--accent)';
+                bar.style.boxShadow = '0 0 15px var(--accent)';
+                counter.innerText = "ACCESO: ILIMITADO";
                 btnCompartir.style.display = 'none'; 
+            } else {
+                let porcentaje = (cantidadChats / 5) * 100;
+                bar.style.width = porcentaje + '%';
+                counter.innerText = `CHATS: ${cantidadChats}/5`;
+                
+                if(cantidadChats >= 5) {
+                    bar.style.background = '#ff4d4d'; 
+                    bar.style.boxShadow = '0 0 15px #ff4d4d';
+                    btnCompartir.style.display = 'flex'; 
+                } else {
+                    bar.style.background = '#fff';
+                    bar.style.boxShadow = '0 0 10px #fff, 0 0 20px #fff';
+                    btnCompartir.style.display = 'none'; 
+                }
             }
         }
 
@@ -405,13 +427,13 @@
                     text: 'Descubrí Aurora, el acceso neuronal.',
                     url: window.location.href
                 }).then(() => {
-                    chatsUsados = Math.max(0, chatsUsados - 2);
+                    ilimitado = true;
                     actualizarBarra();
-                    alert("¡Gracias por compartir! Te hemos regalado 2 chats extra.");
+                    alert("¡Misión cumplida! Desbloqueaste la creación ilimitada de chats.");
                 }).catch(console.error);
             } else {
                 alert("Copiá este enlace y compartilo con un amigo: " + window.location.href);
-                chatsUsados = Math.max(0, chatsUsados - 2);
+                ilimitado = true;
                 actualizarBarra();
             }
         }
@@ -433,8 +455,12 @@
             const input = document.getElementById('chat-terminal'); 
             if(!input.value.trim()) return;
 
-            if (chatsUsados >= 5) {
-                alert("Límite de chats alcanzado. Abrí el menú ☰ y tocá 'Desbloquear Acceso'.");
+            // Busca en la base local el chat que el usuario tiene abierto ahora
+            let chatActual = misChats.find(c => c.id === chatActivoId);
+
+            // Corta la ejecución si el chat llegó a 100
+            if (chatActual && chatActual.mensajes >= LIMITE_MENSAJES) {
+                alert("Memoria neuronal al máximo en este chat (100/100). Creá un 'Nuevo Chat' para seguir.");
                 return;
             }
 
@@ -442,8 +468,11 @@
             document.getElementById('chat-window').innerHTML += `<div class="msg user">${msj}</div>`;
             input.value = ""; toggleInputButtons();
             
-            chatsUsados++;
-            actualizarBarra();
+            // Suma un mensaje al chat actual
+            if(chatActual) {
+                chatActual.mensajes++;
+                renderizarChats(); // Refresca la vista en el menú para mostrar el número
+            }
 
             try { 
                 const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { 
