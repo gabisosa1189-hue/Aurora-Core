@@ -1,21 +1,21 @@
 {
-  "id": "aurora-core-ia-mendoza-v2",
-  "name": "Aurora Core IA",
-  "short_name": "A-Core-V2",
-  "description": "Asistente neuronal universal para Mendoza.",
-  "lang": "es-AR",
-  "start_url": "index.html",
-  "display": "standalone",
-  "orientation": "portrait",
+  "name": "AURORA - Acceso Neuronal",
+  "short_name": "Aurora",
+  "description": "IA de Acceso Neuronal",
+  "start_url": "./index.html",
+  "display": "fullscreen",
   "background_color": "#000000",
   "theme_color": "#000000",
-  "categories": ["productivity", "utilities"],
   "icons": [
     {
-      "src": "apple-touch-icon.png",
+      "src": "icono.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icono.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
