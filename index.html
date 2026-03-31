@@ -54,7 +54,7 @@
         .multi-item:hover, .multi-item:active { background: rgba(255, 255, 255, 0.15); box-shadow: inset 0 0 10px rgba(255,255,255,0.1); }
         .multi-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: 0.9; }
 
-        /* ✨ MODO VOZ OVERLAY (CRISTAL Y A CENTRADA) */
+        /* ✨ MODO VOZ OVERLAY */
         #voice-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 200000; display: none; animation: pop-in 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .voice-center-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
         .voice-controls { position: absolute; bottom: 45px; display: flex; gap: 25px; align-items: center; justify-content: center; width: 100%; }
@@ -106,15 +106,18 @@
         .glowing-A-btn { font-family: 'Orbitron'; font-size: 2rem; color: #fff; background: transparent; border: none; text-shadow: 0 0 15px #fff, 0 0 30px #fff; cursor: pointer; transition: 0.2s; padding: 0 5px; font-weight: bold; }
         .glowing-A-btn:active { transform: scale(0.85); }
 
-        /* PANEL LATERAL */
+        /* ✨ PANELES LATERALES (CRISTAL) */
         .panel-side { position: fixed; top: 0; width: 290px; height: 100%; background: rgba(0, 0, 0, 0.15); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100001; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px; padding-top: calc(env(safe-area-inset-top, 50px) + 20px); box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(255, 255, 255, 0.15); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(255, 255, 255, 0.15); }
         .panel-open { transform: translateX(0) !important; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
 
         .shiny-white-text { color: #fff; text-shadow: 0 0 15px #fff, 0 0 30px #fff; font-family: 'Orbitron'; font-size: 1.3rem; text-align: center; letter-spacing: 3px; margin-bottom: 20px; }
+        
+        /* ✨ PANEL DE CHATS (IZQUIERDO) - ARREGLADO */
         #lista-chats-container { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1; margin-bottom: 15px; touch-action: pan-y; }
-        .chat-item { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px; border-radius: 15px; cursor: pointer; color: #fff; font-family: 'Plus Jakarta Sans'; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; user-select: none; -webkit-user-select: none; }
+        .chat-item { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px; border-radius: 15px; cursor: pointer; color: #fff; font-family: 'Plus Jakarta Sans'; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; user-select: none; -webkit-user-select: none; }
+        .chat-item:active { transform: scale(0.97); }
         .chat-item.pinned { background: rgba(255, 255, 255, 0.1); border-color: rgba(255,255,255,0.4); box-shadow: inset 0 0 10px rgba(255,255,255,0.1), 0 0 15px rgba(255,255,255,0.2); }
         .chat-item.active-chat { border-left: 3px solid #fff; }
 
@@ -122,12 +125,26 @@
         .shiny-counter { color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff; font-family: 'Orbitron'; font-size: 0.85rem; text-align: center; letter-spacing: 2px; }
         .energy-bar-bg { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; }
         .energy-bar-fill { height: 100%; width: 0%; background: #fff; box-shadow: 0 0 10px #fff, 0 0 20px #fff; border-radius: 10px; transition: width 0.4s ease-in-out, background 0.4s ease; }
+
+        /* ✨ PANEL DE CUENTA (DERECHO) - BOTONES GIGANTES ARREGLADOS */
         .shiny-disclaimer { color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff; font-family: 'Orbitron'; font-size: 0.7rem; text-align: center; padding: 15px 0 10px 0; letter-spacing: 1px; line-height: 1.4; border-top: 1px solid rgba(255, 255, 255, 0.2); margin-top: auto; }
 
-        .panel-btn-menu { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); color: #fff; padding: 16px; border-radius: 16px; cursor: pointer; font-family: 'Plus Jakarta Sans'; font-size: 0.95rem; text-align: left; transition: all 0.3s ease; display: flex; align-items: center; gap: 14px; width: 100%; }
-        .panel-btn-menu:active { background: rgba(255, 255, 255, 0.15); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); transform: scale(0.97); }
-        .panel-btn-menu.danger { color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3); }
-        .panel-btn-menu.danger:active { background: rgba(255, 107, 107, 0.15); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255,107,107,0.4); }
+        .panel-btn-account { 
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); 
+            color: #fff; padding: 20px; border-radius: 16px; cursor: pointer; 
+            font-family: 'Plus Jakarta Sans'; font-size: 1rem; text-align: center; 
+            transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; 
+        }
+        .panel-btn-account:active { background: rgba(255, 255, 255, 0.15); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); transform: scale(0.97); }
+        .panel-btn-account.danger { color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3); }
+        .panel-btn-account.danger:active { background: rgba(255, 107, 107, 0.15); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255,107,107,0.4); }
+        .panel-btn-account svg { width: 32px; height: 32px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* Botón contextual estilo lista pequeña */
+        .panel-btn-menu { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 14px; border-radius: 14px; cursor: pointer; font-family: 'Plus Jakarta Sans'; font-size: 0.95rem; text-align: left; display: flex; align-items: center; gap: 14px; width: 100%; }
+        .panel-btn-menu:active { background: rgba(255, 255, 255, 0.15); }
+        #btn-compartir { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); color: #fff; box-shadow: 0 0 15px rgba(0,242,255,0.3); font-weight: bold; animation: pulse-border 2s infinite; }
+        .panel-btn-menu svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
     </style>
 </head>
 <body>
@@ -222,7 +239,7 @@
         </header>
         
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado, Gabriel. Sensores ópticos y de voz activos. Interfaz anclada en modo inmersivo.</div>
+            <div class="msg aurora">Sistema sincronizado, Gabriel. Interfaz sellada, menús ajustados y cristal pulido.</div>
         </div>
 
         <div class="bottom-section">
@@ -235,7 +252,7 @@
                     <button class="floating-icon-btn" onclick="abrirMultimedia()">
                         <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
-                    <button class="pill-btn" onclick="alert('Selector de Modelos en desarrollo')">
+                    <button class="pill-btn" onclick="simularModulo('Selector de Modelos')">
                         Modelo
                     </button>
                 </div>
@@ -275,15 +292,15 @@
     
     <div id="profile-panel" class="panel-side">
         <div class="shiny-white-text">MI CUENTA</div>
-        <button class="panel-btn-menu" onclick="auth.signOut().then(() => location.reload())">
+        <button class="panel-btn-account" onclick="auth.signOut().then(() => location.reload())">
             <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
             Cerrar Sesión
         </button>
-        <button class="panel-btn-menu" onclick="cambiarCuenta()">
+        <button class="panel-btn-account" onclick="cambiarCuenta()">
             <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8 7a4 4 0 0 1 4-4M20 8v6M23 11h-6"/></svg>
             Cambiar Cuenta
         </button>
-        <button class="panel-btn-menu danger" onclick="eliminarCuenta()">
+        <button class="panel-btn-account danger" onclick="eliminarCuenta()">
             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             Eliminar Cuenta
         </button>
@@ -307,15 +324,14 @@
         function abrirMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'block'; }
         function cerrarMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'none'; }
 
-        // ✨ MANEJADOR DE ARCHIVOS REALES (Fotos y Documentos)
+        // ✨ MANEJADOR DE ARCHIVOS REALES
         function manejarArchivo(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             let chatActual = misChats.find(c => c.id === chatActivoId);
             if (chatActual && chatActual.mensajes >= LIMITE_MENSAJES) {
-                alert("Memoria neuronal al máximo. Creá un 'Nuevo Chat'.");
-                return;
+                alert("Memoria neuronal al máximo. Creá un 'Nuevo Chat'."); return;
             }
 
             let fileHTML = '';
@@ -333,16 +349,15 @@
             const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
 
             if(chatActual) { chatActual.mensajes++; renderizarChats(); }
-            event.target.value = ''; // Limpiar input
+            event.target.value = ''; 
 
-            // Simular respuesta de Aurora reconociendo el archivo (Hasta que configures el backend de HF)
             setTimeout(() => {
                 document.getElementById('chat-window').innerHTML += `<div class="msg aurora">Archivo <strong>${file.name}</strong> recibido. Analizando datos en la red neuronal...</div>`;
                 win.scrollTop = win.scrollHeight;
             }, 1500);
         }
 
-        // ✨ WEB SPEECH API (OÍDOS Y VOZ DE AURORA)
+        // ✨ WEB SPEECH API
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
         let modoVozActivo = false;
@@ -352,19 +367,14 @@
             recognition.lang = 'es-AR'; 
             recognition.continuous = false;
             
-            recognition.onstart = function() {
-                if(modoVozActivo) document.getElementById('voice-status').innerText = "ESCUCHANDO...";
-            };
+            recognition.onstart = function() { if(modoVozActivo) document.getElementById('voice-status').innerText = "ESCUCHANDO..."; };
             
             recognition.onresult = function(event) {
                 const transcript = event.results[0][0].transcript;
                 document.getElementById('chat-terminal').value = transcript;
                 toggleInputButtons();
                 
-                if (modoVozActivo) {
-                    cerrarModoVoz();
-                    enviar(); 
-                }
+                if (modoVozActivo) { cerrarModoVoz(); enviar(); }
             };
 
             recognition.onerror = function(event) {
@@ -375,23 +385,9 @@
             };
         }
 
-        function iniciarDictado() {
-            modoVozActivo = false;
-            if(recognition) { try { recognition.start(); } catch(e) {} } else { alert("Tu navegador no soporta dictado por voz."); }
-        }
-
-        function abrirModoVoz() { 
-            modoVozActivo = true;
-            document.getElementById('voice-overlay').style.display = 'flex'; 
-            document.getElementById('voice-status').innerText = "ESCUCHANDO...";
-            if(recognition) { try { recognition.start(); } catch(e) {} } else { document.getElementById('voice-status').innerText = "Navegador no compatible."; }
-        }
-        
-        function cerrarModoVoz() { 
-            modoVozActivo = false;
-            document.getElementById('voice-overlay').style.display = 'none'; 
-            if(recognition) { try { recognition.stop(); } catch(e){} }
-        }
+        function iniciarDictado() { modoVozActivo = false; if(recognition) { try { recognition.start(); } catch(e) {} } else { alert("Navegador no soporta dictado."); } }
+        function abrirModoVoz() { modoVozActivo = true; document.getElementById('voice-overlay').style.display = 'flex'; document.getElementById('voice-status').innerText = "ESCUCHANDO..."; if(recognition) { try { recognition.start(); } catch(e) {} } else { document.getElementById('voice-status').innerText = "Navegador no compatible."; } }
+        function cerrarModoVoz() { modoVozActivo = false; document.getElementById('voice-overlay').style.display = 'none'; if(recognition) { try { recognition.stop(); } catch(e){} } }
 
         function auroraHabla(texto) {
             if('speechSynthesis' in window) {
@@ -456,7 +452,14 @@
         function accionRenombrar() { const nuevoNombre = prompt("Escribí el nuevo nombre para este chat:"); if(nuevoNombre && nuevoNombre.trim() !== "") { let chat = misChats.find(c => c.id === chatActivoParaMenu); if(chat) chat.nombre = nuevoNombre; renderizarChats(); } cerrarMenuSecreto(); }
         function accionFijar() { let chat = misChats.find(c => c.id === chatActivoParaMenu); if(chat) chat.pinned = !chat.pinned; renderizarChats(); cerrarMenuSecreto(); }
         function accionEliminar() { if(misChats.length === 1) { alert("No podés eliminar tu única conexión activa."); } else if(confirm("¿Seguro que querés borrar este chat?")) { misChats = misChats.filter(c => c.id !== chatActivoParaMenu); if(chatActivoId === chatActivoParaMenu) { chatActivoId = misChats[0].id; } renderizarChats(); } cerrarMenuSecreto(); }
-        function accionCompartirChat() { if (navigator.share) { let chat = misChats.find(c => c.id === chatActivoParaMenu); navigator.share({ title: 'AURORA - Chat', text: `Mirá mi conversación en Aurora: ${chat.nombre}`, url: window.location.href }); } else { alert("Enlace del chat copiado al portapapeles."); } cerrarMenuSecreto(); }
+        
+        function accionCompartirChat() { 
+            if (navigator.share) { 
+                let chat = misChats.find(c => c.id === chatActivoParaMenu); 
+                navigator.share({ title: 'AURORA - Chat', text: `Mirá mi conversación en Aurora: ${chat.nombre}`, url: window.location.href }); 
+            } else { alert("Enlace del chat copiado al portapapeles."); } 
+            cerrarMenuSecreto(); 
+        }
 
         function actualizarBarra() {
             const bar = document.getElementById('energy-bar'); const counter = document.getElementById('chat-counter'); const btnCompartir = document.getElementById('btn-compartir');
