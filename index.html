@@ -221,15 +221,16 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        // 🧠 MEMORIA PERSISTENTE (LOCAL STORAGE) [cite: 160, 163]
+        // CIRUGÍA LÁSER: EL LÍMITE DE MENSAJES YA EXISTE DEFINITIVO
+        const LIMITE_MENSAJES = 100;
+        
         let misChats = JSON.parse(localStorage.getItem('aurora_chats')) || [{ id: Date.now(), nombre: 'Chat 1', pinned: false, mensajes: 0, historial: [] }];
         let chatsCreadosHistoricos = parseInt(localStorage.getItem('aurora_historico')) || 0;
         let ilimitado = localStorage.getItem('aurora_ilimitado') === 'true';
-        let chatActivoId = misChats[0].id;
+        let chatActivoId = misChats.length > 0 ? misChats[0].id : Date.now();
         let currentModel = 'flash';
         let currentImageData = null;
 
-        // 🔗 CONEXIÓN AL NÚCLEO [cite: 248]
         const NEXUS_URL = "https://gabiland-aurora-ai-mendoza.hf.space/chat";
 
         function guardarMemoria() {
@@ -256,15 +257,14 @@
             reader.readAsDataURL(file);
         }
 
-        // 🚀 FUNCIÓN DE ENVÍO REPARADA Y REFORZADA [cite: 245, 246, 248]
         async function enviar() {
             const input = document.getElementById('chat-terminal');
             const msg = input.value.trim();
             if(!msg && !currentImageData) return;
+            
             let chatActual = misChats.find(c => c.id === chatActivoId);
             
-            // CORRECCIÓN: LIMITE_MENSAJES es el nombre correcto de la constante [cite: 162, 241]
-            if (chatActual && chatActual.mensajes >= LIMITE_MENSAJES) {
+            if (chatActual && chatActual.mensajes >= 100) {
                 document.getElementById('bottom-bar-container').style.display = 'none';
                 document.getElementById('chat-window').innerHTML += `<div class="msg aurora limite-alcanzado">Memoria neuronal al máximo (100/100). Creá un 'Nuevo Chat'.</div>`;
                 return;
@@ -298,7 +298,6 @@
             }
         }
 
-        // UI LOGIC [cite: 164, 195, 232, 235, 238]
         function abrirMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'block'; }
         function cerrarMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'none'; }
         
@@ -314,16 +313,19 @@
             });
             actualizarBarra();
         }
+        
         function crearNuevoChat() {
             if(!ilimitado && chatsCreadosHistoricos >= 5) return alert("Compartí la app para recargar.");
             let n = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, pinned: false, mensajes: 0, historial: [] };
             misChats.push(n); chatActivoId = n.id; chatsCreadosHistoricos++; guardarMemoria(); renderizarChats(); cerrarPaneles();
         }
+        
         function actualizarBarra() {
             let p = (chatsCreadosHistoricos / 5) * 100; document.getElementById('energy-bar').style.width = Math.min(p, 100) + '%';
             document.getElementById('chat-counter').innerText = `CHATS: ${chatsCreadosHistoricos}/5`;
             document.getElementById('btn-compartir').style.display = chatsCreadosHistoricos >= 5 ? 'block' : 'none';
         }
+        
         function compartirApp() { if (navigator.share) { navigator.share({title:'AURORA', url:window.location.href}).then(() => { ilimitado = true; actualizarBarra(); }); } else { ilimitado = true; actualizarBarra(); } }
         function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; renderizarChats(); }
         function abrirPerfil() { document.getElementById('profile-panel').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
