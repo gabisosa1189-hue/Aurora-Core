@@ -238,11 +238,18 @@
             localStorage.setItem('aurora_ilimitado', ilimitado);
         }
 
+        // LÓGICA QUE CAMBIA EL CEREBRO Y EL COLOR POR JERARQUÍA
         function cambiarModelo() {
             const btn = document.getElementById('btn-model-selector');
-            if(currentModel === 'flash') { currentModel = 'quantum'; btn.innerText = 'Quantum'; btn.style.borderColor = '#ff00ff'; btn.style.color = '#ff00ff'; }
-            else if(currentModel === 'quantum') { currentModel = 'nebula'; btn.innerText = 'Nebula'; btn.style.borderColor = '#fff'; btn.style.color = '#fff'; }
-            else { currentModel = 'flash'; btn.innerText = 'Flash'; btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; }
+            if(currentModel === 'flash') { 
+                currentModel = 'quantum'; btn.innerText = 'Quantum'; btn.style.borderColor = '#ff00ff'; btn.style.color = '#ff00ff'; // Magenta (Razonamiento)
+            }
+            else if(currentModel === 'quantum') { 
+                currentModel = 'nebula'; btn.innerText = 'Nebula'; btn.style.borderColor = '#ffd700'; btn.style.color = '#ffd700'; // Dorado (Premium)
+            }
+            else { 
+                currentModel = 'flash'; btn.innerText = 'Flash'; btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; // Cian (Liviano)
+            }
         }
 
         function manejarArchivo(event) {
@@ -329,19 +336,58 @@
         function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; renderizarChats(); }
         function abrirPerfil() { document.getElementById('profile-panel').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
         function cerrarPaneles() { document.querySelectorAll('.panel-side').forEach(p => p.classList.remove('panel-open')); document.getElementById('panels-overlay').style.display = 'none'; }
+        
         auth.onAuthStateChanged((user) => { if (user) { document.getElementById('login-overlay').style.display = 'none'; document.getElementById('app-container').style.display = 'flex'; if (user.photoURL) document.getElementById('user-avatar').src = user.photoURL; document.getElementById('user-avatar').style.display = 'block'; } });
         function authGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         function toggleInputButtons() { const val = document.getElementById('chat-terminal').value.trim(); document.getElementById('send-controls').style.display = val ? 'flex' : 'none'; document.getElementById('normal-controls').style.display = val ? 'none' : 'flex'; }
+        
         let modoVozActivo = false;
         function abrirModoVoz() { modoVozActivo = true; document.getElementById('voice-overlay').style.display = 'flex'; iniciarDictado(); }
         function cerrarModoVoz() { modoVozActivo = false; document.getElementById('voice-overlay').style.display = 'none'; }
-        function auroraHabla(t) { let s = new SpeechSynthesisUtterance(t); s.lang = 'es-ES'; window.speechSynthesis.speak(s); }
+        
+        // VOZ FEMENINA DE ALTA GAMA
+        let vocesDisponibles = [];
+        if (window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = () => { vocesDisponibles = window.speechSynthesis.getVoices(); };
+        }
+
+        function auroraHabla(texto) { 
+            if (!window.speechSynthesis) return;
+            const utterance = new SpeechSynthesisUtterance(texto); 
+            utterance.lang = 'es-ES'; 
+            utterance.pitch = 1.15; 
+            utterance.rate = 1.05;  
+            
+            if (vocesDisponibles.length === 0) vocesDisponibles = window.speechSynthesis.getVoices();
+            
+            let vozElegida = vocesDisponibles.find(v => v.lang.startsWith('es') && (v.name.includes('Female') || v.name.includes('Mujer') || v.name.includes('Paulina') || v.name.includes('Monica') || v.name.includes('Google español') || v.name.includes('Luciana') || v.name.includes('Sabina')));
+            
+            if (vozElegida) {
+                utterance.voice = vozElegida;
+            }
+            window.speechSynthesis.speak(utterance); 
+        }
+
         function iniciarDictado() {
-            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition; if(!Speech) return;
-            const rec = new Speech(); rec.lang = 'es-AR';
-            rec.onresult = (e) => { document.getElementById('chat-terminal').value = e.results[0][0].transcript; toggleInputButtons(); if(modoVozActivo) { cerrarModoVoz(); enviar(); } };
+            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition; 
+            if(!Speech) {
+                alert("Tu navegador no soporta dictado por voz.");
+                return;
+            }
+            const rec = new Speech(); 
+            rec.lang = 'es-AR';
+            rec.onresult = (e) => { 
+                document.getElementById('chat-terminal').value = e.results[0][0].transcript; 
+                toggleInputButtons(); 
+                if(modoVozActivo) { cerrarModoVoz(); enviar(); } 
+            };
+            rec.onerror = (e) => {
+                if (e.error === 'not-allowed') alert("Por favor, habilita el acceso al micrófono en tu navegador.");
+                cerrarModoVoz();
+            };
             rec.start();
         }
+        
         renderizarChats();
     </script>
 </body>
