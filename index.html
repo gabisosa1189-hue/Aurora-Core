@@ -37,6 +37,17 @@
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
+        /* ✨ MODO VOZ OVERLAY */
+        #voice-overlay {
+            position: fixed; inset: 0; background: rgba(0, 5, 10, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            z-index: 200000; display: none; flex-direction: column; align-items: center; justify-content: center;
+            animation: pop-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .voice-close-btn {
+            position: absolute; top: 50px; right: 30px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+
         #context-menu-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             z-index: 100005; display: none; align-items: center; justify-content: center; 
@@ -48,17 +59,6 @@
             animation: pop-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         @keyframes pop-in { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
-        /* ✨ MODO VOZ OVERLAY */
-        #voice-overlay {
-            position: fixed; inset: 0; background: rgba(0, 5, 10, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            z-index: 200000; display: none; flex-direction: column; align-items: center; justify-content: center;
-            animation: pop-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .voice-close-btn {
-            position: absolute; top: 50px; right: 30px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-            color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer;
-        }
 
         #login-overlay { 
             position: fixed; inset: 0; width: 100vw; height: 100dvh;
@@ -101,46 +101,64 @@
 
         .btn-menu-lateral { background: transparent; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; z-index: 20; text-shadow: 0 0 10px #fff; }
 
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
+        /* Ajuste del chat para que no lo tape la nueva barra grande */
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 140px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* ✨ LA PÍLDORA FLOTANTE (ESTILO GEMINI + CRISTAL AURORA) */
+        /* ✨ LA NUEVA BARRA ESTILO GEMINI (CRISTAL AURORA) */
         .bottom-section {
-            position: absolute; bottom: 0; width: 100vw; 
-            padding: 10px 15px calc(env(safe-area-inset-bottom, 15px) + 15px); 
+            position: absolute; bottom: 0; left: 0; width: 100vw; 
+            background: rgba(0, 10, 20, 0.55); /* Cristal Oscuro */
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 15px 20px calc(env(safe-area-inset-bottom, 15px) + 15px); 
             box-sizing: border-box; z-index: 100;
+            display: flex; flex-direction: column; gap: 12px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            border-radius: 30px 30px 0 0;
         }
-        .input-pill {
-            background: rgba(0, 10, 20, 0.65); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 40px; 
-            padding: 10px 15px; display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+        /* Fila 1: El Input Text */
+        .chat-input-row { width: 100%; }
+        #chat-terminal { 
+            width: 100%; background: transparent; border: none; color: white; 
+            font-size: 1.1rem; font-family: 'Plus Jakarta Sans'; outline: none; padding: 5px 0; 
         }
-        
+        #chat-terminal::placeholder { 
+            color: rgba(255,255,255,0.8); 
+            text-shadow: 0 0 10px rgba(255,255,255,0.5); 
+            font-weight: 300;
+        }
+
+        /* Fila 2: Botones */
+        .chat-controls-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .controls-group { display: flex; align-items: center; gap: 12px; }
+
+        /* Botones Circulares y Píldoras */
+        .circle-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; width: 42px; height: 42px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: 0.3s;
+        }
+        .circle-btn:hover { background: rgba(255,255,255,0.15); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        .circle-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
         .pill-btn {
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
-            color: #fff; border-radius: 20px; padding: 8px 12px; font-size: 0.85rem; font-family: 'Plus Jakarta Sans';
-            display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.2s;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; padding: 10px 18px; border-radius: 25px; 
+            font-family: 'Orbitron'; font-size: 0.85rem; letter-spacing: 1px;
+            cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px;
         }
-        .pill-btn:hover { background: rgba(255,255,255,0.15); border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        .pill-btn:hover { background: rgba(255,255,255,0.15); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
 
-        #chat-terminal { flex: 1; background: transparent; border: none; color: white; font-size: 1.05rem; outline: none; padding: 5px 0; }
-        #chat-terminal::placeholder { color: rgba(255,255,255,0.6); text-shadow: 0 0 5px rgba(255,255,255,0.2); }
-
-        .icon-btn {
-            background: transparent; border: none; color: #fff; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; padding: 5px;
-            transition: 0.3s;
+        .glowing-A-btn {
+            font-family: 'Orbitron'; font-size: 1.6rem; color: #fff; background: transparent; border: none;
+            text-shadow: 0 0 12px #fff, 0 0 25px #fff; cursor: pointer; transition: 0.2s; padding: 0 5px; font-weight: bold;
         }
-        .icon-btn svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
-
-        .glowing-A {
-            font-family: 'Orbitron'; font-size: 1.4rem; color: #fff; background: transparent; border: none; cursor: pointer;
-            text-shadow: 0 0 10px #fff, 0 0 20px #fff; font-weight: bold; padding: 0 8px; transition: 0.2s;
-        }
-        .glowing-A:active { transform: scale(0.9); }
+        .glowing-A-btn:active { transform: scale(0.9); }
 
         /* ✨ PANEL LATERAL CRISTAL PURO */
         .panel-side { 
@@ -192,23 +210,21 @@
             border-top: 1px solid rgba(255, 255, 255, 0.2); margin-top: auto;
         }
 
-        .panel-btn {
+        .panel-btn-menu {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px);
             color: #fff; padding: 16px; border-radius: 16px; cursor: pointer;
             font-family: 'Plus Jakarta Sans'; font-size: 0.95rem; text-align: left;
             transition: all 0.3s ease; display: flex; align-items: center; gap: 14px; width: 100%;
         }
-        .panel-btn:hover { background: rgba(255, 255, 255, 0.15); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); transform: translateX(5px); }
-        .panel-btn.danger { color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3); }
-        .panel-btn.danger:hover { background: rgba(255, 107, 107, 0.15); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255,107,107,0.4); }
+        .panel-btn-menu:hover { background: rgba(255, 255, 255, 0.15); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); transform: translateX(5px); }
+        .panel-btn-menu.danger { color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3); }
+        .panel-btn-menu.danger:hover { background: rgba(255, 107, 107, 0.15); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255,107,107,0.4); }
         
         #btn-compartir {
             background: rgba(0, 242, 255, 0.1); border-color: var(--accent); color: #fff;
             box-shadow: 0 0 15px rgba(0,242,255,0.3); font-weight: bold; animation: pulse-border 2s infinite;
         }
-        @keyframes pulse-border { 0% { box-shadow: 0 0 5px var(--accent); } 50% { box-shadow: 0 0 20px var(--accent); } 100% { box-shadow: 0 0 5px var(--accent); } }
-
-        .panel-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+        .panel-btn-menu svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
     </style>
 </head>
@@ -222,26 +238,26 @@
 
     <div id="voice-overlay">
         <button class="voice-close-btn" onclick="cerrarModoVoz()">×</button>
-        <div class="glowing-A" style="font-size: 6rem; padding:0; margin-bottom: 20px; animation: aurora-breath-white 1.5s infinite;">A</div>
+        <div class="glowing-A-btn" style="font-size: 6rem; margin-bottom: 20px; animation: aurora-breath-white 1.5s infinite; cursor: default;">A</div>
         <div style="font-family:'Orbitron'; font-size:1.2rem; color:#fff; text-shadow:0 0 10px #fff; letter-spacing:3px;">ESCUCHANDO...</div>
     </div>
 
     <div id="context-menu-overlay" onclick="cerrarMenuSecreto()">
         <div class="context-menu-box" onclick="event.stopPropagation()">
             <div class="shiny-white-text" style="font-size:1rem; margin-bottom:10px;">OPCIONES</div>
-            <button class="panel-btn" onclick="accionRenombrar()">
+            <button class="panel-btn-menu" onclick="accionRenombrar()">
                 <svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                 Cambiar Nombre
             </button>
-            <button class="panel-btn" onclick="accionFijar()">
+            <button class="panel-btn-menu" onclick="accionFijar()">
                 <svg viewBox="0 0 24 24"><path d="M12 17v5"></path><path d="M9 10.5V7a3 3 0 0 1 6 0v3.5l2 3.5H7l2-3.5z"></path></svg>
                 Fijar Chat
             </button>
-            <button class="panel-btn" onclick="accionCompartirChat()">
+            <button class="panel-btn-menu" onclick="accionCompartirChat()">
                 <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
                 Compartir Chat
             </button>
-            <button class="panel-btn danger" onclick="accionEliminar()">
+            <button class="panel-btn-menu danger" onclick="accionEliminar()">
                 <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 Eliminar Chat
             </button>
@@ -266,52 +282,52 @@
         </header>
         
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado, Gabriel. Píldora de chat transparente activada. La terminal de voz está lista.</div>
+            <div class="msg aurora">Sistema sincronizado, Gabriel. Panel neuronal estilo Gemini activado.</div>
         </div>
 
         <div class="bottom-section">
-            <div class="input-pill">
-                
-                <button class="pill-btn" onclick="alert('Selector de Modelos IA en desarrollo. Próximamente.')">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                    Modelo
-                </button>
-
+            <div class="chat-input-row">
                 <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off" oninput="toggleInputButtons()">
-                
-                <div style="display:flex; align-items:center; gap:8px;" id="input-controls">
-                    <button class="icon-btn" onclick="alert('Micrófono nativo activado. Próximamente.')">
-                        <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </div>
+            
+            <div class="chat-controls-row">
+                <div class="controls-group">
+                    <button class="circle-btn" onclick="alert('Opciones multimedia próximamente')">
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
-                    <button class="glowing-A" onclick="abrirModoVoz()">A</button>
+                    <button class="pill-btn" onclick="alert('Selector de Modelos en desarrollo')">
+                        Modelo
+                    </button>
                 </div>
                 
-                <button id="btn-enviar" class="icon-btn" style="display:none;" onclick="enviar()">
-                    <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                </button>
-
+                <div class="controls-group" id="normal-controls">
+                    <button class="circle-btn" onclick="alert('Micrófono activado')">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                    </button>
+                    <button class="glowing-A-btn" onclick="abrirModoVoz()">A</button>
+                </div>
+                
+                <div class="controls-group" id="send-controls" style="display:none;">
+                    <button class="circle-btn" style="background: rgba(255,255,255,0.2); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.5);" onclick="enviar()">
+                        <svg viewBox="0 0 24 24" style="stroke: #fff;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="sidebar-menu" class="panel-side">
         <div class="shiny-white-text">MIS CHATS</div>
-        
         <div id="lista-chats-container"></div>
-        
-        <button class="panel-btn" onclick="crearNuevoChat()" style="margin-bottom:10px;">
+        <button class="panel-btn-menu" onclick="crearNuevoChat()" style="margin-bottom:10px;">
             <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2-2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="12" y1="9" x2="12" y2="15"></line><line x1="9" y1="12" x2="15" y2="12"></line></svg>
             Nuevo Chat
         </button>
-
         <div class="energy-container">
             <div class="shiny-counter" id="chat-counter">CHATS: 1/5</div>
-            <div class="energy-bar-bg">
-                <div class="energy-bar-fill" id="energy-bar"></div>
-            </div>
+            <div class="energy-bar-bg"><div class="energy-bar-fill" id="energy-bar"></div></div>
         </div>
-
-        <button class="panel-btn" id="btn-compartir" onclick="compartirApp()" style="display: none; margin-bottom: 10px;">
+        <button class="panel-btn-menu" id="btn-compartir" onclick="compartirApp()" style="display: none; margin-bottom: 10px;">
             <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
             Desbloquear Acceso
         </button>
@@ -319,25 +335,19 @@
     
     <div id="profile-panel" class="panel-side">
         <div class="shiny-white-text">MI CUENTA</div>
-        
-        <button class="panel-btn" onclick="auth.signOut().then(() => location.reload())">
+        <button class="panel-btn-menu" onclick="auth.signOut().then(() => location.reload())">
             <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
             Cerrar Sesión
         </button>
-        
-        <button class="panel-btn" onclick="cambiarCuenta()">
+        <button class="panel-btn-menu" onclick="cambiarCuenta()">
             <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8 7a4 4 0 0 1 4-4M20 8v6M23 11h-6"/></svg>
             Cambiar Cuenta
         </button>
-        
-        <button class="panel-btn danger" onclick="eliminarCuenta()">
+        <button class="panel-btn-menu danger" onclick="eliminarCuenta()">
             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             Eliminar Cuenta
         </button>
-
-        <div class="shiny-disclaimer">
-            AURORA ES UNA IA Y PUEDE COMETER ERRORES.
-        </div>
+        <div class="shiny-disclaimer">AURORA ES UNA IA Y PUEDE COMETER ERRORES.</div>
     </div>
 
     <script>
@@ -353,13 +363,9 @@
         let isLongPress = false;
         let chatsCreadosHistoricos = 0; 
 
-        // ✨ ABRIR Y CERRAR MODO VOZ
-        function abrirModoVoz() {
-            document.getElementById('voice-overlay').style.display = 'flex';
-        }
-        function cerrarModoVoz() {
-            document.getElementById('voice-overlay').style.display = 'none';
-        }
+        // VOZ
+        function abrirModoVoz() { document.getElementById('voice-overlay').style.display = 'flex'; }
+        function cerrarModoVoz() { document.getElementById('voice-overlay').style.display = 'none'; }
 
         function renderizarChats() {
             const container = document.getElementById('lista-chats-container');
@@ -372,8 +378,6 @@
                 div.className = `chat-item ${chat.pinned ? 'pinned' : ''} ${chat.id === chatActivoId ? 'active-chat' : ''}`;
                 
                 let pinIcon = chat.pinned ? `<svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--pure-white)" stroke-width="2" fill="none" style="opacity:0.9;"><path d="M12 17v5"/><path d="M9 10.5V7a3 3 0 0 1 6 0v3.5l2 3.5H7l2-3.5z"/></svg>` : '';
-                
-                // Ya no mostramos la memoria acá, queda súper limpio.
                 div.innerHTML = `<span style="display:flex; align-items:center; gap:8px;">${chat.nombre} ${pinIcon}</span>`;
                 
                 div.oncontextmenu = function(e) { e.preventDefault(); return false; };
@@ -381,30 +385,23 @@
                 const startPress = (e) => {
                     isLongPress = false;
                     timerToqueLargo = setTimeout(() => {
-                        isLongPress = true;
-                        chatActivoParaMenu = chat.id;
+                        isLongPress = true; chatActivoParaMenu = chat.id;
                         document.getElementById('context-menu-overlay').style.display = 'flex';
                         if(navigator.vibrate) navigator.vibrate(50); 
                     }, 500); 
                 };
-
                 const cancelPress = () => { clearTimeout(timerToqueLargo); };
 
                 div.addEventListener('touchstart', startPress, {passive: true});
-                div.addEventListener('touchend', (e) => {
-                    clearTimeout(timerToqueLargo);
-                    if(isLongPress && e.cancelable) { e.preventDefault(); }
-                });
+                div.addEventListener('touchend', (e) => { clearTimeout(timerToqueLargo); if(isLongPress && e.cancelable) { e.preventDefault(); } });
                 div.addEventListener('touchmove', cancelPress, {passive: true});
-                
                 div.addEventListener('mousedown', startPress);
                 div.addEventListener('mouseup', cancelPress);
                 div.addEventListener('mouseleave', cancelPress);
                 
                 div.addEventListener('click', (e) => {
                     if(isLongPress) { e.preventDefault(); return; }
-                    chatActivoId = chat.id; 
-                    cerrarPaneles();
+                    chatActivoId = chat.id; cerrarPaneles();
                     document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Cambiando al ${chat.nombre}...</div>`;
                     renderizarChats();
                 });
@@ -417,112 +414,37 @@
                 alert("Límite máximo de chats alcanzado. Compartí la app para desbloquear la creación ilimitada.");
                 return;
             }
-            
             let nuevoChat = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, pinned: false, mensajes: 0 };
-            misChats.push(nuevoChat);
-            chatActivoId = nuevoChat.id;
-            
+            misChats.push(nuevoChat); chatActivoId = nuevoChat.id;
             if(!ilimitado) chatsCreadosHistoricos++; 
-            
-            actualizarBarra();
-            renderizarChats();
-            cerrarPaneles();
+            actualizarBarra(); renderizarChats(); cerrarPaneles();
             document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Nuevo canal neuronal abierto (${nuevoChat.nombre}). ¿De qué hablamos?</div>`;
         }
 
         function cerrarMenuSecreto() { document.getElementById('context-menu-overlay').style.display = 'none'; chatActivoParaMenu = null; }
-
-        function accionRenombrar() {
-            const nuevoNombre = prompt("Escribí el nuevo nombre para este chat:");
-            if(nuevoNombre && nuevoNombre.trim() !== "") {
-                let chat = misChats.find(c => c.id === chatActivoParaMenu);
-                if(chat) chat.nombre = nuevoNombre;
-                renderizarChats();
-            }
-            cerrarMenuSecreto();
-        }
-
-        function accionFijar() {
-            let chat = misChats.find(c => c.id === chatActivoParaMenu);
-            if(chat) chat.pinned = !chat.pinned;
-            renderizarChats();
-            cerrarMenuSecreto();
-        }
-
-        function accionEliminar() {
-            if(misChats.length === 1) {
-                alert("No podés eliminar tu única conexión activa.");
-            } else if(confirm("¿Seguro que querés borrar este chat?")) {
-                misChats = misChats.filter(c => c.id !== chatActivoParaMenu);
-                if(chatActivoId === chatActivoParaMenu) { chatActivoId = misChats[0].id; }
-                renderizarChats();
-            }
-            cerrarMenuSecreto();
-        }
-
-        function accionCompartirChat() {
-            if (navigator.share) {
-                let chat = misChats.find(c => c.id === chatActivoParaMenu);
-                navigator.share({ title: 'AURORA - Chat', text: `Mirá mi conversación en Aurora: ${chat.nombre}`, url: window.location.href });
-            } else {
-                alert("Enlace del chat copiado al portapapeles.");
-            }
-            cerrarMenuSecreto();
-        }
+        function accionRenombrar() { const nuevoNombre = prompt("Escribí el nuevo nombre para este chat:"); if(nuevoNombre && nuevoNombre.trim() !== "") { let chat = misChats.find(c => c.id === chatActivoParaMenu); if(chat) chat.nombre = nuevoNombre; renderizarChats(); } cerrarMenuSecreto(); }
+        function accionFijar() { let chat = misChats.find(c => c.id === chatActivoParaMenu); if(chat) chat.pinned = !chat.pinned; renderizarChats(); cerrarMenuSecreto(); }
+        function accionEliminar() { if(misChats.length === 1) { alert("No podés eliminar tu única conexión activa."); } else if(confirm("¿Seguro que querés borrar este chat?")) { misChats = misChats.filter(c => c.id !== chatActivoParaMenu); if(chatActivoId === chatActivoParaMenu) { chatActivoId = misChats[0].id; } renderizarChats(); } cerrarMenuSecreto(); }
+        function accionCompartirChat() { if (navigator.share) { let chat = misChats.find(c => c.id === chatActivoParaMenu); navigator.share({ title: 'AURORA - Chat', text: `Mirá mi conversación en Aurora: ${chat.nombre}`, url: window.location.href }); } else { alert("Enlace del chat copiado al portapapeles."); } cerrarMenuSecreto(); }
 
         function actualizarBarra() {
-            const bar = document.getElementById('energy-bar');
-            const counter = document.getElementById('chat-counter');
-            const btnCompartir = document.getElementById('btn-compartir');
-            
+            const bar = document.getElementById('energy-bar'); const counter = document.getElementById('chat-counter'); const btnCompartir = document.getElementById('btn-compartir');
             if (ilimitado) {
-                bar.style.width = '100%';
-                bar.style.background = 'var(--accent)';
-                bar.style.boxShadow = '0 0 15px var(--accent)';
-                counter.innerText = "ACCESO: ILIMITADO";
-                btnCompartir.style.display = 'none'; 
+                bar.style.width = '100%'; bar.style.background = 'var(--accent)'; bar.style.boxShadow = '0 0 15px var(--accent)';
+                counter.innerText = "ACCESO: ILIMITADO"; btnCompartir.style.display = 'none'; 
             } else {
-                let porcentaje = (chatsCreadosHistoricos / 5) * 100;
-                bar.style.width = porcentaje + '%';
-                counter.innerText = `CHATS: ${chatsCreadosHistoricos}/5`;
-                
-                if(chatsCreadosHistoricos >= 5) {
-                    bar.style.background = '#ff4d4d'; 
-                    bar.style.boxShadow = '0 0 15px #ff4d4d';
-                    btnCompartir.style.display = 'flex'; 
-                } else {
-                    bar.style.background = '#fff';
-                    bar.style.boxShadow = '0 0 10px #fff, 0 0 20px #fff';
-                    btnCompartir.style.display = 'none'; 
-                }
+                let porcentaje = (chatsCreadosHistoricos / 5) * 100; bar.style.width = porcentaje + '%'; counter.innerText = `CHATS: ${chatsCreadosHistoricos}/5`;
+                if(chatsCreadosHistoricos >= 5) { bar.style.background = '#ff4d4d'; bar.style.boxShadow = '0 0 15px #ff4d4d'; btnCompartir.style.display = 'flex'; } else { bar.style.background = '#fff'; bar.style.boxShadow = '0 0 10px #fff, 0 0 20px #fff'; btnCompartir.style.display = 'none'; }
             }
         }
 
-        function compartirApp() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'AURORA - IA',
-                    text: 'Descubrí Aurora, el acceso neuronal.',
-                    url: window.location.href
-                }).then(() => {
-                    ilimitado = true;
-                    actualizarBarra();
-                    alert("¡Misión cumplida! Desbloqueaste la creación ilimitada de chats.");
-                }).catch(console.error);
-            } else {
-                alert("Copiá este enlace y compartilo con un amigo: " + window.location.href);
-                ilimitado = true;
-                actualizarBarra();
-            }
-        }
+        function compartirApp() { if (navigator.share) { navigator.share({ title: 'AURORA - IA', text: 'Descubrí Aurora, el acceso neuronal.', url: window.location.href }).then(() => { ilimitado = true; actualizarBarra(); alert("¡Misión cumplida! Desbloqueaste la creación ilimitada de chats."); }).catch(console.error); } else { alert("Copiá este enlace y compartilo con un amigo: " + window.location.href); ilimitado = true; actualizarBarra(); } }
 
         function abrirSidebar() { const menu = document.getElementById('sidebar-menu'); if(menu) { menu.classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; renderizarChats(); } }
         function abrirPerfil() { const prof = document.getElementById('profile-panel'); if(prof) { prof.classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; } }
         function cerrarPaneles() { document.querySelectorAll('.panel-side').forEach(p => p.classList.remove('panel-open')); document.getElementById('panels-overlay').style.display = 'none'; }
 
-        auth.onAuthStateChanged((user) => {
-            if (user) { document.getElementById('login-overlay').style.display = 'none'; document.getElementById('app-container').style.display = 'flex'; if (user.photoURL) { const av = document.getElementById('user-avatar'); av.src = user.photoURL; av.style.display = 'block'; } } else { document.getElementById('login-overlay').style.display = 'flex'; document.getElementById('app-container').style.display = 'none'; }
-        });
+        auth.onAuthStateChanged((user) => { if (user) { document.getElementById('login-overlay').style.display = 'none'; document.getElementById('app-container').style.display = 'flex'; if (user.photoURL) { const av = document.getElementById('user-avatar'); av.src = user.photoURL; av.style.display = 'block'; } } else { document.getElementById('login-overlay').style.display = 'flex'; document.getElementById('app-container').style.display = 'none'; } });
 
         function cambiarCuenta() { auth.signOut().then(() => { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }); }
         function eliminarCuenta() { if(confirm("¿Estás seguro de eliminar tu cuenta?")) { const user = auth.currentUser; user.delete().then(() => { alert("Cuenta eliminada."); location.reload(); }).catch(() => { alert("Para eliminar, debés haber iniciado sesión recientemente."); }); } }
@@ -530,38 +452,24 @@
         function toggleInputButtons() { 
             const val = document.getElementById('chat-terminal').value.trim(); 
             if (val) {
-                document.getElementById('btn-enviar').style.display = 'flex';
-                document.getElementById('input-controls').style.display = 'none';
+                document.getElementById('send-controls').style.display = 'flex';
+                document.getElementById('normal-controls').style.display = 'none';
             } else {
-                document.getElementById('btn-enviar').style.display = 'none';
-                document.getElementById('input-controls').style.display = 'flex';
+                document.getElementById('send-controls').style.display = 'none';
+                document.getElementById('normal-controls').style.display = 'flex';
             }
         }
 
         async function enviar() {
-            const input = document.getElementById('chat-terminal'); 
-            if(!input.value.trim()) return;
-
+            const input = document.getElementById('chat-terminal'); if(!input.value.trim()) return;
             let chatActual = misChats.find(c => c.id === chatActivoId);
-
-            if (chatActual && chatActual.mensajes >= LIMITE_MENSAJES) {
-                alert("Memoria neuronal al máximo en este chat (100/100). Creá un 'Nuevo Chat' para seguir.");
-                return;
-            }
-
-            const msj = input.value;
-            document.getElementById('chat-window').innerHTML += `<div class="msg user">${msj}</div>`;
-            input.value = ""; toggleInputButtons();
+            if (chatActual && chatActual.mensajes >= LIMITE_MENSAJES) { alert("Memoria neuronal al máximo en este chat (100/100). Creá un 'Nuevo Chat' para seguir."); return; }
+            const msj = input.value; document.getElementById('chat-window').innerHTML += `<div class="msg user">${msj}</div>`; input.value = ""; toggleInputButtons();
             
-            if(chatActual) {
-                chatActual.mensajes++;
-                renderizarChats(); 
-            }
+            if(chatActual) { chatActual.mensajes++; renderizarChats(); }
 
             try { 
-                const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { 
-                    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:msj}) 
-                }); 
+                const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:msj}) }); 
                 const data = await res.json(); 
                 document.getElementById('chat-window').innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
                 const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
