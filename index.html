@@ -230,6 +230,7 @@
         let currentModel = 'flash';
         let currentImageData = null;
 
+        // 🚨 CONFIGURACIÓN DEL NEXO - CAMBIAR POR TU URL DE HUGGING FACE
         const NEXUS_URL = "https://gabiland-aurora-ai-mendoza.hf.space/chat";
 
         function guardarMemoria() {
@@ -238,17 +239,16 @@
             localStorage.setItem('aurora_ilimitado', ilimitado);
         }
 
-        // LÓGICA QUE CAMBIA EL CEREBRO Y EL COLOR POR JERARQUÍA
         function cambiarModelo() {
             const btn = document.getElementById('btn-model-selector');
             if(currentModel === 'flash') { 
-                currentModel = 'quantum'; btn.innerText = 'Quantum'; btn.style.borderColor = '#ff00ff'; btn.style.color = '#ff00ff'; // Magenta (Razonamiento)
+                currentModel = 'quantum'; btn.innerText = 'Quantum'; btn.style.borderColor = '#ff00ff'; btn.style.color = '#ff00ff';
             }
             else if(currentModel === 'quantum') { 
-                currentModel = 'nebula'; btn.innerText = 'Nebula'; btn.style.borderColor = '#ffd700'; btn.style.color = '#ffd700'; // Dorado (Premium)
+                currentModel = 'nebula'; btn.innerText = 'Nebula'; btn.style.borderColor = '#ffd700'; btn.style.color = '#ffd700';
             }
             else { 
-                currentModel = 'flash'; btn.innerText = 'Flash'; btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; // Cian (Liviano)
+                currentModel = 'flash'; btn.innerText = 'Flash'; btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)';
             }
         }
 
@@ -269,16 +269,21 @@
             if(!msg && !currentImageData) return;
             
             let chatActual = misChats.find(c => c.id === chatActivoId);
+            const win = document.getElementById('chat-window');
             
             if (chatActual && chatActual.mensajes >= 100) {
                 document.getElementById('bottom-bar-container').style.display = 'none';
-                document.getElementById('chat-window').innerHTML += `<div class="msg aurora limite-alcanzado">Memoria neuronal al máximo (100/100). Creá un 'Nuevo Chat'.</div>`;
+                win.innerHTML += `<div class="msg aurora limite-alcanzado">Memoria neuronal al máximo (100/100). Creá un 'Nuevo Chat'.</div>`;
                 return;
             }
 
-            if(msg) document.getElementById('chat-window').innerHTML += `<div class="msg user">${msg}</div>`;
+            if(msg) win.innerHTML += `<div class="msg user">${msg}</div>`;
             input.value = ""; toggleInputButtons();
-            const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
+            
+            // Efecto de carga
+            const tempID = "loading-" + Date.now();
+            win.innerHTML += `<div class="msg aurora" id="${tempID}">Estableciendo nexo con ${currentModel.toUpperCase()}...</div>`;
+            win.scrollTop = win.scrollHeight;
             
             if(chatActual) { chatActual.mensajes++; guardarMemoria(); }
 
@@ -293,14 +298,22 @@
                         user_id: auth.currentUser ? auth.currentUser.uid : 'anon'
                     }) 
                 });
+                
                 const data = await res.json(); 
-                document.getElementById('chat-window').innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
+                
+                // Borramos el indicador de carga y ponemos la respuesta real
+                const loadingMsg = document.getElementById(tempID);
+                if(loadingMsg) loadingMsg.remove();
+
+                win.innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
                 win.scrollTop = win.scrollHeight;
                 currentImageData = null; 
                 if(modoVozActivo) { auroraHabla(data.respuesta); modoVozActivo = false; }
             } catch(e) { 
                 console.error("Error de conexión:", e);
-                document.getElementById('chat-window').innerHTML += `<div class="msg aurora">Hubo una interferencia en el Nexus. Verifica tu conexión, Gabriel.</div>`;
+                const loadingMsg = document.getElementById(tempID);
+                if(loadingMsg) loadingMsg.remove();
+                win.innerHTML += `<div class="msg aurora">Fallo de sincronización. Verifica el servidor en Hugging Face.</div>`;
             }
         }
 
@@ -309,10 +322,9 @@
         
         function renderizarChats() {
             const container = document.getElementById('lista-chats-container'); container.innerHTML = '';
-            let chatsOrdenados = [...misChats].sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
-            chatsOrdenados.forEach(chat => {
+            misChats.forEach(chat => {
                 const div = document.createElement('div');
-                div.className = `chat-item ${chat.pinned ? 'pinned' : ''} ${chat.id === chatActivoId ? 'active-chat' : ''}`;
+                div.className = `chat-item ${chat.id === chatActivoId ? 'active-chat' : ''}`;
                 div.innerHTML = `<span>${chat.nombre}</span>`;
                 div.onclick = () => { chatActivoId = chat.id; document.getElementById('bottom-bar-container').style.display = 'flex'; cerrarPaneles(); renderizarChats(); };
                 container.appendChild(div);
@@ -321,7 +333,7 @@
         }
         
         function crearNuevoChat() {
-            if(!ilimitado && chatsCreadosHistoricos >= 5) return alert("Compartí la app para recargar.");
+            if(!ilimitado && chatsCreadosHistoricos >= 5) return alert("Comparí la app para recargar energía.");
             let n = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, pinned: false, mensajes: 0, historial: [] };
             misChats.push(n); chatActivoId = n.id; chatsCreadosHistoricos++; guardarMemoria(); renderizarChats(); cerrarPaneles();
         }
@@ -345,45 +357,22 @@
         function abrirModoVoz() { modoVozActivo = true; document.getElementById('voice-overlay').style.display = 'flex'; iniciarDictado(); }
         function cerrarModoVoz() { modoVozActivo = false; document.getElementById('voice-overlay').style.display = 'none'; }
         
-        // VOZ FEMENINA DE ALTA GAMA
-        let vocesDisponibles = [];
-        if (window.speechSynthesis) {
-            window.speechSynthesis.onvoiceschanged = () => { vocesDisponibles = window.speechSynthesis.getVoices(); };
-        }
-
         function auroraHabla(texto) { 
             if (!window.speechSynthesis) return;
             const utterance = new SpeechSynthesisUtterance(texto); 
-            utterance.lang = 'es-ES'; 
-            utterance.pitch = 1.15; 
-            utterance.rate = 1.05;  
-            
-            if (vocesDisponibles.length === 0) vocesDisponibles = window.speechSynthesis.getVoices();
-            
-            let vozElegida = vocesDisponibles.find(v => v.lang.startsWith('es') && (v.name.includes('Female') || v.name.includes('Mujer') || v.name.includes('Paulina') || v.name.includes('Monica') || v.name.includes('Google español') || v.name.includes('Luciana') || v.name.includes('Sabina')));
-            
-            if (vozElegida) {
-                utterance.voice = vozElegida;
-            }
+            utterance.lang = 'es-AR';
             window.speechSynthesis.speak(utterance); 
         }
 
         function iniciarDictado() {
             const Speech = window.SpeechRecognition || window.webkitSpeechRecognition; 
-            if(!Speech) {
-                alert("Tu navegador no soporta dictado por voz.");
-                return;
-            }
+            if(!Speech) return;
             const rec = new Speech(); 
             rec.lang = 'es-AR';
             rec.onresult = (e) => { 
                 document.getElementById('chat-terminal').value = e.results[0][0].transcript; 
                 toggleInputButtons(); 
                 if(modoVozActivo) { cerrarModoVoz(); enviar(); } 
-            };
-            rec.onerror = (e) => {
-                if (e.error === 'not-allowed') alert("Por favor, habilita el acceso al micrófono en tu navegador.");
-                cerrarModoVoz();
             };
             rec.start();
         }
