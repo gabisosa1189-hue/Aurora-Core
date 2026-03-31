@@ -222,10 +222,10 @@
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
         // INYECCIÓN 3: TATUAJE DE MEMORIA - PERSISTENCIA LOCAL (BLINDADO) [cite: 160, 163]
-        let misChats = JSON.parse(localStorage.getItem('aurora_chats')) || [{ id: Date.now(), nombre: 'Chat 1', pinned: false, mensajes: 0 }];
+        let misChats = JSON.parse(localStorage.getItem('aurora_chats')) || [{ id: Date.now(), nombre: 'Chat 1', pinned: false, mensajes: 0, historial: [] }];
         let chatsCreadosHistoricos = parseInt(localStorage.getItem('aurora_historico')) || 0;
         let ilimitado = localStorage.getItem('aurora_ilimitado') === 'true';
-        let chatActivoId = misChats.length > 0 ? misChats[0].id : Date.now();
+        let chatActivoId = misChats[0].id;
         let currentModel = 'flash';
         let currentImageData = null;
 
@@ -294,7 +294,7 @@
         function abrirMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'block'; }
         function cerrarMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'none'; }
         function checkLimite(chatActual) {
-            if (chatActual && chatActual.mensajes >= LIMITE_MENSAJES) {
+            if (chatActual && chatActual.mensajes >= LIMITE_MENSA_JES) {
                 document.getElementById('bottom-bar-container').style.display = 'none';
                 document.getElementById('chat-window').innerHTML += `<div class="msg aurora limite-alcanzado">Memoria neuronal al máximo (100/100). Creá un 'Nuevo Chat'.</div>`;
                 return true;
@@ -315,7 +315,7 @@
         }
         function crearNuevoChat() {
             if(!ilimitado && chatsCreadosHistoricos >= 5) return alert("Compartí la app para recargar.");
-            let n = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, pinned: false, mensajes: 0 };
+            let n = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, pinned: false, mensajes: 0, historial: [] };
             misChats.push(n); chatActivoId = n.id; chatsCreadosHistoricos++; guardarMemoria(); renderizarChats(); cerrarPaneles();
         }
         function actualizarBarra() {
