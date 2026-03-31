@@ -51,7 +51,7 @@
         #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.15rem; outline: none; padding: 5px 0; user-select: text; -webkit-user-select: text; }
         .floating-icon-btn { background: transparent; border: none; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; padding: 5px; }
         .floating-icon-btn svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 2; fill: none; }
-        .pill-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: #fff; padding: 10px 18px; border-radius: 25px; font-family: 'Orbitron'; font-size: 0.85rem; cursor: pointer; transition: 0.3s; min-width: 80px; text-align: center; }
+        .pill-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: #fff; padding: 10px 18px; border-radius: 25px; font-family: 'Orbitron'; font-size: 0.85rem; cursor: pointer; transition: 0.3s; min-width: 90px; text-align: center; }
         .glowing-A-btn { font-family: 'Orbitron'; font-size: 2rem; color: #fff; background: transparent; border: none; text-shadow: 0 0 15px #fff, 0 0 30px #fff; cursor: pointer; font-weight: bold; }
         .panel-side { position: fixed; top: 0; width: 290px; height: 100%; background: rgba(0, 0, 0, 0.15); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100001; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px; padding-top: calc(env(safe-area-inset-top, 50px) + 20px); box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(255, 255, 255, 0.15); }
@@ -59,7 +59,7 @@
         .panel-open { transform: translateX(0) !important; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
         .energy-bar-bg { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; }
         .energy-bar-fill { height: 100%; width: 0%; background: #fff; box-shadow: 0 0 10px #fff; border-radius: 10px; transition: 0.4s; }
-        .panel-btn-account { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 16px; color: #fff; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; }
+        .panel-btn-account { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 16px; color: #fff; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; font-family: 'Plus Jakarta Sans'; }
         .shiny-disclaimer { color: #fff; text-shadow: 0 0 10px #fff; font-family: 'Orbitron'; font-size: 0.7rem; text-align: center; padding: 15px 0 10px 0; border-top: 1px solid rgba(255, 255, 255, 0.2); margin-top: auto; }
     </style>
 </head>
@@ -120,9 +120,11 @@
             <div class="titulo-app">AURORA</div>
             <img id="user-avatar" src="" alt="Perfil" onclick="abrirPerfil()">
         </header>
+        
         <div id="chat-window">
             <div class="msg aurora">Sistema sincronizado, Gabriel. Núcleo V27 operando a máxima potencia.</div>
         </div>
+
         <div class="bottom-section" id="bottom-bar-container">
             <div class="chat-input-row">
                 <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off" oninput="toggleInputButtons()">
@@ -156,35 +158,49 @@
     
     <div id="profile-panel" class="panel-side">
         <div class="shiny-white-text">MI CUENTA</div>
-        <button class="panel-btn-account" onclick="auth.signOut().then(() => location.reload())"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Cerrar Sesión</button>
-        <button class="panel-btn-account" onclick="cambiarCuenta()"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8 7a4 4 0 0 1 4-4M20 8v6M23 11h-6"/></svg>Cambiar Cuenta</button>
-        <button class="panel-btn-account danger" onclick="eliminarCuenta()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>Eliminar Cuenta</button>
+        <button class="panel-btn-account" onclick="auth.signOut().then(() => location.reload())">Cerrar Sesión</button>
+        <button class="panel-btn-account" onclick="cambiarCuenta()">Cambiar Cuenta</button>
+        <button class="panel-btn-account danger" onclick="eliminarCuenta()">Eliminar Cuenta</button>
         <div class="shiny-disclaimer">AURORA ES UNA IA Y PUEDE COMETER ERRORES.</div>
+    </div>
+
+    <div id="login-overlay" style="position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px);">
+        <div style="text-align: center; border: 1px solid var(--accent); padding: 40px; border-radius: 30px;">
+            <h2 style="font-family:'Orbitron'; letter-spacing:10px;">AURORA</h2>
+            <button onclick="authGoogle()" style="background:white; color:black; border:none; padding:15px 30px; border-radius:15px; font-weight:bold; cursor:pointer;">Ingresar con Google</button>
+        </div>
     </div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        // 3. INYECCIÓN ANTI-TRAMPAS: PERSISTENCIA LOCAL
-        let misChats = JSON.parse(localStorage.getItem('aurora_chats')) || [{ id: Date.now(), nombre: 'Chat 1', mensajes: 0 }];
+        // 🧠 MEMORIA DE DISPOSITIVO (PERSISTENTE)
+        let misChats = JSON.parse(localStorage.getItem('aurora_chats')) || [{ id: Date.now(), nombre: 'Chat 1', mensajes: 0, historial: [] }];
         let chatsHistoricos = parseInt(localStorage.getItem('aurora_historico')) || 0;
         let ilimitado = localStorage.getItem('aurora_ilimitado') === 'true';
         let chatActivoId = misChats[0].id;
         let currentModel = 'flash';
         let currentImageData = null;
 
+        // 🔗 EL CABLE AL MOTOR
         const NEXUS_URL = "https://gabiland-aurora-ai-mendoza.hf.space/chat";
 
-        function guardar() { localStorage.setItem('aurora_chats', JSON.stringify(misChats)); localStorage.setItem('aurora_historico', chatsHistoricos); localStorage.setItem('aurora_ilimitado', ilimitado); }
-
-        function cambiarModelo() {
-            const btn = document.getElementById('btn-model-selector');
-            if(currentModel === 'flash') { currentModel = 'quantum'; btn.innerText = 'Quantum'; btn.style.color = '#ff00ff'; }
-            else if(currentModel === 'quantum') { currentModel = 'nebula'; btn.innerText = 'Nebula'; btn.style.color = '#00f2ff'; }
-            else { currentModel = 'flash'; btn.innerText = 'Flash'; btn.style.color = '#fff'; }
+        function guardar() { 
+            localStorage.setItem('aurora_chats', JSON.stringify(misChats)); 
+            localStorage.setItem('aurora_historico', chatsHistoricos); 
+            localStorage.setItem('aurora_ilimitado', ilimitado); 
         }
 
+        // 🔄 CAMBIO DE CEREBRO REAL
+        function cambiarModelo() {
+            const btn = document.getElementById('btn-model-selector');
+            if(currentModel === 'flash') { currentModel = 'quantum'; btn.innerText = 'Quantum'; btn.style.color = '#ff00ff'; btn.style.borderColor = '#ff00ff'; }
+            else if(currentModel === 'quantum') { currentModel = 'nebula'; btn.innerText = 'Nebula'; btn.style.color = '#00f2ff'; btn.style.borderColor = '#00f2ff'; }
+            else { currentModel = 'flash'; btn.innerText = 'Flash'; btn.style.color = '#fff'; btn.style.borderColor = 'rgba(255,255,255,0.2)'; }
+        }
+
+        // 👁️ VISIÓN ARTIFICIAL (Base64)
         function manejarArchivo(event) {
             const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
@@ -196,69 +212,78 @@
             reader.readAsDataURL(file);
         }
 
+        // 🚀 ENVÍO NEURONAL BLINDADO
         async function enviar() {
             const input = document.getElementById('chat-terminal');
             const msg = input.value.trim();
             if(!msg && !currentImageData) return;
             let chat = misChats.find(c => c.id === chatActivoId);
-            if(chat.mensajes >= 100) { checkLimite(chat); return; }
+            if(chat.mensajes >= 100) { checkLimite(); return; }
 
-            document.getElementById('chat-window').innerHTML += msg ? `<div class="msg user">${msg}</div>` : '';
+            if(msg) document.getElementById('chat-window').innerHTML += `<div class="msg user">${msg}</div>`;
             input.value = ""; toggleInputButtons();
-            
+            const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
+
             try {
                 const res = await fetch(NEXUS_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ msg, model: currentModel, image: currentImageData, user_id: auth.currentUser ? auth.currentUser.uid : 'anon' })
+                    body: JSON.stringify({ 
+                        msg: msg, 
+                        model: currentModel, 
+                        image: currentImageData, 
+                        user_id: auth.currentUser ? auth.currentUser.uid : 'dispositivo_anon' 
+                    })
                 });
                 const data = await res.json();
                 document.getElementById('chat-window').innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
-                chat.mensajes++; currentImageData = null; guardar();
-                const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
+                chat.mensajes++; 
+                chat.historial.push({u: msg, a: data.respuesta});
+                currentImageData = null; 
+                guardar();
+                win.scrollTop = win.scrollHeight;
                 if(modoVozActivo) auroraHabla(data.respuesta);
-            } catch(e) { console.error(e); }
+            } catch(e) { 
+                document.getElementById('chat-window').innerHTML += `<div class="msg aurora">Singularidad detectada. El Núcleo se está reiniciando.</div>`;
+            }
         }
 
-        function checkLimite(chat) {
+        // UI Y LOGICA DE PANELES
+        function checkLimite() {
             document.getElementById('bottom-bar-container').style.display = 'none';
             document.getElementById('chat-window').innerHTML += `<div class="msg aurora limite-alcanzado">Memoria neuronal al máximo (100/100). Creá un 'Nuevo Chat' para seguir.</div>`;
         }
-
         function renderChats() {
             const container = document.getElementById('lista-chats-container'); container.innerHTML = '';
             misChats.forEach(c => {
                 const div = document.createElement('div'); div.className = `chat-item ${c.id === chatActivoId ? 'active-chat' : ''}`;
-                div.innerText = c.nombre; div.onclick = () => { chatActivoId = c.id; document.getElementById('bottom-bar-container').style.display = 'flex'; cerrarPaneles(); renderChats(); };
+                div.innerText = c.nombre; div.onclick = () => { chatActivoId = c.id; document.getElementById('bottom-bar-container').style.display = 'flex'; 
+                document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Historial del ${c.nombre} cargado.</div>`;
+                cerrarPaneles(); renderChats(); };
                 container.appendChild(div);
             });
             actualizarBarra();
         }
-
         function crearNuevoChat() {
-            if(!ilimitado && chatsHistoricos >= 5) return alert("Límite de chats alcanzado. Compartí la app.");
-            let n = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, mensajes: 0 };
+            if(!ilimitado && chatsHistoricos >= 5) return alert("Energía agotada. Compartí la app para recargar el Núcleo.");
+            let n = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, mensajes: 0, historial: [] };
             misChats.push(n); chatActivoId = n.id; chatsHistoricos++; guardar(); renderChats(); cerrarPaneles();
         }
-
         function actualizarBarra() {
             let p = (chatsHistoricos / 5) * 100; document.getElementById('energy-bar').style.width = Math.min(p, 100) + '%';
             document.getElementById('chat-counter').innerText = `CHATS: ${chatsHistoricos}/5`;
             document.getElementById('btn-compartir').style.display = chatsHistoricos >= 5 ? 'block' : 'none';
             document.getElementById('btn-nuevo-chat').style.display = (chatsHistoricos >= 5 && !ilimitado) ? 'none' : 'block';
         }
-
-        function compartirApp() { if(navigator.share){ navigator.share({title:'AURORA', url:window.location.href}).then(()=>{ ilimitado=true; guardar(); actualizarBarra(); alert('¡Acceso Ilimitado Activado!'); }); } else { ilimitado=true; guardar(); actualizarBarra(); } }
+        function compartirApp() { if(navigator.share){ navigator.share({title:'AURORA AI', url:window.location.href}).then(()=>{ ilimitado=true; guardar(); actualizarBarra(); alert('¡Acceso Ilimitado Activado!'); }); } else { ilimitado=true; guardar(); actualizarBarra(); } }
         function abrirSidebar() { document.getElementById('sidebar-menu').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; renderChats(); }
         function abrirPerfil() { document.getElementById('profile-panel').classList.add('panel-open'); document.getElementById('panels-overlay').style.display = 'block'; }
         function cerrarPaneles() { document.querySelectorAll('.panel-side').forEach(p => p.classList.remove('panel-open')); document.getElementById('panels-overlay').style.display = 'none'; }
         function abrirMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'block'; }
         function cerrarMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'none'; }
-        
-        auth.onAuthStateChanged(u => { if(u) { document.getElementById('login-overlay').style.display = 'none'; document.getElementById('app-container').style.display = 'flex'; if(u.photoURL) document.getElementById('user-avatar').src = u.photoURL; document.getElementById('user-avatar').style.display='block'; } });
+        auth.onAuthStateChanged(u => { if(u) { document.getElementById('login-overlay').style.display = 'none'; document.getElementById('app-container').style.display = 'flex'; if(u.photoURL) document.getElementById('user-avatar').src = u.photoURL; document.getElementById('user-avatar').style.display='block'; renderChats(); } });
         function authGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         function toggleInputButtons() { document.getElementById('send-controls').style.display = document.getElementById('chat-terminal').value ? 'flex' : 'none'; document.getElementById('normal-controls').style.display = document.getElementById('chat-terminal').value ? 'none' : 'flex'; }
-        
         let modoVozActivo = false;
         function abrirModoVoz() { modoVozActivo = true; document.getElementById('voice-overlay').style.display = 'flex'; iniciarDictado(); }
         function cerrarModoVoz() { modoVozActivo = false; document.getElementById('voice-overlay').style.display = 'none'; }
@@ -269,7 +294,6 @@
             rec.onresult = (e) => { document.getElementById('chat-terminal').value = e.results[0][0].transcript; toggleInputButtons(); if(modoVozActivo){ cerrarModoVoz(); enviar(); } };
             rec.start();
         }
-        
         renderChats();
     </script>
 </body>
