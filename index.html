@@ -58,10 +58,15 @@
         #voice-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 200000; display: none; animation: pop-in 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .voice-center-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
         .voice-controls { position: absolute; bottom: 45px; display: flex; gap: 25px; align-items: center; justify-content: center; width: 100%; }
-        .voice-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; backdrop-filter: blur(15px); transition: 0.3s; }
-        .voice-btn:active { background: rgba(255,255,255,0.2); box-shadow: 0 0 20px rgba(255,255,255,0.3); transform: scale(0.95); }
-        .voice-btn.danger { background: rgba(255,77,77,0.15); border-color: #ff4d4d; color: #ff4d4d; }
-        .voice-btn.danger:active { background: rgba(255,77,77,0.3); box-shadow: 0 0 25px rgba(255,77,77,0.5); }
+        
+        /* Botones sin redondel como pediste */
+        .voice-btn { background: transparent; border: none; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: 0.3s; padding: 10px; }
+        .voice-btn:active { transform: scale(0.9); text-shadow: 0 0 20px #fff; }
+        .voice-btn svg { filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
+        
+        .voice-btn.danger { color: #ff4d4d; }
+        .voice-btn.danger svg { filter: drop-shadow(0 0 5px rgba(255,77,77,0.3)); }
+        .voice-btn.danger:active { transform: scale(0.9); text-shadow: 0 0 20px #ff4d4d; }
 
         #context-menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100005; display: none; align-items: center; justify-content: center; }
         .context-menu-box { background: rgba(0, 10, 20, 0.65); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 25px; padding: 25px; width: 260px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 0 30px rgba(255, 255, 255, 0.15); animation: pop-in 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -86,6 +91,8 @@
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); user-select: text; -webkit-user-select: text; }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); }
+        
+        .limite-alcanzado { align-self: center; background: rgba(255, 77, 77, 0.15); border: 1px solid rgba(255, 77, 77, 0.4); text-align: center; max-width: 90%; box-shadow: 0 0 20px rgba(255, 77, 77, 0.2); }
 
         .bottom-section { position: absolute; bottom: 0; left: 0; width: 100vw; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%); padding: 20px 20px calc(env(safe-area-inset-bottom, 15px) + 20px); box-sizing: border-box; z-index: 100; display: flex; flex-direction: column; gap: 15px; }
 
@@ -106,7 +113,7 @@
         .glowing-A-btn { font-family: 'Orbitron'; font-size: 2rem; color: #fff; background: transparent; border: none; text-shadow: 0 0 15px #fff, 0 0 30px #fff; cursor: pointer; transition: 0.2s; padding: 0 5px; font-weight: bold; }
         .glowing-A-btn:active { transform: scale(0.85); }
 
-        /* ✨ PANELES LATERALES (CRISTAL) */
+        /* PANEL LATERAL */
         .panel-side { position: fixed; top: 0; width: 290px; height: 100%; background: rgba(0, 0, 0, 0.15); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100001; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px; padding-top: calc(env(safe-area-inset-top, 50px) + 20px); box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(255, 255, 255, 0.15); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(255, 255, 255, 0.15); }
@@ -114,7 +121,6 @@
 
         .shiny-white-text { color: #fff; text-shadow: 0 0 15px #fff, 0 0 30px #fff; font-family: 'Orbitron'; font-size: 1.3rem; text-align: center; letter-spacing: 3px; margin-bottom: 20px; }
         
-        /* ✨ PANEL DE CHATS (IZQUIERDO) - ARREGLADO */
         #lista-chats-container { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1; margin-bottom: 15px; touch-action: pan-y; }
         .chat-item { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px; border-radius: 15px; cursor: pointer; color: #fff; font-family: 'Plus Jakarta Sans'; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; user-select: none; -webkit-user-select: none; }
         .chat-item:active { transform: scale(0.97); }
@@ -126,21 +132,14 @@
         .energy-bar-bg { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; }
         .energy-bar-fill { height: 100%; width: 0%; background: #fff; box-shadow: 0 0 10px #fff, 0 0 20px #fff; border-radius: 10px; transition: width 0.4s ease-in-out, background 0.4s ease; }
 
-        /* ✨ PANEL DE CUENTA (DERECHO) - BOTONES GIGANTES ARREGLADOS */
         .shiny-disclaimer { color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff; font-family: 'Orbitron'; font-size: 0.7rem; text-align: center; padding: 15px 0 10px 0; letter-spacing: 1px; line-height: 1.4; border-top: 1px solid rgba(255, 255, 255, 0.2); margin-top: auto; }
 
-        .panel-btn-account { 
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); 
-            color: #fff; padding: 20px; border-radius: 16px; cursor: pointer; 
-            font-family: 'Plus Jakarta Sans'; font-size: 1rem; text-align: center; 
-            transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; 
-        }
+        .panel-btn-account { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); color: #fff; padding: 20px; border-radius: 16px; cursor: pointer; font-family: 'Plus Jakarta Sans'; font-size: 1rem; text-align: center; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
         .panel-btn-account:active { background: rgba(255, 255, 255, 0.15); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); transform: scale(0.97); }
         .panel-btn-account.danger { color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3); }
         .panel-btn-account.danger:active { background: rgba(255, 107, 107, 0.15); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255,107,107,0.4); }
         .panel-btn-account svg { width: 32px; height: 32px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
-        /* Botón contextual estilo lista pequeña */
         .panel-btn-menu { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 14px; border-radius: 14px; cursor: pointer; font-family: 'Plus Jakarta Sans'; font-size: 0.95rem; text-align: left; display: flex; align-items: center; gap: 14px; width: 100%; }
         .panel-btn-menu:active { background: rgba(255, 255, 255, 0.15); }
         #btn-compartir { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); color: #fff; box-shadow: 0 0 15px rgba(0,242,255,0.3); font-weight: bold; animation: pulse-border 2s infinite; }
@@ -155,7 +154,7 @@
 
     <input type="file" id="upload-docs" accept=".pdf,.doc,.docx,.txt" style="display:none" onchange="manejarArchivo(event)">
     <input type="file" id="upload-photos" accept="image/*" style="display:none" onchange="manejarArchivo(event)">
-    <input type="file" id="upload-camera" accept="image/*" capture="environment" style="display:none" onchange="manejarArchivo(event)">
+    <input type="file" id="upload-camera" accept="video/*,image/*" capture="environment" style="display:none" onchange="manejarArchivo(event)">
 
     <div id="panels-overlay" onclick="cerrarPaneles()"></div>
 
@@ -175,7 +174,7 @@
             </button>
             <button class="multi-item" onclick="document.getElementById('upload-camera').click(); cerrarMultimedia();">
                 <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                <span>Cámara</span>
+                <span>Cámara en Vivo</span>
             </button>
         </div>
     </div>
@@ -188,13 +187,13 @@
         
         <div class="voice-controls">
             <button class="voice-btn" onclick="document.getElementById('upload-camera').click(); cerrarModoVoz();">
-                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <svg viewBox="0 0 24 24" width="30" height="30" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
             </button>
             <button class="voice-btn" onclick="alert('Micrófono Silenciado')">
-                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                <svg viewBox="0 0 24 24" width="30" height="30" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
             </button>
             <button class="voice-btn danger" onclick="cerrarModoVoz()">
-                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
         </div>
     </div>
@@ -239,10 +238,10 @@
         </header>
         
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado, Gabriel. Interfaz sellada, menús ajustados y cristal pulido.</div>
+            <div class="msg aurora">Sistema sincronizado, Gabriel. La memoria neuronal está activa y el sistema Anti-Trampas configurado en 0/5.</div>
         </div>
 
-        <div class="bottom-section">
+        <div class="bottom-section" id="bottom-bar-container">
             <div class="chat-input-row">
                 <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off" oninput="toggleInputButtons()">
             </div>
@@ -252,7 +251,7 @@
                     <button class="floating-icon-btn" onclick="abrirMultimedia()">
                         <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
-                    <button class="pill-btn" onclick="simularModulo('Selector de Modelos')">
+                    <button class="pill-btn" onclick="alert('Selector de Modelos en desarrollo')">
                         Modelo
                     </button>
                 </div>
@@ -276,12 +275,12 @@
     <div id="sidebar-menu" class="panel-side">
         <div class="shiny-white-text">MIS CHATS</div>
         <div id="lista-chats-container"></div>
-        <button class="panel-btn-menu" onclick="crearNuevoChat()" style="margin-bottom:10px;">
+        <button class="panel-btn-menu" id="btn-nuevo-chat" onclick="crearNuevoChat()" style="margin-bottom:10px;">
             <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2-2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="12" y1="9" x2="12" y2="15"></line><line x1="9" y1="12" x2="15" y2="12"></line></svg>
             Nuevo Chat
         </button>
         <div class="energy-container">
-            <div class="shiny-counter" id="chat-counter">CHATS: 1/5</div>
+            <div class="shiny-counter" id="chat-counter">CHATS: 0/5</div>
             <div class="energy-bar-bg"><div class="energy-bar-fill" id="energy-bar"></div></div>
         </div>
         <button class="panel-btn-menu" id="btn-compartir" onclick="compartirApp()" style="display: none; margin-bottom: 10px;">
@@ -318,13 +317,13 @@
         const LIMITE_MENSAJES = 100;
         let ilimitado = false;
         let isLongPress = false;
-        let chatsCreadosHistoricos = 1; 
+        let chatsCreadosHistoricos = 0; // Arranca en 0 (El Chat 1 es gratis)
 
         // ✨ MULTIMEDIA MENÚ (+)
         function abrirMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'block'; }
         function cerrarMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'none'; }
 
-        // ✨ MANEJADOR DE ARCHIVOS REALES
+        // ✨ MANEJADOR DE ARCHIVOS REALES Y CÁMARA
         function manejarArchivo(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -338,6 +337,9 @@
             if (file.type.startsWith('image/')) {
                 const fileURL = URL.createObjectURL(file);
                 fileHTML = `<img src="${fileURL}" style="max-width: 100%; border-radius: 15px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.2);">`;
+            } else if (file.type.startsWith('video/')) {
+                const fileURL = URL.createObjectURL(file);
+                fileHTML = `<video src="${fileURL}" controls style="max-width: 100%; border-radius: 15px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.2);"></video>`;
             } else {
                 fileHTML = `<div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 10px; margin-top: 10px;">
                                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="#fff" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
@@ -345,19 +347,19 @@
                             </div>`;
             }
 
-            document.getElementById('chat-window').innerHTML += `<div class="msg user"><strong>Enviando archivo...</strong>${fileHTML}</div>`;
+            document.getElementById('chat-window').innerHTML += `<div class="msg user"><strong>Analizando entorno...</strong>${fileHTML}</div>`;
             const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
 
-            if(chatActual) { chatActual.mensajes++; renderizarChats(); }
+            if(chatActual) { chatActual.mensajes++; checkLimite(chatActual); renderizarChats(); }
             event.target.value = ''; 
 
             setTimeout(() => {
-                document.getElementById('chat-window').innerHTML += `<div class="msg aurora">Archivo <strong>${file.name}</strong> recibido. Analizando datos en la red neuronal...</div>`;
+                document.getElementById('chat-window').innerHTML += `<div class="msg aurora">Archivo procesado mediante visión artificial. Esperando conexión con el modelo multimodal de Hugging Face para darte una respuesta detallada.</div>`;
                 win.scrollTop = win.scrollHeight;
             }, 1500);
         }
 
-        // ✨ WEB SPEECH API
+        // ✨ WEB SPEECH API (OÍDOS Y VOZ DE AURORA)
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
         let modoVozActivo = false;
@@ -367,14 +369,19 @@
             recognition.lang = 'es-AR'; 
             recognition.continuous = false;
             
-            recognition.onstart = function() { if(modoVozActivo) document.getElementById('voice-status').innerText = "ESCUCHANDO..."; };
+            recognition.onstart = function() {
+                if(modoVozActivo) document.getElementById('voice-status').innerText = "ESCUCHANDO...";
+            };
             
             recognition.onresult = function(event) {
                 const transcript = event.results[0][0].transcript;
                 document.getElementById('chat-terminal').value = transcript;
                 toggleInputButtons();
                 
-                if (modoVozActivo) { cerrarModoVoz(); enviar(); }
+                if (modoVozActivo) {
+                    cerrarModoVoz();
+                    enviar(); 
+                }
             };
 
             recognition.onerror = function(event) {
@@ -385,9 +392,23 @@
             };
         }
 
-        function iniciarDictado() { modoVozActivo = false; if(recognition) { try { recognition.start(); } catch(e) {} } else { alert("Navegador no soporta dictado."); } }
-        function abrirModoVoz() { modoVozActivo = true; document.getElementById('voice-overlay').style.display = 'flex'; document.getElementById('voice-status').innerText = "ESCUCHANDO..."; if(recognition) { try { recognition.start(); } catch(e) {} } else { document.getElementById('voice-status').innerText = "Navegador no compatible."; } }
-        function cerrarModoVoz() { modoVozActivo = false; document.getElementById('voice-overlay').style.display = 'none'; if(recognition) { try { recognition.stop(); } catch(e){} } }
+        function iniciarDictado() {
+            modoVozActivo = false;
+            if(recognition) { try { recognition.start(); } catch(e) {} } else { alert("Tu navegador no soporta dictado por voz."); }
+        }
+
+        function abrirModoVoz() { 
+            modoVozActivo = true;
+            document.getElementById('voice-overlay').style.display = 'flex'; 
+            document.getElementById('voice-status').innerText = "ESCUCHANDO...";
+            if(recognition) { try { recognition.start(); } catch(e) {} } else { document.getElementById('voice-status').innerText = "Navegador no compatible."; }
+        }
+        
+        function cerrarModoVoz() { 
+            modoVozActivo = false;
+            document.getElementById('voice-overlay').style.display = 'none'; 
+            if(recognition) { try { recognition.stop(); } catch(e){} }
+        }
 
         function auroraHabla(texto) {
             if('speechSynthesis' in window) {
@@ -428,8 +449,13 @@
                 
                 div.addEventListener('click', (e) => {
                     if(isLongPress) { e.preventDefault(); return; }
-                    chatActivoId = chat.id; cerrarPaneles();
-                    document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Cambiando al ${chat.nombre}...</div>`;
+                    chatActivoId = chat.id; 
+                    
+                    // Al cambiar de chat, restauramos la barra inferior si estaba bloqueada
+                    document.getElementById('bottom-bar-container').style.display = 'flex';
+                    
+                    cerrarPaneles();
+                    document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Conectado al ${chat.nombre}. Historial neuronal sincronizado.</div>`;
                     renderizarChats();
                 });
                 container.appendChild(div);
@@ -443,6 +469,10 @@
             }
             let nuevoChat = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, pinned: false, mensajes: 0 };
             misChats.push(nuevoChat); chatActivoId = nuevoChat.id;
+            
+            // RESTAURAR BARRA DE ESCRITURA
+            document.getElementById('bottom-bar-container').style.display = 'flex';
+
             if(!ilimitado) chatsCreadosHistoricos++; 
             actualizarBarra(); renderizarChats(); cerrarPaneles();
             document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Nuevo canal neuronal abierto (${nuevoChat.nombre}). ¿De qué hablamos?</div>`;
@@ -451,24 +481,37 @@
         function cerrarMenuSecreto() { document.getElementById('context-menu-overlay').style.display = 'none'; chatActivoParaMenu = null; }
         function accionRenombrar() { const nuevoNombre = prompt("Escribí el nuevo nombre para este chat:"); if(nuevoNombre && nuevoNombre.trim() !== "") { let chat = misChats.find(c => c.id === chatActivoParaMenu); if(chat) chat.nombre = nuevoNombre; renderizarChats(); } cerrarMenuSecreto(); }
         function accionFijar() { let chat = misChats.find(c => c.id === chatActivoParaMenu); if(chat) chat.pinned = !chat.pinned; renderizarChats(); cerrarMenuSecreto(); }
-        function accionEliminar() { if(misChats.length === 1) { alert("No podés eliminar tu única conexión activa."); } else if(confirm("¿Seguro que querés borrar este chat?")) { misChats = misChats.filter(c => c.id !== chatActivoParaMenu); if(chatActivoId === chatActivoParaMenu) { chatActivoId = misChats[0].id; } renderizarChats(); } cerrarMenuSecreto(); }
-        
-        function accionCompartirChat() { 
-            if (navigator.share) { 
-                let chat = misChats.find(c => c.id === chatActivoParaMenu); 
-                navigator.share({ title: 'AURORA - Chat', text: `Mirá mi conversación en Aurora: ${chat.nombre}`, url: window.location.href }); 
-            } else { alert("Enlace del chat copiado al portapapeles."); } 
+        function accionEliminar() { 
+            if(misChats.length === 1) { 
+                alert("No podés eliminar tu única conexión activa."); 
+            } else if(confirm("¿Seguro que querés borrar este chat?")) { 
+                misChats = misChats.filter(c => c.id !== chatActivoParaMenu); 
+                if(chatActivoId === chatActivoParaMenu) { chatActivoId = misChats[0].id; document.getElementById('bottom-bar-container').style.display = 'flex'; } 
+                renderizarChats(); 
+                // NOTA: NO LE BAJAMOS LA ENERGÍA PARA EVITAR TRAMPAS
+            } 
             cerrarMenuSecreto(); 
         }
+        function accionCompartirChat() { if (navigator.share) { let chat = misChats.find(c => c.id === chatActivoParaMenu); navigator.share({ title: 'AURORA - Chat', text: `Mirá mi conversación en Aurora: ${chat.nombre}`, url: window.location.href }); } else { alert("Enlace del chat copiado al portapapeles."); } cerrarMenuSecreto(); }
 
         function actualizarBarra() {
             const bar = document.getElementById('energy-bar'); const counter = document.getElementById('chat-counter'); const btnCompartir = document.getElementById('btn-compartir');
+            const btnNuevoChat = document.getElementById('btn-nuevo-chat');
+
             if (ilimitado) {
                 bar.style.width = '100%'; bar.style.background = 'var(--accent)'; bar.style.boxShadow = '0 0 15px var(--accent)';
-                counter.innerText = "ACCESO: ILIMITADO"; btnCompartir.style.display = 'none'; 
+                counter.innerText = "ACCESO: ILIMITADO"; btnCompartir.style.display = 'none'; btnNuevoChat.style.display = 'flex';
             } else {
                 let porcentaje = (chatsCreadosHistoricos / 5) * 100; bar.style.width = porcentaje + '%'; counter.innerText = `CHATS: ${chatsCreadosHistoricos}/5`;
-                if(chatsCreadosHistoricos >= 5) { bar.style.background = '#ff4d4d'; bar.style.boxShadow = '0 0 15px #ff4d4d'; btnCompartir.style.display = 'flex'; } else { bar.style.background = '#fff'; bar.style.boxShadow = '0 0 10px #fff, 0 0 20px #fff'; btnCompartir.style.display = 'none'; }
+                if(chatsCreadosHistoricos >= 5) { 
+                    bar.style.background = '#ff4d4d'; bar.style.boxShadow = '0 0 15px #ff4d4d'; 
+                    btnCompartir.style.display = 'flex'; 
+                    btnNuevoChat.style.display = 'none'; // OCULTA EL BOTÓN NUEVO CHAT HASTA COMPARTIR
+                } else { 
+                    bar.style.background = '#fff'; bar.style.boxShadow = '0 0 10px #fff, 0 0 20px #fff'; 
+                    btnCompartir.style.display = 'none'; 
+                    btnNuevoChat.style.display = 'flex'; 
+                }
             }
         }
 
@@ -494,13 +537,29 @@
             }
         }
 
+        // ✨ BLOQUEO POR LÍMITE DE MENSAJES (Forzar nuevo chat)
+        function checkLimite(chatActual) {
+            if (chatActual && chatActual.mensajes >= LIMITE_MENSAJES) {
+                document.getElementById('bottom-bar-container').style.display = 'none'; // Desaparece la barra de escritura
+                document.getElementById('chat-window').innerHTML += `<div class="msg aurora limite-alcanzado">Has alcanzado el límite de memoria neuronal para esta conexión (100/100). Tu conversación ha sido guardada en la red. <br><br><strong>Por favor, creá un 'Nuevo Chat' desde el menú lateral para continuar.</strong></div>`;
+                const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
+                return true;
+            }
+            return false;
+        }
+
         async function enviar() {
             const input = document.getElementById('chat-terminal'); if(!input.value.trim()) return;
             let chatActual = misChats.find(c => c.id === chatActivoId);
-            if (chatActual && chatActual.mensajes >= LIMITE_MENSAJES) { alert("Memoria neuronal al máximo en este chat (100/100). Creá un 'Nuevo Chat' para seguir."); return; }
+            
+            if (checkLimite(chatActual)) return;
             
             const msj = input.value; document.getElementById('chat-window').innerHTML += `<div class="msg user">${msj}</div>`; input.value = ""; toggleInputButtons();
-            if(chatActual) { chatActual.mensajes++; }
+            
+            if(chatActual) { 
+                chatActual.mensajes++; 
+                if(checkLimite(chatActual)) return; // Chequea de nuevo después de mandar
+            }
 
             try { 
                 const res = await fetch('https://gabiland-aurora-ai-mendoza.hf.space/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msg:msj}) }); 
