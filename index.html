@@ -156,7 +156,7 @@
 
         <div class="bottom-section" id="bottom-bar-container">
             <div class="chat-input-row">
-                <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off" oninput="toggleInputButtons()">
+                <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off" oninput="toggleInputButtons()" onkeydown="if(event.key==='Enter') enviar()">
             </div>
             
             <div class="chat-controls-row">
@@ -174,8 +174,8 @@
                     <button class="glowing-A-btn" onclick="abrirModoVoz()">A</button>
                 </div>
                 
-                <div class="controls-group" id="send-controls" style="display:none;">
-                    <button class="floating-icon-btn" onclick="enviar()">
+                <div class="controls-group" id="send-controls" style="display:none; pointer-events: auto;">
+                    <button class="floating-icon-btn" onclick="enviar()" style="cursor: pointer;">
                         <svg viewBox="0 0 24 24" style="stroke: #fff;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </div>
@@ -221,7 +221,7 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        // INYECCIÓN 3: TATUAJE DE MEMORIA - PERSISTENCIA LOCAL (BLINDADO) [cite: 160, 163]
+        // 🧠 MEMORIA PERSISTENTE (LOCAL STORAGE) [cite: 160, 163]
         let misChats = JSON.parse(localStorage.getItem('aurora_chats')) || [{ id: Date.now(), nombre: 'Chat 1', pinned: false, mensajes: 0, historial: [] }];
         let chatsCreadosHistoricos = parseInt(localStorage.getItem('aurora_historico')) || 0;
         let ilimitado = localStorage.getItem('aurora_ilimitado') === 'true';
@@ -229,7 +229,7 @@
         let currentModel = 'flash';
         let currentImageData = null;
 
-        // INYECCIÓN 4: CONEXIÓN NEURONAL REAL [cite: 245, 248]
+        // 🔗 CONEXIÓN AL NÚCLEO [cite: 248]
         const NEXUS_URL = "https://gabiland-aurora-ai-mendoza.hf.space/chat";
 
         function guardarMemoria() {
@@ -238,7 +238,6 @@
             localStorage.setItem('aurora_ilimitado', ilimitado);
         }
 
-        // LÓGICA CAMBIO DE CEREBRO REAL
         function cambiarModelo() {
             const btn = document.getElementById('btn-model-selector');
             if(currentModel === 'flash') { currentModel = 'quantum'; btn.innerText = 'Quantum'; btn.style.borderColor = '#ff00ff'; btn.style.color = '#ff00ff'; }
@@ -246,7 +245,6 @@
             else { currentModel = 'flash'; btn.innerText = 'Flash'; btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; }
         }
 
-        // VISIÓN ARTIFICIAL (Base64) [cite: 166]
         function manejarArchivo(event) {
             const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
@@ -258,13 +256,20 @@
             reader.readAsDataURL(file);
         }
 
+        // 🚀 FUNCIÓN DE ENVÍO REPARADA Y REFORZADA [cite: 245, 246, 248]
         async function enviar() {
             const input = document.getElementById('chat-terminal');
             const msg = input.value.trim();
             if(!msg && !currentImageData) return;
             let chatActual = misChats.find(c => c.id === chatActivoId);
             
-            if (checkLimite(chatActual)) return;
+            // CORRECCIÓN: LIMITE_MENSAJES es el nombre correcto de la constante [cite: 162, 241]
+            if (chatActual && chatActual.mensajes >= LIMITE_MENSAJES) {
+                document.getElementById('bottom-bar-container').style.display = 'none';
+                document.getElementById('chat-window').innerHTML += `<div class="msg aurora limite-alcanzado">Memoria neuronal al máximo (100/100). Creá un 'Nuevo Chat'.</div>`;
+                return;
+            }
+
             if(msg) document.getElementById('chat-window').innerHTML += `<div class="msg user">${msg}</div>`;
             input.value = ""; toggleInputButtons();
             const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
@@ -287,20 +292,16 @@
                 win.scrollTop = win.scrollHeight;
                 currentImageData = null; 
                 if(modoVozActivo) { auroraHabla(data.respuesta); modoVozActivo = false; }
-            } catch(e) { console.log(e); }
+            } catch(e) { 
+                console.error("Error de conexión:", e);
+                document.getElementById('chat-window').innerHTML += `<div class="msg aurora">Hubo una interferencia en el Nexus. Verifica tu conexión, Gabriel.</div>`;
+            }
         }
 
-        // UI LOGIC (RESTAURADA) [cite: 164, 195, 232, 235, 238]
+        // UI LOGIC [cite: 164, 195, 232, 235, 238]
         function abrirMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'block'; }
         function cerrarMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'none'; }
-        function checkLimite(chatActual) {
-            if (chatActual && chatActual.mensajes >= LIMITE_MENSA_JES) {
-                document.getElementById('bottom-bar-container').style.display = 'none';
-                document.getElementById('chat-window').innerHTML += `<div class="msg aurora limite-alcanzado">Memoria neuronal al máximo (100/100). Creá un 'Nuevo Chat'.</div>`;
-                return true;
-            }
-            return false;
-        }
+        
         function renderizarChats() {
             const container = document.getElementById('lista-chats-container'); container.innerHTML = '';
             let chatsOrdenados = [...misChats].sort((a, b) => (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1);
