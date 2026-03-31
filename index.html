@@ -6,7 +6,7 @@
     <title>AURORA - Acceso Neuronal</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#00f2ff">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -18,11 +18,11 @@
     <style>
         :root { --accent: #00f2ff; --danger: #ff4d4d; --pure-white: #ffffff; --glow-white: rgba(255, 255, 255, 0.8); }
 
-        html { height: -webkit-fill-available; background-color: #0c1425; }
+        html { height: -webkit-fill-available; background-color: #000000; }
 
         body { 
             margin: 0; padding: 0; width: 100vw; height: 100dvh;
-            background-color: #0c1425; overflow: hidden; position: fixed; inset: 0;
+            background-color: #000000; overflow: hidden; position: fixed; inset: 0;
             font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; 
             overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;
         }
@@ -37,6 +37,7 @@
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
+        /* ✨ MENÚ CONTEXTUAL SECRETO (LONG PRESS) */
         #context-menu-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             z-index: 100005; display: none; align-items: center; justify-content: center; 
@@ -98,6 +99,7 @@
         .unified-panel { background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 35px 35px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px !important; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4); }
         #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; outline: none; transition: 0.3s; }
 
+        /* ✨ PANEL LATERAL CRISTAL PURO */
         .panel-side { 
             position: fixed; top: 0; width: 290px; height: 100%; 
             background: rgba(0, 0, 0, 0.15); 
@@ -110,12 +112,14 @@
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(255, 255, 255, 0.15); }
         .panel-open { transform: translateX(0) !important; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
 
+        /* ✨ TEXTOS BRILLOSOS */
         .shiny-white-text {
             color: #fff; text-shadow: 0 0 15px #fff, 0 0 30px #fff;
             font-family: 'Orbitron'; font-size: 1.3rem; text-align: center;
             letter-spacing: 3px; margin-bottom: 20px;
         }
 
+        /* ✨ LISTA DE CHATS DINÁMICA */
         #lista-chats-container {
             display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1; margin-bottom: 15px;
         }
@@ -125,9 +129,10 @@
             font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;
             transition: 0.3s; user-select: none; -webkit-user-select: none;
         }
-        .chat-item:active { transform: scale(0.97); }
+        .chat-item:active { transform: scale(0.97); } /* Efecto de hundimiento al apretar */
         .chat-item.pinned { border-left: 3px solid #fff; box-shadow: -3px 0 10px rgba(255,255,255,0.5); }
 
+        /* ✨ BARRA DE ENERGÍA FINITA */
         .energy-container { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px 0; }
         .shiny-counter {
             color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff;
@@ -146,6 +151,7 @@
             border-top: 1px solid rgba(255, 255, 255, 0.2); margin-top: auto;
         }
 
+        /* ✨ BOTONES DE PANEL */
         .panel-btn {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px);
             color: #fff; padding: 16px; border-radius: 16px; cursor: pointer;
@@ -214,7 +220,7 @@
         </header>
         
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado, Gabriel. Barra progresiva activa. Modos ocultos listos.</div>
+            <div class="msg aurora">Sistema sincronizado, Gabriel. Mantené presionado un chat para ver sus opciones ocultas.</div>
         </div>
 
         <div class="bottom-section">
@@ -283,8 +289,7 @@
         let misChats = [{ id: Date.now(), nombre: 'Conexión Alpha', pinned: false }];
         let chatActivoParaMenu = null;
         let timerToqueLargo;
-        let chatsUsados = 0; 
-        
+
         function renderizarChats() {
             const container = document.getElementById('lista-chats-container');
             container.innerHTML = '';
@@ -370,7 +375,9 @@
             cerrarMenuSecreto();
         }
 
-        // ✨ NUEVA LÓGICA: RECOMPENSA DE 2 CHATS
+        let chatsUsados = 0;
+        let ilimitado = false;
+
         function actualizarBarra() {
             const bar = document.getElementById('energy-bar');
             const counter = document.getElementById('chat-counter');
@@ -381,13 +388,13 @@
             counter.innerText = `CHATS: ${chatsUsados}/5`;
             
             if(chatsUsados >= 5) {
-                bar.style.background = '#ff4d4d'; // Rojo peligro
+                bar.style.background = '#ff4d4d'; 
                 bar.style.boxShadow = '0 0 15px #ff4d4d';
-                btnCompartir.style.display = 'flex'; // ¡Sorpresa!
+                btnCompartir.style.display = 'flex'; 
             } else {
                 bar.style.background = '#fff';
                 bar.style.boxShadow = '0 0 10px #fff, 0 0 20px #fff';
-                btnCompartir.style.display = 'none'; // Sigue oculto
+                btnCompartir.style.display = 'none'; 
             }
         }
 
@@ -398,7 +405,6 @@
                     text: 'Descubrí Aurora, el acceso neuronal.',
                     url: window.location.href
                 }).then(() => {
-                    // Recompensa: Le restamos 2 al uso, así tiene 2 chats libres
                     chatsUsados = Math.max(0, chatsUsados - 2);
                     actualizarBarra();
                     alert("¡Gracias por compartir! Te hemos regalado 2 chats extra.");
