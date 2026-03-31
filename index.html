@@ -215,7 +215,7 @@
         </header>
         
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado, Gabriel. Tenés un límite de 100 mensajes por chat. Podés ver tu capacidad en el menú izquierdo.</div>
+            <div class="msg aurora">Sistema sincronizado, Gabriel. Mantené presionado un chat para ver sus opciones ocultas.</div>
         </div>
 
         <div class="bottom-section">
@@ -281,13 +281,13 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        // ✨ ESTRUCTURA MEJORADA DE CHATS (Contador de Mensajes por Chat)
         let misChats = [{ id: Date.now(), nombre: 'Chat 1', pinned: false, mensajes: 0 }];
         let chatActivoId = misChats[0].id;
         let chatActivoParaMenu = null;
         let timerToqueLargo;
         const LIMITE_MENSAJES = 100;
         let ilimitado = false;
+        let isLongPress = false;
 
         function renderizarChats() {
             const container = document.getElementById('lista-chats-container');
@@ -297,24 +297,42 @@
 
             chatsOrdenados.forEach(chat => {
                 const div = document.createElement('div');
-                // Si es el chat activo, se ilumina un poco más
                 div.className = `chat-item ${chat.pinned ? 'pinned' : ''} ${chat.id === chatActivoId ? 'active-chat' : ''}`;
                 div.innerHTML = `<span>${chat.nombre}</span> <span style="font-size:0.7rem; opacity:0.7;">${chat.mensajes}/${LIMITE_MENSAJES}</span>`;
                 
-                div.addEventListener('touchstart', (e) => iniciarToqueLargo(e, chat.id));
-                div.addEventListener('touchend', cancelarToqueLargo);
-                div.addEventListener('touchmove', cancelarToqueLargo);
-                div.addEventListener('mousedown', (e) => iniciarToqueLargo(e, chat.id));
-                div.addEventListener('mouseup', cancelarToqueLargo);
-                div.addEventListener('mouseleave', cancelarToqueLargo);
+                // ✨ BLOQUEAR MENÚ NATIVO PARA QUE SALTE EL NUESTRO
+                div.oncontextmenu = function(e) { e.preventDefault(); return false; };
                 
-                div.addEventListener('click', () => {
-                    if(!chatActivoParaMenu) {
-                        chatActivoId = chat.id; // Cambia el chat en uso
-                        cerrarPaneles();
-                        document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Cambiando al ${chat.nombre}...</div>`;
-                        renderizarChats();
-                    }
+                const startPress = (e) => {
+                    isLongPress = false;
+                    timerToqueLargo = setTimeout(() => {
+                        isLongPress = true;
+                        chatActivoParaMenu = chat.id;
+                        document.getElementById('context-menu-overlay').style.display = 'flex';
+                        if(navigator.vibrate) navigator.vibrate(50); // ✨ Vibración háptica de élite
+                    }, 500); 
+                };
+
+                const cancelPress = () => { clearTimeout(timerToqueLargo); };
+
+                div.addEventListener('touchstart', startPress, {passive: true});
+                div.addEventListener('touchend', (e) => {
+                    clearTimeout(timerToqueLargo);
+                    if(isLongPress && e.cancelable) { e.preventDefault(); }
+                });
+                div.addEventListener('touchmove', cancelPress, {passive: true});
+                
+                div.addEventListener('mousedown', startPress);
+                div.addEventListener('mouseup', cancelPress);
+                div.addEventListener('mouseleave', cancelPress);
+                
+                div.addEventListener('click', (e) => {
+                    if(isLongPress) { e.preventDefault(); return; }
+                    
+                    chatActivoId = chat.id; 
+                    cerrarPaneles();
+                    document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Cambiando al ${chat.nombre}...</div>`;
+                    renderizarChats();
                 });
                 container.appendChild(div);
             });
@@ -328,7 +346,7 @@
             
             let nuevoChat = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, pinned: false, mensajes: 0 };
             misChats.push(nuevoChat);
-            chatActivoId = nuevoChat.id; // Te manda directo al chat nuevo
+            chatActivoId = nuevoChat.id;
             
             actualizarBarra();
             renderizarChats();
@@ -336,15 +354,6 @@
             document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Nuevo canal neuronal abierto (${nuevoChat.nombre}). ¿De qué hablamos?</div>`;
         }
 
-        function iniciarToqueLargo(e, id) {
-            chatActivoParaMenu = null;
-            timerToqueLargo = setTimeout(() => {
-                chatActivoParaMenu = id;
-                document.getElementById('context-menu-overlay').style.display = 'flex';
-            }, 600); 
-        }
-
-        function cancelarToqueLargo() { clearTimeout(timerToqueLargo); setTimeout(() => chatActivoParaMenu = null, 100); }
         function cerrarMenuSecreto() { document.getElementById('context-menu-overlay').style.display = 'none'; chatActivoParaMenu = null; }
 
         function accionRenombrar() {
@@ -369,10 +378,7 @@
                 alert("No podés eliminar tu única conexión activa.");
             } else if(confirm("¿Seguro que querés borrar este chat?")) {
                 misChats = misChats.filter(c => c.id !== chatActivoParaMenu);
-                // Si eliminó el chat que estaba usando, lo pasa a otro
-                if(chatActivoId === chatActivoParaMenu) {
-                    chatActivoId = misChats[0].id;
-                }
+                if(chatActivoId === chatActivoParaMenu) { chatActivoId = misChats[0].id; }
                 actualizarBarra();
                 renderizarChats();
             }
@@ -389,7 +395,6 @@
             cerrarMenuSecreto();
         }
 
-        // ✨ LA BARRA AHORA SE LLENA CON CHATS CREADOS (No con mensajes)
         function actualizarBarra() {
             const bar = document.getElementById('energy-bar');
             const counter = document.getElementById('chat-counter');
@@ -427,14 +432,12 @@
                     text: 'Descubrí Aurora, el acceso neuronal.',
                     url: window.location.href
                 }).then(() => {
-                    ilimitado = true;
-                    actualizarBarra();
+                    ilimitado = true; actualizarBarra();
                     alert("¡Misión cumplida! Desbloqueaste la creación ilimitada de chats.");
                 }).catch(console.error);
             } else {
                 alert("Copiá este enlace y compartilo con un amigo: " + window.location.href);
-                ilimitado = true;
-                actualizarBarra();
+                ilimitado = true; actualizarBarra();
             }
         }
 
@@ -455,10 +458,8 @@
             const input = document.getElementById('chat-terminal'); 
             if(!input.value.trim()) return;
 
-            // Busca en la base local el chat que el usuario tiene abierto ahora
             let chatActual = misChats.find(c => c.id === chatActivoId);
 
-            // Corta la ejecución si el chat llegó a 100
             if (chatActual && chatActual.mensajes >= LIMITE_MENSAJES) {
                 alert("Memoria neuronal al máximo en este chat (100/100). Creá un 'Nuevo Chat' para seguir.");
                 return;
@@ -468,10 +469,9 @@
             document.getElementById('chat-window').innerHTML += `<div class="msg user">${msj}</div>`;
             input.value = ""; toggleInputButtons();
             
-            // Suma un mensaje al chat actual
             if(chatActual) {
                 chatActual.mensajes++;
-                renderizarChats(); // Refresca la vista en el menú para mostrar el número
+                renderizarChats(); 
             }
 
             try { 
