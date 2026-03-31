@@ -37,16 +37,25 @@
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* ✨ MODO VOZ OVERLAY */
+        /* ✨ MODO VOZ OVERLAY (NUEVO DISEÑO ESTILO GEMINI) */
         #voice-overlay {
             position: fixed; inset: 0; background: rgba(0, 5, 10, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             z-index: 200000; display: none; flex-direction: column; align-items: center; justify-content: center;
             animation: pop-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .voice-close-btn {
-            position: absolute; top: 50px; right: 30px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-            color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer;
+        
+        /* Botonera inferior del Modo Voz */
+        .voice-controls {
+            position: absolute; bottom: 50px; display: flex; gap: 25px; align-items: center; justify-content: center; width: 100%;
         }
+        .voice-btn {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: #fff; cursor: pointer; backdrop-filter: blur(10px); transition: 0.3s;
+        }
+        .voice-btn:hover { background: rgba(255,255,255,0.2); box-shadow: 0 0 15px rgba(255,255,255,0.3); transform: scale(1.05); }
+        .voice-btn.danger { background: rgba(255,77,77,0.15); border-color: #ff4d4d; color: #ff4d4d; }
+        .voice-btn.danger:hover { background: rgba(255,77,77,0.3); box-shadow: 0 0 20px rgba(255,77,77,0.5); }
 
         #context-menu-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -74,7 +83,6 @@
 
         #app-container { display: none; flex-direction: column; width: 100vw; height: 100dvh; position: fixed; inset: 0; z-index: 10; }
         
-        /* ✨ HEADER EMPUJADO ARRIBA */
         header { 
             padding: calc(env(safe-area-inset-top, 20px) + 5px) 20px 10px; 
             display: flex; justify-content: space-between; align-items: center; 
@@ -102,19 +110,17 @@
 
         .btn-menu-lateral { background: transparent; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; z-index: 20; text-shadow: 0 0 10px #fff; margin-top: -5px; }
 
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 140px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
         .msg { max-width: 85%; padding: 14px 22px; border-radius: 22px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); font-size: 1rem; line-height: 1.5; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        /* ✨ BOTONERA FLOTANTE (ESTILO GEMINI) */
+        /* ✨ BARRA INFERIOR (CRISTAL FLOTANTE SIN CAJAS) */
         .bottom-section {
             position: absolute; bottom: 0; left: 0; width: 100vw; 
-            /* Degradado sutil para asegurar lectura, sin caja dura */
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
             padding: 20px 20px calc(env(safe-area-inset-bottom, 15px) + 20px); 
-            box-sizing: border-box; z-index: 100;
-            display: flex; flex-direction: column; gap: 15px;
+            box-sizing: border-box; z-index: 100; display: flex; flex-direction: column; gap: 15px;
         }
 
         .chat-input-row { width: 100%; }
@@ -122,23 +128,19 @@
             width: 100%; background: transparent; border: none; color: white; 
             font-size: 1.15rem; font-family: 'Plus Jakarta Sans'; outline: none; padding: 5px 0; 
         }
-        #chat-terminal::placeholder { 
-            color: rgba(255,255,255,0.9); 
-            text-shadow: 0 0 10px rgba(255,255,255,0.6); 
-            font-weight: 400;
-        }
+        #chat-terminal::placeholder { color: rgba(255,255,255,0.9); text-shadow: 0 0 10px rgba(255,255,255,0.6); font-weight: 400; }
 
         .chat-controls-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .controls-group { display: flex; align-items: center; gap: 12px; }
+        .controls-group { display: flex; align-items: center; gap: 18px; }
 
-        .circle-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px);
-            color: #fff; width: 42px; height: 42px; border-radius: 50%; 
+        /* ✨ ICONOS FLOTANTES (Sin círculo de fondo) */
+        .floating-icon-btn {
+            background: transparent; border: none; color: #fff; 
             display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: 0.3s;
+            cursor: pointer; transition: 0.3s; padding: 5px;
         }
-        .circle-btn:hover { background: rgba(255,255,255,0.15); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
-        .circle-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .floating-icon-btn:hover { transform: scale(1.1); text-shadow: 0 0 15px #fff; }
+        .floating-icon-btn svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 2; fill: none; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
 
         .pill-btn {
             background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px);
@@ -149,77 +151,43 @@
         .pill-btn:hover { background: rgba(255,255,255,0.15); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
 
         .glowing-A-btn {
-            font-family: 'Orbitron'; font-size: 1.8rem; color: #fff; background: transparent; border: none;
-            text-shadow: 0 0 15px #fff, 0 0 30px #fff; cursor: pointer; transition: 0.2s; padding: 0 8px; font-weight: bold;
+            font-family: 'Orbitron'; font-size: 2rem; color: #fff; background: transparent; border: none;
+            text-shadow: 0 0 15px #fff, 0 0 30px #fff; cursor: pointer; transition: 0.2s; padding: 0 5px; font-weight: bold;
         }
         .glowing-A-btn:active { transform: scale(0.9); }
 
-        /* ✨ PANEL LATERAL CRISTAL PURO */
+        /* PANEL LATERAL */
         .panel-side { 
-            position: fixed; top: 0; width: 290px; height: 100%; 
-            background: rgba(0, 0, 0, 0.15); 
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            z-index: 100001; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px; 
-            padding-top: calc(env(safe-area-inset-top, 50px) + 20px); 
-            box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; 
+            position: fixed; top: 0; width: 290px; height: 100%; background: rgba(0, 0, 0, 0.15); 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100001; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px; 
+            padding-top: calc(env(safe-area-inset-top, 50px) + 20px); box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; 
         }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(255, 255, 255, 0.15); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(255, 255, 255, 0.15); }
         .panel-open { transform: translateX(0) !important; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
 
-        .shiny-white-text {
-            color: #fff; text-shadow: 0 0 15px #fff, 0 0 30px #fff;
-            font-family: 'Orbitron'; font-size: 1.3rem; text-align: center;
-            letter-spacing: 3px; margin-bottom: 20px;
-        }
+        .shiny-white-text { color: #fff; text-shadow: 0 0 15px #fff, 0 0 30px #fff; font-family: 'Orbitron'; font-size: 1.3rem; text-align: center; letter-spacing: 3px; margin-bottom: 20px; }
 
-        #lista-chats-container {
-            display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1; margin-bottom: 15px;
-        }
-        .chat-item {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 14px; border-radius: 15px; cursor: pointer; color: #fff; font-family: 'Plus Jakarta Sans';
-            font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;
-            transition: 0.3s; user-select: none; -webkit-user-select: none;
-        }
+        #lista-chats-container { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1; margin-bottom: 15px; }
+        .chat-item { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px; border-radius: 15px; cursor: pointer; color: #fff; font-family: 'Plus Jakarta Sans'; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; user-select: none; -webkit-user-select: none; }
         .chat-item:active { transform: scale(0.97); }
         .chat-item.pinned { background: rgba(255, 255, 255, 0.1); border-color: rgba(255,255,255,0.4); box-shadow: inset 0 0 10px rgba(255,255,255,0.1), 0 0 15px rgba(255,255,255,0.2); }
         .chat-item.active-chat { border-left: 3px solid #fff; }
 
         .energy-container { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px 0; }
-        .shiny-counter {
-            color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff;
-            font-family: 'Orbitron'; font-size: 0.85rem; text-align: center; letter-spacing: 2px;
-        }
+        .shiny-counter { color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff; font-family: 'Orbitron'; font-size: 0.85rem; text-align: center; letter-spacing: 2px; }
         .energy-bar-bg { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; }
-        .energy-bar-fill {
-            height: 100%; width: 0%; background: #fff; box-shadow: 0 0 10px #fff, 0 0 20px #fff;
-            border-radius: 10px; transition: width 0.4s ease-in-out, background 0.4s ease;
-        }
+        .energy-bar-fill { height: 100%; width: 0%; background: #fff; box-shadow: 0 0 10px #fff, 0 0 20px #fff; border-radius: 10px; transition: width 0.4s ease-in-out, background 0.4s ease; }
 
-        .shiny-disclaimer {
-            color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff;
-            font-family: 'Orbitron'; font-size: 0.7rem; text-align: center;
-            padding: 15px 0 10px 0; letter-spacing: 1px; line-height: 1.4;
-            border-top: 1px solid rgba(255, 255, 255, 0.2); margin-top: auto;
-        }
+        .shiny-disclaimer { color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff; font-family: 'Orbitron'; font-size: 0.7rem; text-align: center; padding: 15px 0 10px 0; letter-spacing: 1px; line-height: 1.4; border-top: 1px solid rgba(255, 255, 255, 0.2); margin-top: auto; }
 
-        .panel-btn-menu {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px);
-            color: #fff; padding: 16px; border-radius: 16px; cursor: pointer;
-            font-family: 'Plus Jakarta Sans'; font-size: 0.95rem; text-align: left;
-            transition: all 0.3s ease; display: flex; align-items: center; gap: 14px; width: 100%;
-        }
+        .panel-btn-menu { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); color: #fff; padding: 16px; border-radius: 16px; cursor: pointer; font-family: 'Plus Jakarta Sans'; font-size: 0.95rem; text-align: left; transition: all 0.3s ease; display: flex; align-items: center; gap: 14px; width: 100%; }
         .panel-btn-menu:hover { background: rgba(255, 255, 255, 0.15); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); transform: translateX(5px); }
         .panel-btn-menu.danger { color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3); }
         .panel-btn-menu.danger:hover { background: rgba(255, 107, 107, 0.15); border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255,107,107,0.4); }
         
-        #btn-compartir {
-            background: rgba(0, 242, 255, 0.1); border-color: var(--accent); color: #fff;
-            box-shadow: 0 0 15px rgba(0,242,255,0.3); font-weight: bold; animation: pulse-border 2s infinite;
-        }
+        #btn-compartir { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); color: #fff; box-shadow: 0 0 15px rgba(0,242,255,0.3); font-weight: bold; animation: pulse-border 2s infinite; }
         .panel-btn-menu svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-
     </style>
 </head>
 <body>
@@ -231,9 +199,20 @@
     <div id="panels-overlay" onclick="cerrarPaneles()"></div>
 
     <div id="voice-overlay">
-        <button class="voice-close-btn" onclick="cerrarModoVoz()">×</button>
         <div class="glowing-A-btn" style="font-size: 6rem; margin-bottom: 20px; animation: aurora-breath-white 1.5s infinite; cursor: default;">A</div>
         <div id="voice-status" style="font-family:'Orbitron'; font-size:1.2rem; color:#fff; text-shadow:0 0 10px #fff; letter-spacing:3px; text-align:center; padding:20px;">ESCUCHANDO...</div>
+        
+        <div class="voice-controls">
+            <button class="voice-btn" onclick="alert('Cámara Neuronal en desarrollo')">
+                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            </button>
+            <button class="voice-btn" onclick="alert('Micrófono Silenciado')">
+                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </button>
+            <button class="voice-btn danger" onclick="cerrarModoVoz()">
+                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
     </div>
 
     <div id="context-menu-overlay" onclick="cerrarMenuSecreto()">
@@ -276,7 +255,7 @@
         </header>
         
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado, Gabriel. La interfaz flotante y el módulo de voz están en línea.</div>
+            <div class="msg aurora">Sistema sincronizado, Gabriel. Iconos flotantes e interfaz de voz activa.</div>
         </div>
 
         <div class="bottom-section">
@@ -286,7 +265,7 @@
             
             <div class="chat-controls-row">
                 <div class="controls-group">
-                    <button class="circle-btn" onclick="alert('Multimedia en desarrollo')">
+                    <button class="floating-icon-btn" onclick="alert('Multimedia en desarrollo')">
                         <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
                     <button class="pill-btn" onclick="alert('Selector de Modelos en desarrollo')">
@@ -295,14 +274,14 @@
                 </div>
                 
                 <div class="controls-group" id="normal-controls">
-                    <button class="circle-btn" onclick="abrirModoVoz()">
+                    <button class="floating-icon-btn" onclick="iniciarDictado()">
                         <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
                     </button>
                     <button class="glowing-A-btn" onclick="abrirModoVoz()">A</button>
                 </div>
                 
                 <div class="controls-group" id="send-controls" style="display:none;">
-                    <button class="circle-btn" style="background: rgba(255,255,255,0.2); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.5);" onclick="enviar()">
+                    <button class="floating-icon-btn" onclick="enviar()">
                         <svg viewBox="0 0 24 24" style="stroke: #fff;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </div>
@@ -360,6 +339,7 @@
         // ✨ WEB SPEECH API (OÍDOS Y VOZ DE AURORA)
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
+        let modoVozActivo = false;
         
         if(SpeechRecognition) {
             recognition = new SpeechRecognition();
@@ -367,31 +347,52 @@
             recognition.continuous = false;
             
             recognition.onstart = function() {
-                document.getElementById('voice-status').innerText = "ESCUCHANDO...";
+                if(modoVozActivo) document.getElementById('voice-status').innerText = "ESCUCHANDO...";
             };
             
             recognition.onresult = function(event) {
                 const transcript = event.results[0][0].transcript;
                 document.getElementById('chat-terminal').value = transcript;
-                cerrarModoVoz();
                 toggleInputButtons();
+                
+                if (modoVozActivo) {
+                    cerrarModoVoz();
+                    enviar(); // Auto envía si estaba en modo voz ("A")
+                }
             };
 
             recognition.onerror = function(event) {
-                document.getElementById('voice-status').innerText = "NO TE ESCUCHÉ. INTENTÁ DE NUEVO.";
-                setTimeout(cerrarModoVoz, 2000);
+                if(modoVozActivo) {
+                    document.getElementById('voice-status').innerText = "NO TE ESCUCHÉ. INTENTÁ DE NUEVO.";
+                    setTimeout(cerrarModoVoz, 2000);
+                }
             };
         }
 
-        function abrirModoVoz() { 
-            document.getElementById('voice-overlay').style.display = 'flex'; 
+        // Dictado a texto (solo escribe, no responde por voz)
+        function iniciarDictado() {
+            modoVozActivo = false;
             if(recognition) {
                 try { recognition.start(); } catch(e) { console.log(e); }
             } else {
-                document.getElementById('voice-status').innerText = "Tu navegador no soporta voz.";
+                alert("Tu navegador no soporta dictado por voz.");
             }
         }
+
+        // Modo voz real (Aurara te contesta hablando)
+        function abrirModoVoz() { 
+            modoVozActivo = true;
+            document.getElementById('voice-overlay').style.display = 'flex'; 
+            document.getElementById('voice-status').innerText = "ESCUCHANDO...";
+            if(recognition) {
+                try { recognition.start(); } catch(e) { console.log(e); }
+            } else {
+                document.getElementById('voice-status').innerText = "Navegador no compatible.";
+            }
+        }
+        
         function cerrarModoVoz() { 
+            modoVozActivo = false;
             document.getElementById('voice-overlay').style.display = 'none'; 
             if(recognition) { try { recognition.stop(); } catch(e){} }
         }
@@ -399,11 +400,10 @@
         // FUNCIÓN PARA QUE AURORA HABLE
         function auroraHabla(texto) {
             if('speechSynthesis' in window) {
-                // Limpiamos un poco el texto para que lo lea natural (sin emojis)
                 const textoLimpio = texto.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
                 const utterance = new SpeechSynthesisUtterance(textoLimpio);
-                utterance.lang = 'es-ES'; // Voz en español
-                utterance.pitch = 1.1; // Un tono un poco más brillante
+                utterance.lang = 'es-ES'; 
+                utterance.pitch = 1.1; 
                 utterance.rate = 1.0;
                 window.speechSynthesis.speak(utterance);
             }
@@ -512,8 +512,11 @@
                 document.getElementById('chat-window').innerHTML += `<div class="msg aurora">${data.respuesta}</div>`;
                 const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
                 
-                // ✨ AURORA HABLA EN VOZ ALTA LA RESPUESTA
-                auroraHabla(data.respuesta);
+                // ✨ AURORA HABLA EN VOZ ALTA SOLO SI SE ACTIVÓ DESDE LA "A"
+                if(modoVozActivo) {
+                    auroraHabla(data.respuesta);
+                    modoVozActivo = false; // Reseteamos para el próximo mensaje
+                }
 
             } catch(e) { console.log(e); }
         }
