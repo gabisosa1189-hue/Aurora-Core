@@ -35,7 +35,7 @@
         
         #panels-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100000; display: none; backdrop-filter: blur(5px); }
 
-        /* ✨ MENÚ MULTIMEDIA (+) TOTALMENTE TRANSPARENTE Y CRISTALINO */
+        /* ✨ MENÚ MULTIMEDIA (+) */
         #multimedia-menu-overlay { position: fixed; inset: 0; z-index: 100002; display: none; }
         .multimedia-box {
             position: absolute; bottom: 95px; left: 20px; 
@@ -58,12 +58,9 @@
         #voice-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 200000; display: none; animation: pop-in 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .voice-center-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
         .voice-controls { position: absolute; bottom: 45px; display: flex; gap: 25px; align-items: center; justify-content: center; width: 100%; }
-        
-        /* Botones sin redondel como pediste */
         .voice-btn { background: transparent; border: none; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: 0.3s; padding: 10px; }
         .voice-btn:active { transform: scale(0.9); text-shadow: 0 0 20px #fff; }
         .voice-btn svg { filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
-        
         .voice-btn.danger { color: #ff4d4d; }
         .voice-btn.danger svg { filter: drop-shadow(0 0 5px rgba(255,77,77,0.3)); }
         .voice-btn.danger:active { transform: scale(0.9); text-shadow: 0 0 20px #ff4d4d; }
@@ -94,7 +91,7 @@
         
         .limite-alcanzado { align-self: center; background: rgba(255, 77, 77, 0.15); border: 1px solid rgba(255, 77, 77, 0.4); text-align: center; max-width: 90%; box-shadow: 0 0 20px rgba(255, 77, 77, 0.2); }
 
-        .bottom-section { position: absolute; bottom: 0; left: 0; width: 100vw; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%); padding: 20px 20px calc(env(safe-area-inset-bottom, 15px) + 20px); box-sizing: border-box; z-index: 100; display: flex; flex-direction: column; gap: 15px; }
+        .bottom-section { position: absolute; bottom: 0; left: 0; width: 100vw; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%); padding: 20px 20px calc(env(safe-area-inset-bottom, 15px) + 20px); box-sizing: border-box; z-index: 100; display: flex; flex-direction: column; gap: 15px; }
 
         .chat-input-row { width: 100%; }
         #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.15rem; font-family: 'Plus Jakarta Sans'; outline: none; padding: 5px 0; touch-action: pan-x pan-y; user-select: text; -webkit-user-select: text; }
@@ -113,7 +110,7 @@
         .glowing-A-btn { font-family: 'Orbitron'; font-size: 2rem; color: #fff; background: transparent; border: none; text-shadow: 0 0 15px #fff, 0 0 30px #fff; cursor: pointer; transition: 0.2s; padding: 0 5px; font-weight: bold; }
         .glowing-A-btn:active { transform: scale(0.85); }
 
-        /* PANEL LATERAL */
+        /* PANELES LATERALES */
         .panel-side { position: fixed; top: 0; width: 290px; height: 100%; background: rgba(0, 0, 0, 0.15); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100001; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px; padding-top: calc(env(safe-area-inset-top, 50px) + 20px); box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; }
         #sidebar-menu { left: 0; transform: translateX(-100%); border-right: 1px solid rgba(255, 255, 255, 0.15); }
         #profile-panel { right: 0; transform: translateX(100%); border-left: 1px solid rgba(255, 255, 255, 0.15); }
@@ -132,8 +129,6 @@
         .energy-bar-bg { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; }
         .energy-bar-fill { height: 100%; width: 0%; background: #fff; box-shadow: 0 0 10px #fff, 0 0 20px #fff; border-radius: 10px; transition: width 0.4s ease-in-out, background 0.4s ease; }
 
-        .shiny-disclaimer { color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff; font-family: 'Orbitron'; font-size: 0.7rem; text-align: center; padding: 15px 0 10px 0; letter-spacing: 1px; line-height: 1.4; border-top: 1px solid rgba(255, 255, 255, 0.2); margin-top: auto; }
-
         .panel-btn-account { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); color: #fff; padding: 20px; border-radius: 16px; cursor: pointer; font-family: 'Plus Jakarta Sans'; font-size: 1rem; text-align: center; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
         .panel-btn-account:active { background: rgba(255, 255, 255, 0.15); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); transform: scale(0.97); }
         .panel-btn-account.danger { color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3); }
@@ -144,6 +139,8 @@
         .panel-btn-menu:active { background: rgba(255, 255, 255, 0.15); }
         #btn-compartir { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); color: #fff; box-shadow: 0 0 15px rgba(0,242,255,0.3); font-weight: bold; animation: pulse-border 2s infinite; }
         .panel-btn-menu svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+        
+        .shiny-disclaimer { color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff; font-family: 'Orbitron'; font-size: 0.7rem; text-align: center; padding: 15px 0 10px 0; letter-spacing: 1px; line-height: 1.4; border-top: 1px solid rgba(255, 255, 255, 0.2); margin-top: auto; }
     </style>
 </head>
 <body>
@@ -238,7 +235,7 @@
         </header>
         
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado, Gabriel. La memoria neuronal está activa y el sistema Anti-Trampas configurado en 0/5.</div>
+            <div class="msg aurora">Sistema sincronizado, Gabriel. La memoria neuronal está activa y el sistema Anti-Trampas configurado desde la base del dispositivo.</div>
         </div>
 
         <div class="bottom-section" id="bottom-bar-container">
@@ -310,20 +307,28 @@
         const firebaseConfig = { apiKey: "AIzaSyDhLaoI89AsGoEh23bvjraFUztHtgUkLAo", authDomain: "aurora-ai-oficia.firebaseapp.com", projectId: "aurora-ai-oficia", storageBucket: "aurora-ai-oficia.firebasestorage.app", messagingSenderId: "426513637524", appId: "1:426513637524:web:13851f499aa4af13cfd481", measurementId: "G-XTN5WJPRPP" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth();
 
-        let misChats = [{ id: Date.now(), nombre: 'Chat 1', pinned: false, mensajes: 0 }];
-        let chatActivoId = misChats[0].id;
+        // ✨ SISTEMA ANTI-TRAMPAS: LOCAL STORAGE
+        let misChats = JSON.parse(localStorage.getItem('aurora_chats')) || [{ id: Date.now(), nombre: 'Chat 1', pinned: false, mensajes: 0 }];
+        let chatsCreadosHistoricos = parseInt(localStorage.getItem('aurora_historico')) || 0;
+        let ilimitado = localStorage.getItem('aurora_ilimitado') === 'true';
+        let chatActivoId = misChats.length > 0 ? misChats[0].id : Date.now();
+        
         let chatActivoParaMenu = null;
         let timerToqueLargo;
         const LIMITE_MENSAJES = 100;
-        let ilimitado = false;
         let isLongPress = false;
-        let chatsCreadosHistoricos = 0; // Arranca en 0 (El Chat 1 es gratis)
 
-        // ✨ MULTIMEDIA MENÚ (+)
+        function guardarMemoria() {
+            localStorage.setItem('aurora_chats', JSON.stringify(misChats));
+            localStorage.setItem('aurora_historico', chatsCreadosHistoricos);
+            localStorage.setItem('aurora_ilimitado', ilimitado);
+        }
+
+        // MULTIMEDIA MENÚ
         function abrirMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'block'; }
         function cerrarMultimedia() { document.getElementById('multimedia-menu-overlay').style.display = 'none'; }
 
-        // ✨ MANEJADOR DE ARCHIVOS REALES Y CÁMARA
+        // MANEJADOR DE ARCHIVOS Y CÁMARA
         function manejarArchivo(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -350,7 +355,7 @@
             document.getElementById('chat-window').innerHTML += `<div class="msg user"><strong>Analizando entorno...</strong>${fileHTML}</div>`;
             const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
 
-            if(chatActual) { chatActual.mensajes++; checkLimite(chatActual); renderizarChats(); }
+            if(chatActual) { chatActual.mensajes++; checkLimite(chatActual); renderizarChats(); guardarMemoria(); }
             event.target.value = ''; 
 
             setTimeout(() => {
@@ -359,7 +364,7 @@
             }, 1500);
         }
 
-        // ✨ WEB SPEECH API (OÍDOS Y VOZ DE AURORA)
+        // WEB SPEECH API
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
         let modoVozActivo = false;
@@ -378,10 +383,7 @@
                 document.getElementById('chat-terminal').value = transcript;
                 toggleInputButtons();
                 
-                if (modoVozActivo) {
-                    cerrarModoVoz();
-                    enviar(); 
-                }
+                if (modoVozActivo) { cerrarModoVoz(); enviar(); }
             };
 
             recognition.onerror = function(event) {
@@ -392,23 +394,9 @@
             };
         }
 
-        function iniciarDictado() {
-            modoVozActivo = false;
-            if(recognition) { try { recognition.start(); } catch(e) {} } else { alert("Tu navegador no soporta dictado por voz."); }
-        }
-
-        function abrirModoVoz() { 
-            modoVozActivo = true;
-            document.getElementById('voice-overlay').style.display = 'flex'; 
-            document.getElementById('voice-status').innerText = "ESCUCHANDO...";
-            if(recognition) { try { recognition.start(); } catch(e) {} } else { document.getElementById('voice-status').innerText = "Navegador no compatible."; }
-        }
-        
-        function cerrarModoVoz() { 
-            modoVozActivo = false;
-            document.getElementById('voice-overlay').style.display = 'none'; 
-            if(recognition) { try { recognition.stop(); } catch(e){} }
-        }
+        function iniciarDictado() { modoVozActivo = false; if(recognition) { try { recognition.start(); } catch(e) {} } else { alert("Tu navegador no soporta dictado por voz."); } }
+        function abrirModoVoz() { modoVozActivo = true; document.getElementById('voice-overlay').style.display = 'flex'; document.getElementById('voice-status').innerText = "ESCUCHANDO..."; if(recognition) { try { recognition.start(); } catch(e) {} } else { document.getElementById('voice-status').innerText = "Navegador no compatible."; } }
+        function cerrarModoVoz() { modoVozActivo = false; document.getElementById('voice-overlay').style.display = 'none'; if(recognition) { try { recognition.stop(); } catch(e){} } }
 
         function auroraHabla(texto) {
             if('speechSynthesis' in window) {
@@ -450,13 +438,11 @@
                 div.addEventListener('click', (e) => {
                     if(isLongPress) { e.preventDefault(); return; }
                     chatActivoId = chat.id; 
-                    
-                    // Al cambiar de chat, restauramos la barra inferior si estaba bloqueada
-                    document.getElementById('bottom-bar-container').style.display = 'flex';
-                    
+                    document.getElementById('bottom-bar-container').style.display = 'flex'; // Restaura barra al cambiar de chat
                     cerrarPaneles();
                     document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Conectado al ${chat.nombre}. Historial neuronal sincronizado.</div>`;
                     renderizarChats();
+                    guardarMemoria();
                 });
                 container.appendChild(div);
             });
@@ -470,25 +456,23 @@
             let nuevoChat = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, pinned: false, mensajes: 0 };
             misChats.push(nuevoChat); chatActivoId = nuevoChat.id;
             
-            // RESTAURAR BARRA DE ESCRITURA
             document.getElementById('bottom-bar-container').style.display = 'flex';
 
             if(!ilimitado) chatsCreadosHistoricos++; 
-            actualizarBarra(); renderizarChats(); cerrarPaneles();
+            actualizarBarra(); renderizarChats(); cerrarPaneles(); guardarMemoria();
             document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Nuevo canal neuronal abierto (${nuevoChat.nombre}). ¿De qué hablamos?</div>`;
         }
 
         function cerrarMenuSecreto() { document.getElementById('context-menu-overlay').style.display = 'none'; chatActivoParaMenu = null; }
-        function accionRenombrar() { const nuevoNombre = prompt("Escribí el nuevo nombre para este chat:"); if(nuevoNombre && nuevoNombre.trim() !== "") { let chat = misChats.find(c => c.id === chatActivoParaMenu); if(chat) chat.nombre = nuevoNombre; renderizarChats(); } cerrarMenuSecreto(); }
-        function accionFijar() { let chat = misChats.find(c => c.id === chatActivoParaMenu); if(chat) chat.pinned = !chat.pinned; renderizarChats(); cerrarMenuSecreto(); }
+        function accionRenombrar() { const nuevoNombre = prompt("Escribí el nuevo nombre para este chat:"); if(nuevoNombre && nuevoNombre.trim() !== "") { let chat = misChats.find(c => c.id === chatActivoParaMenu); if(chat) chat.nombre = nuevoNombre; renderizarChats(); guardarMemoria(); } cerrarMenuSecreto(); }
+        function accionFijar() { let chat = misChats.find(c => c.id === chatActivoParaMenu); if(chat) chat.pinned = !chat.pinned; renderizarChats(); guardarMemoria(); cerrarMenuSecreto(); }
         function accionEliminar() { 
             if(misChats.length === 1) { 
                 alert("No podés eliminar tu única conexión activa."); 
             } else if(confirm("¿Seguro que querés borrar este chat?")) { 
                 misChats = misChats.filter(c => c.id !== chatActivoParaMenu); 
                 if(chatActivoId === chatActivoParaMenu) { chatActivoId = misChats[0].id; document.getElementById('bottom-bar-container').style.display = 'flex'; } 
-                renderizarChats(); 
-                // NOTA: NO LE BAJAMOS LA ENERGÍA PARA EVITAR TRAMPAS
+                renderizarChats(); guardarMemoria();
             } 
             cerrarMenuSecreto(); 
         }
@@ -505,14 +489,13 @@
                 let porcentaje = (chatsCreadosHistoricos / 5) * 100; bar.style.width = porcentaje + '%'; counter.innerText = `CHATS: ${chatsCreadosHistoricos}/5`;
                 if(chatsCreadosHistoricos >= 5) { 
                     bar.style.background = '#ff4d4d'; bar.style.boxShadow = '0 0 15px #ff4d4d'; 
-                    btnCompartir.style.display = 'flex'; 
-                    btnNuevoChat.style.display = 'none'; // OCULTA EL BOTÓN NUEVO CHAT HASTA COMPARTIR
+                    btnCompartir.style.display = 'flex'; btnNuevoChat.style.display = 'none'; 
                 } else { 
                     bar.style.background = '#fff'; bar.style.boxShadow = '0 0 10px #fff, 0 0 20px #fff'; 
-                    btnCompartir.style.display = 'none'; 
-                    btnNuevoChat.style.display = 'flex'; 
+                    btnCompartir.style.display = 'none'; btnNuevoChat.style.display = 'flex'; 
                 }
             }
+            guardarMemoria();
         }
 
         function compartirApp() { if (navigator.share) { navigator.share({ title: 'AURORA - IA', text: 'Descubrí Aurora, el acceso neuronal.', url: window.location.href }).then(() => { ilimitado = true; actualizarBarra(); alert("¡Misión cumplida! Desbloqueaste la creación ilimitada de chats."); }).catch(console.error); } else { alert("Copiá este enlace y compartilo con un amigo: " + window.location.href); ilimitado = true; actualizarBarra(); } }
@@ -524,7 +507,7 @@
         auth.onAuthStateChanged((user) => { if (user) { document.getElementById('login-overlay').style.display = 'none'; document.getElementById('app-container').style.display = 'flex'; if (user.photoURL) { const av = document.getElementById('user-avatar'); av.src = user.photoURL; av.style.display = 'block'; } } else { document.getElementById('login-overlay').style.display = 'flex'; document.getElementById('app-container').style.display = 'none'; } });
 
         function cambiarCuenta() { auth.signOut().then(() => { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }); }
-        function eliminarCuenta() { if(confirm("¿Estás seguro de eliminar tu cuenta?")) { const user = auth.currentUser; user.delete().then(() => { alert("Cuenta eliminada."); location.reload(); }).catch(() => { alert("Para eliminar, debés haber iniciado sesión recientemente."); }); } }
+        function eliminarCuenta() { if(confirm("¿Estás seguro de eliminar tu cuenta?")) { const user = auth.currentUser; user.delete().then(() => { localStorage.clear(); alert("Cuenta eliminada."); location.reload(); }).catch(() => { alert("Para eliminar, debés haber iniciado sesión recientemente."); }); } }
 
         function toggleInputButtons() { 
             const val = document.getElementById('chat-terminal').value.trim(); 
@@ -537,10 +520,10 @@
             }
         }
 
-        // ✨ BLOQUEO POR LÍMITE DE MENSAJES (Forzar nuevo chat)
+        // ✨ BLOQUEO POR LÍMITE DE MENSAJES
         function checkLimite(chatActual) {
             if (chatActual && chatActual.mensajes >= LIMITE_MENSAJES) {
-                document.getElementById('bottom-bar-container').style.display = 'none'; // Desaparece la barra de escritura
+                document.getElementById('bottom-bar-container').style.display = 'none'; 
                 document.getElementById('chat-window').innerHTML += `<div class="msg aurora limite-alcanzado">Has alcanzado el límite de memoria neuronal para esta conexión (100/100). Tu conversación ha sido guardada en la red. <br><br><strong>Por favor, creá un 'Nuevo Chat' desde el menú lateral para continuar.</strong></div>`;
                 const win = document.getElementById('chat-window'); win.scrollTop = win.scrollHeight;
                 return true;
@@ -558,7 +541,8 @@
             
             if(chatActual) { 
                 chatActual.mensajes++; 
-                if(checkLimite(chatActual)) return; // Chequea de nuevo después de mandar
+                guardarMemoria();
+                if(checkLimite(chatActual)) return; 
             }
 
             try { 
