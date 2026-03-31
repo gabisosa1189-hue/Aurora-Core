@@ -95,7 +95,14 @@
         .aurora { align-self: flex-start; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.2); }
         .user { align-self: flex-end; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); }
 
-        .unified-panel { background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 35px 35px 0 0; padding: 25px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px !important; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4); }
+        .unified-panel { background: rgba(0, 10, 20, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 35px 35px 0 0; padding: 20px 20px calc(env(safe-area-inset-bottom, 20px) + 20px) 20px !important; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4); }
+        
+        /* ✨ INDICADOR DE MEMORIA EN VIVO */
+        .live-memory-indicator {
+            font-family: 'Orbitron'; font-size: 0.75rem; color: #fff; opacity: 0.8;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5); margin-left: 10px;
+        }
+
         #chat-terminal { width: 100%; background: transparent; border: none; color: white; font-size: 1.05rem; outline: none; transition: 0.3s; }
 
         .panel-side { 
@@ -126,8 +133,13 @@
             transition: 0.3s; user-select: none; -webkit-user-select: none;
         }
         .chat-item:active { transform: scale(0.97); }
-        .chat-item.pinned { border-left: 3px solid #fff; box-shadow: -3px 0 10px rgba(255,255,255,0.5); }
-        .chat-item.active-chat { background: rgba(255, 255, 255, 0.15); border-color: #fff; }
+        
+        /* ✨ ESTILOS PARA CHAT FIJADO (Elegante) */
+        .chat-item.pinned { 
+            background: rgba(255, 255, 255, 0.1); border-color: rgba(255,255,255,0.4);
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.1), 0 0 15px rgba(255,255,255,0.2); 
+        }
+        .chat-item.active-chat { border-left: 3px solid #fff; }
 
         .energy-container { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px 0; }
         .shiny-counter {
@@ -215,11 +227,13 @@
         </header>
         
         <div id="chat-window">
-            <div class="msg aurora">Sistema sincronizado, Gabriel. Mantené presionado un chat para ver sus opciones ocultas.</div>
+            <div class="msg aurora">Sistema sincronizado, Gabriel. Tenés un límite de 100 mensajes por chat. Observá el indicador de memoria.</div>
         </div>
 
         <div class="bottom-section">
             <div class="unified-panel">
+                <div class="live-memory-indicator" id="memoria-vivo">Memoria Neuronal: 0/100</div>
+                
                 <input type="text" id="chat-terminal" placeholder="Preguntale a Aurora..." autocomplete="off" oninput="toggleInputButtons()">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <button style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.4); color: #fff; border-radius: 20px; padding: 8px 16px; font-size: 0.85rem; font-family: 'Orbitron'; cursor: pointer;">⚡ Flash</button>
@@ -242,7 +256,7 @@
         </button>
 
         <div class="energy-container">
-            <div class="shiny-counter" id="chat-counter">CHATS: 1/5</div>
+            <div class="shiny-counter" id="chat-counter">CHATS: 0/5</div>
             <div class="energy-bar-bg">
                 <div class="energy-bar-fill" id="energy-bar"></div>
             </div>
@@ -288,6 +302,16 @@
         const LIMITE_MENSAJES = 100;
         let ilimitado = false;
         let isLongPress = false;
+        
+        // ✨ LÓGICA ANTI-TRAMPAS
+        let chatsCreadosHistoricos = 0; // Arranca en 0
+
+        function actualizarIndicadorMemoria() {
+            let chatActual = misChats.find(c => c.id === chatActivoId);
+            if (chatActual) {
+                document.getElementById('memoria-vivo').innerText = `Memoria Neuronal: ${chatActual.mensajes}/${LIMITE_MENSAJES}`;
+            }
+        }
 
         function renderizarChats() {
             const container = document.getElementById('lista-chats-container');
@@ -298,9 +322,12 @@
             chatsOrdenados.forEach(chat => {
                 const div = document.createElement('div');
                 div.className = `chat-item ${chat.pinned ? 'pinned' : ''} ${chat.id === chatActivoId ? 'active-chat' : ''}`;
-                div.innerHTML = `<span>${chat.nombre}</span> <span style="font-size:0.7rem; opacity:0.7;">${chat.mensajes}/${LIMITE_MENSAJES}</span>`;
                 
-                // ✨ BLOQUEAR MENÚ NATIVO PARA QUE SALTE EL NUESTRO
+                // ✨ ICONO SVG ELEGANTE PARA EL PIN
+                let pinIcon = chat.pinned ? `<svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--pure-white)" stroke-width="2" fill="none" style="opacity:0.9;"><path d="M12 17v5"/><path d="M9 10.5V7a3 3 0 0 1 6 0v3.5l2 3.5H7l2-3.5z"/></svg>` : '';
+                
+                div.innerHTML = `<span style="display:flex; align-items:center; gap:8px;">${chat.nombre} ${pinIcon}</span>`;
+                
                 div.oncontextmenu = function(e) { e.preventDefault(); return false; };
                 
                 const startPress = (e) => {
@@ -309,7 +336,7 @@
                         isLongPress = true;
                         chatActivoParaMenu = chat.id;
                         document.getElementById('context-menu-overlay').style.display = 'flex';
-                        if(navigator.vibrate) navigator.vibrate(50); // ✨ Vibración háptica de élite
+                        if(navigator.vibrate) navigator.vibrate(50); 
                     }, 500); 
                 };
 
@@ -333,20 +360,24 @@
                     cerrarPaneles();
                     document.getElementById('chat-window').innerHTML = `<div class="msg aurora">Cambiando al ${chat.nombre}...</div>`;
                     renderizarChats();
+                    actualizarIndicadorMemoria();
                 });
                 container.appendChild(div);
             });
+            actualizarIndicadorMemoria();
         }
 
         function crearNuevoChat() {
-            if(!ilimitado && misChats.length >= 5) {
-                alert("Límite máximo de 5 chats alcanzado. Compartí la app para desbloquear espacio o eliminá un chat.");
+            if(!ilimitado && chatsCreadosHistoricos >= 5) {
+                alert("Límite máximo de chats alcanzado. Compartí la app para desbloquear la creación ilimitada.");
                 return;
             }
             
             let nuevoChat = { id: Date.now(), nombre: `Chat ${misChats.length + 1}`, pinned: false, mensajes: 0 };
             misChats.push(nuevoChat);
             chatActivoId = nuevoChat.id;
+            
+            if(!ilimitado) chatsCreadosHistoricos++; // Incrementa el contador anti-trampa
             
             actualizarBarra();
             renderizarChats();
@@ -379,7 +410,8 @@
             } else if(confirm("¿Seguro que querés borrar este chat?")) {
                 misChats = misChats.filter(c => c.id !== chatActivoParaMenu);
                 if(chatActivoId === chatActivoParaMenu) { chatActivoId = misChats[0].id; }
-                actualizarBarra();
+                
+                // NOTA: NO ACTUALIZAMOS 'chatsCreadosHistoricos' PARA EVITAR TRAMPAS
                 renderizarChats();
             }
             cerrarMenuSecreto();
@@ -400,8 +432,6 @@
             const counter = document.getElementById('chat-counter');
             const btnCompartir = document.getElementById('btn-compartir');
             
-            let cantidadChats = misChats.length;
-
             if (ilimitado) {
                 bar.style.width = '100%';
                 bar.style.background = 'var(--accent)';
@@ -409,11 +439,11 @@
                 counter.innerText = "ACCESO: ILIMITADO";
                 btnCompartir.style.display = 'none'; 
             } else {
-                let porcentaje = (cantidadChats / 5) * 100;
+                let porcentaje = (chatsCreadosHistoricos / 5) * 100;
                 bar.style.width = porcentaje + '%';
-                counter.innerText = `CHATS: ${cantidadChats}/5`;
+                counter.innerText = `CHATS: ${chatsCreadosHistoricos}/5`;
                 
-                if(cantidadChats >= 5) {
+                if(chatsCreadosHistoricos >= 5) {
                     bar.style.background = '#ff4d4d'; 
                     bar.style.boxShadow = '0 0 15px #ff4d4d';
                     btnCompartir.style.display = 'flex'; 
@@ -432,12 +462,14 @@
                     text: 'Descubrí Aurora, el acceso neuronal.',
                     url: window.location.href
                 }).then(() => {
-                    ilimitado = true; actualizarBarra();
+                    ilimitado = true;
+                    actualizarBarra();
                     alert("¡Misión cumplida! Desbloqueaste la creación ilimitada de chats.");
                 }).catch(console.error);
             } else {
                 alert("Copiá este enlace y compartilo con un amigo: " + window.location.href);
-                ilimitado = true; actualizarBarra();
+                ilimitado = true;
+                actualizarBarra();
             }
         }
 
